@@ -1,6 +1,6 @@
-import api from '.';
+import api from '../config/AxiosConfig';
 
-const API_URL = '/api/members';
+const API_URL = process.env.NEXT_PUBLIC_MEMBER_API_URL;
 
 const membersAPI = {
   async isMemberExist(userId: string) {
