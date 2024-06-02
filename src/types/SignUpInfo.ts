@@ -1,6 +1,6 @@
 type UserSignUpInfo = {
   [index: string]: string;
-  id: string;
+  username: string;
   password: string;
   checkPassword: string;
 };

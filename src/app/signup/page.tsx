@@ -4,13 +4,15 @@ import Validation from '@/constants/validation';
 import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
 import { UserSignUpInfo, UserAdditionalSignUpInfo } from '@/types/SignUpInfo';
+import membersAPI from '@/services/members';
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [checkPasswordVisible, setCheckPasswordVisible] = useState(false);
+  const [isUsernameExistChecked, setIsUsernameExistChecked] = useState(false);
 
   const [userInfo, setUserInfo] = useState<UserAdditionalSignUpInfo>({
-    id: '',
+    username: '',
     password: '',
     checkPassword: '',
     name: '',
@@ -19,7 +21,7 @@ export default function SignUp() {
   });
 
   const [checkMessage, setCheckMessage] = useState<UserSignUpInfo>({
-    id: '',
+    username: '',
     password: '',
     checkPassword: '',
     email: '',
@@ -53,6 +55,19 @@ export default function SignUp() {
     });
   }, [checkMessage, userInfo]);
 
+  const handleUserExist = async () => {
+    const data = await membersAPI.isMemberExist(userInfo.username);
+    if (data) {
+      setCheckMessage({ ...checkMessage, username: '아이디가 중복됩니다.' });
+    } else {
+      setIsUsernameExistChecked(true);
+    }
+  };
+
+  const handleSignUp = async () => {
+    await membersAPI.signUp(userInfo);
+  };
+
   return (
     <div className="w-screen min-h-dvh bg-gradient-to-br from-primary to-second flex items-center justify-center">
       <div className="bg-white rounded-3xl py-6 px-32 z-10 flex flex-col items-center max-w-[535px] ">
@@ -65,28 +80,32 @@ export default function SignUp() {
           className="w-16 h-16"
         />
         <form className="pb-2 w-full">
-          <label className="font-black text-sm pb-2 inline-block" htmlFor="id">
+          <label
+            className="font-black text-sm pb-2 inline-block"
+            htmlFor="username"
+          >
             아이디
           </label>
           <div className="flex justify-between gap-x-2">
             <input
               type="text"
-              className={`w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2 ${checkMessage.id.length > 0 && '!border-second'}`}
+              className={`w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2 ${checkMessage.username.length > 0 && '!border-second'}`}
               placeholder="아이디를 입력해주세요."
-              name="id"
-              id="id"
+              name="username"
+              id="username"
               maxLength={12}
               onInput={handleInput}
             />
             <button
               type="button"
-              className={`bg-primary rounded text-white py-3 px-[10px] text-xs whitespace-nowrap ${(userInfo.id.length === 0 || checkMessage.id.length > 0) && '!bg-disable'}`}
+              className={`bg-primary rounded text-white py-3 px-[10px] text-xs whitespace-nowrap ${(userInfo.username.length === 0 || checkMessage.username.length > 0 || isUsernameExistChecked) && '!bg-disable !cursor-not-allowed'}`}
+              onClick={handleUserExist}
             >
               아이디 확인
             </button>
           </div>
           <p className="text-second text-xs pt-1 break-keep">
-            {checkMessage.id}
+            {checkMessage.username}
           </p>
         </form>
         <div className="pb-2 w-full">
@@ -210,7 +229,8 @@ export default function SignUp() {
         </div>
         <button
           type="button"
-          className={`w-full bg-primary rounded text-white py-3 px-[10px] mt-4 text-xs whitespace-nowrap ${!isSignUpAvailable && '!bg-disable'}`}
+          className={`w-full bg-primary rounded text-white py-3 px-[10px] mt-4 text-xs whitespace-nowrap ${!isSignUpAvailable && isUsernameExistChecked && '!bg-disable !cursor-not-allowed'}`}
+          onClick={handleSignUp}
         >
           회원가입
         </button>
