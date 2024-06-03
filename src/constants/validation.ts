@@ -1,7 +1,7 @@
 import { AuthCondition } from '@/types/AuthCondition';
 
 const Validation: { [key: string]: Array<AuthCondition> } = {
-  id: [
+  username: [
     {
       name: '첫 글자 숫자 제외, 6자 이상 12자 이하',
       validateFunction: (message: string) => {
