@@ -19,6 +19,10 @@ const config: Config = {
         primary: '#5779E9',
         second: '#FB5D8D',
         gray: '#CBD5E1',
+        blueGray: '#D2DAF8',
+        blueBlack: '#2E396C',
+        kakao: '#FFEB00',
+        kakaoText: '#3C1E1E',
         disable: '#D9D9D9',
       },
       boxShadow: {
@@ -27,6 +31,19 @@ const config: Config = {
     },
   },
   darkMode: 'class',
-  plugins: [nextui()],
+  plugins: [
+    nextui({
+      addCommonColors: true,
+      themes: {
+        light: {
+          colors: {
+            primary: '#5779E9',
+            secondary: '#FB5D8D',
+            foreground: '#FFFFFF',
+          },
+        },
+      },
+    }),
+  ],
 };
 export default config;
