@@ -1,5 +1,6 @@
 'use client';
 
+import clsx from 'clsx';
 import Validation from '@/constants/validation';
 import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
@@ -7,8 +8,8 @@ import { UserSignUpInfo, UserAdditionalSignUpInfo } from '@/types/SignUpInfo';
 import membersAPI from '@/services/members';
 
 export default function SignUp() {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [checkPasswordVisible, setCheckPasswordVisible] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isCheckPasswordVisible, setIsCheckPasswordVisible] = useState(false);
   const [isUsernameExistChecked, setIsUsernameExistChecked] = useState(false);
 
   const [userInfo, setUserInfo] = useState<UserAdditionalSignUpInfo>({
@@ -27,7 +28,38 @@ export default function SignUp() {
     email: '',
   });
 
-  const handleInput = (event: FormEvent<HTMLInputElement>): void => {
+  const isSignUpAvailable = useMemo(() => {
+    const keyOfConditions: string[] = Object.keys(checkMessage);
+    return keyOfConditions.every((key: string) => {
+      if (key === 'email') {
+        return Validation.email[0].validateFunction(userInfo.email);
+      }
+      return checkMessage[key].length === 0 && userInfo[key].length > 0;
+    });
+  }, [checkMessage, userInfo]);
+
+  const handleUserExistClick = async () => {
+    try {
+      const data = await membersAPI.isMemberExist(userInfo.username);
+      if (data) {
+        setCheckMessage({ ...checkMessage, username: '아이디가 중복됩니다.' });
+      } else {
+        setIsUsernameExistChecked(true);
+      }
+    } catch (error) {
+      // 에러 메시지 모달창 출력
+    }
+  };
+
+  const handleSignUpClick = async () => {
+    try {
+      await membersAPI.signUp(userInfo);
+    } catch (error) {
+      // 에러 메시지 모달창 출력
+    }
+  };
+
+  const handleInput = (event: FormEvent<HTMLInputElement>) => {
     const { name, value } = event.target as HTMLInputElement;
     if (Validation[name] !== undefined) {
       const newValidationMessage = Validation[name]
@@ -45,34 +77,27 @@ export default function SignUp() {
     setUserInfo({ ...userInfo, [name]: value });
   };
 
-  const isSignUpAvailable = useMemo(() => {
-    const keyOfConditions: string[] = Object.keys(checkMessage);
-    return keyOfConditions.every((key: string) => {
-      if (key === 'email') {
-        return Validation.email[0].validateFunction(userInfo.email);
-      }
-      return checkMessage[key].length === 0 && userInfo[key].length > 0;
-    });
-  }, [checkMessage, userInfo]);
-
-  const handleUserExist = async () => {
-    const data = await membersAPI.isMemberExist(userInfo.username);
-    if (data) {
-      setCheckMessage({ ...checkMessage, username: '아이디가 중복됩니다.' });
-    } else {
-      setIsUsernameExistChecked(true);
-    }
+  const handlePasswordCheck = () => {
+    setIsPasswordVisible((prev) => !prev);
   };
 
-  const handleSignUp = async () => {
-    await membersAPI.signUp(userInfo);
+  const handleCheckPasswordCheck = () => {
+    setIsCheckPasswordVisible((prev) => !prev);
   };
+
+  const inputClassName: string = clsx(
+    `w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2`
+  );
+
+  const buttonClassName: string = clsx(
+    `bg-primary rounded text-white py-3 px-[10px] text-xs whitespace-nowrap`
+  );
 
   return (
     <div className="w-screen min-h-dvh bg-gradient-to-br from-primary to-second flex items-center justify-center">
       <div className="bg-white rounded-3xl py-6 px-32 z-10 flex flex-col items-center max-w-[535px] ">
         <Image
-          src="/svgs/logo.svg"
+          src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
           alt="my trophy logo"
           width={64}
           height={64}
@@ -89,17 +114,17 @@ export default function SignUp() {
           <div className="flex justify-between gap-x-2">
             <input
               type="text"
-              className={`w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2 ${checkMessage.username.length > 0 && '!border-second'}`}
+              className={`${inputClassName} ${checkMessage.username.length > 0 && '!border-second'}`}
               placeholder="아이디를 입력해주세요."
               name="username"
               id="username"
               maxLength={12}
-              onInput={handleInput}
+              onChange={handleInput}
             />
             <button
               type="button"
-              className={`bg-primary rounded text-white py-3 px-[10px] text-xs whitespace-nowrap ${(userInfo.username.length === 0 || checkMessage.username.length > 0 || isUsernameExistChecked) && '!bg-disable !cursor-not-allowed'}`}
-              onClick={handleUserExist}
+              className={`${buttonClassName} ${(userInfo.username.length === 0 || checkMessage.username.length > 0 || isUsernameExistChecked) && '!bg-disable !cursor-not-allowed'}`}
+              onClick={handleUserExistClick}
             >
               아이디 확인
             </button>
@@ -117,8 +142,8 @@ export default function SignUp() {
           </label>
           <div className="flex justify-between gap-x-2 relative ">
             <input
-              type={passwordVisible ? 'text' : 'password'}
-              className={`w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2 ${checkMessage.password.length > 0 && '!border-second'}`}
+              type={isPasswordVisible ? 'text' : 'password'}
+              className={`${inputClassName} ${checkMessage.password.length > 0 && '!border-second'}`}
               placeholder="비밀번호를 입력해주세요."
               name="password"
               id="password"
@@ -126,15 +151,15 @@ export default function SignUp() {
             />
             <Image
               src={
-                passwordVisible
-                  ? '../svgs/visibility_off_24dp.svg'
-                  : '../svgs/visibility_24dp.svg'
+                isPasswordVisible
+                  ? `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_off_24dp.svg`
+                  : `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`
               }
               alt="password visibility icon"
               width={28}
               height={24}
               className="absolute top-2/4 right-3 translate-y-[-50%] cursor-pointer w-7 h-6"
-              onClick={() => setPasswordVisible((prev) => !prev)}
+              onClick={handlePasswordCheck}
             />
           </div>
           <p className="text-second text-xs pt-1 break-keep">
@@ -150,20 +175,20 @@ export default function SignUp() {
           </label>
           <div className="flex justify-between gap-x-2 relative ">
             <input
-              type={checkPasswordVisible ? 'text' : 'password'}
-              className={`w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2 ${checkMessage.checkPassword.length > 0 && '!border-second'}`}
+              type={isCheckPasswordVisible ? 'text' : 'password'}
+              className={`${inputClassName} ${checkMessage.checkPassword.length > 0 && '!border-second'}`}
               placeholder="비밀번호를 다시 한 번 입력해주세요."
               name="checkPassword"
               id="checkPassword"
               onInput={handleInput}
             />
             <Image
-              src="../svgs/visibility_24dp.svg"
+              src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`}
               alt="password check visibility icon"
               width={28}
               height={24}
               className=" absolute top-2/4 right-3 translate-y-[-50%] cursor-pointer w-7 h-6"
-              onClick={() => setCheckPasswordVisible((prev) => !prev)}
+              onClick={handleCheckPasswordCheck}
             />
           </div>
           <p className="text-second text-xs pt-1 break-keep">
@@ -180,7 +205,7 @@ export default function SignUp() {
           <div className="flex justify-between gap-x-2 relative ">
             <input
               type="text"
-              className="w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2"
+              className={inputClassName}
               placeholder="이름을 입력해주세요."
               name="name"
               id="name"
@@ -198,7 +223,7 @@ export default function SignUp() {
           <div className="flex justify-between gap-x-2 relative ">
             <input
               type="text"
-              className="w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2"
+              className={inputClassName}
               placeholder="닉네임을 입력해주세요."
               name="nickname"
               id="nickname"
@@ -216,7 +241,7 @@ export default function SignUp() {
           <div className="flex justify-between gap-x-2 relative ">
             <input
               type="email"
-              className={`w-full p-3 border border-gray rounded text-xs autofill:transition-colors autofill:shadow-disabled outline-none focus:border-primary focus:border-2 ${checkMessage.email.length > 0 && '!border-second'}`}
+              className={`${inputClassName} ${checkMessage.email.length > 0 && '!border-second'}`}
               placeholder="이메일을 입력해주세요."
               name="email"
               id="email"
@@ -229,8 +254,8 @@ export default function SignUp() {
         </div>
         <button
           type="button"
-          className={`w-full bg-primary rounded text-white py-3 px-[10px] mt-4 text-xs whitespace-nowrap ${!isSignUpAvailable && isUsernameExistChecked && '!bg-disable !cursor-not-allowed'}`}
-          onClick={handleSignUp}
+          className={`w-full ${buttonClassName} ${!isSignUpAvailable && isUsernameExistChecked && '!bg-disable !cursor-not-allowed'}`}
+          onClick={handleSignUpClick}
         >
           회원가입
         </button>
