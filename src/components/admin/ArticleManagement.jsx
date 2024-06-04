@@ -4,7 +4,7 @@ export default function Dashboard() {
   return (
     <div className="m-4">
       <div className="m-4">
-        <p className="text-2xl">게임 관리</p>
+        <p className="text-2xl">게시물 관리</p>
       </div>
     </div>
   );

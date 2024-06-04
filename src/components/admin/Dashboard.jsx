@@ -3,11 +3,11 @@ import { Card, CardHeader, CardBody, Divider } from '@nextui-org/react';
 
 export default function Dashboard() {
   return (
-    <div className="m-4 h-[200px]">
+    <div className="m-4">
       <div className="m-4">
         <p className="text-2xl">Dashboard</p>
       </div>
-      <div className="flex flex-wrap gap-4 justify-evenly">
+      <div className="flex flex-wrap gap-4 justify-between">
         <Card className="w-[200px] m-1">
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">

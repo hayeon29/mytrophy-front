@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { Listbox, ListboxItem } from '@nextui-org/react';
-// eslint-disable-next-line import/extensions
 import { ListboxWrapper } from '@/components/admin/ListboxWrapper';
 import Container from '@/components/admin/Container';
 import Dashboard from '@/components/admin/Dashboard';
 import MemberManagement from '@/components/admin/MemberManagement';
+import ArticleManagement from '@/components/admin/ArticleManagement';
 import GameManagement from '@/components/admin/GameManagement';
 
 export default function Admin() {
@@ -24,6 +24,8 @@ export default function Admin() {
         return <Dashboard />;
       case 'member-management':
         return <MemberManagement />;
+      case 'article-management':
+        return <ArticleManagement />;
       case 'game-management':
         return <GameManagement />;
       default:
@@ -32,7 +34,7 @@ export default function Admin() {
   };
 
   return (
-    <div className="bg-white h-screen mx-auto">
+    <div className="bg-gray h-screen mx-auto">
       <div style={{ display: 'flex', padding: '20px' }}>
         <Container>
           <ListboxWrapper>
@@ -57,6 +59,12 @@ export default function Admin() {
                 회원 관리
               </ListboxItem>
               <ListboxItem
+                key="article-management"
+                onClick={() => handleItemClick('article-management')}
+              >
+                게시물 관리
+              </ListboxItem>
+              <ListboxItem
                 key="game-management"
                 onClick={() => handleItemClick('game-management')}
               >
@@ -64,7 +72,7 @@ export default function Admin() {
               </ListboxItem>
             </Listbox>
           </ListboxWrapper>
-          <div className="w-full border-small ml-4 px-1 py-2 rounded-small border-primary">
+          <div className="bg-white w-full border-small ml-4 px-1 py-2 rounded-small border-primary">
             {renderContent()}
           </div>
         </Container>
