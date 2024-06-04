@@ -1,22 +1,21 @@
 'use client';
 
 import React from 'react';
-
 import {
   Button,
-  Input,
   Image,
   Card,
   CardHeader,
   CardBody,
   Avatar,
+  Pagination,
 } from '@nextui-org/react';
 
 export default function Article() {
   return (
     <div className="bg-white h-screen mx-auto">
-      <div className="max-w-screen-xl mx-auto relative bg-white p-5">
-        <div className="relative justify-start items-start gap-4 inline-flex p-0">
+      <div className="max-w-7xl mx-auto relative bg-white pt-4">
+        <div className="flex justify-left items-center p-0 gap-4">
           <Button color="primary" variant="ghost">
             자유
           </Button>
@@ -32,23 +31,19 @@ export default function Article() {
         </div>
       </div>
       <div className="bg-white flex justify-center items-center py-4">
-        <div className="w-full max-w-7xl border border-gray p-4 flex items-center rounded-lg h-26 shadow-md">
+        <div className="w-full max-w-7xl border border-gray p-4 flex items-center rounded-lg h-26 shadow-md text-left">
           <Image
             width={64}
             alt="main profile image"
             src="/svgs/mainprofile.svg"
           />
-          <Input
-            classNames={{
-              base: 'ml-4 flex-grow',
-              mainWrapper: 'h-full',
-              input: 'text-small',
-            }}
-            radius="md"
-            size="md"
-            placeholder="클릭 후 글을 작성해보세요."
-            type="text"
-          />
+          <Button
+            color="default"
+            variant="faded"
+            className="ml-4 flex-grow test-small"
+          >
+            클릭 후 글을 작성해보세요.
+          </Button>
         </div>
       </div>
 
@@ -97,9 +92,13 @@ export default function Article() {
         </Card>
       </div>
       <div className="flex flex-wrap gap-4 items-center justify-center mt-8">
-        <Button variant="bordered" className="text-gray-600">
-          더보기 +
-        </Button>
+        <Pagination
+          loop
+          showControls
+          color="primary"
+          total={5}
+          initialPage={1}
+        />
       </div>
     </div>
   );
