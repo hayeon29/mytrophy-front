@@ -3,264 +3,73 @@ import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import gamesAPI from '@/services/games';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 
-const  Gamelist = [
-    {
-      id: 1,
-      title: 'Animal Trainer Simulator: Prologue',
-      imageUrl: "https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/steam2.png?alt=media&token=da0a75bb-5eb7-423a-ac25-d62809224da6", // 이미지 경로를 적절히 수정하세요
-      price: '무료',
-      releaseDate: '2023.06.01',
-      platform: '스팀',
-      languageSupport: '한국어 지원',
-      category : ['시뮬레이션','캐주얼','귀여운','분위기 있는','경엉'],
-    },
-    {
-      id: 2,
-      title: 'Morbid: The Lords of Ire',
-      imageUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`, // 이미지 경로를 적절히 수정하세요
-      price: '무료',
-      releaseDate: '2023.06.02',
-      platform: '스팀',
-      languageSupport: '한국어 지원',
-      category : ['시뮬레이션','캐주얼','귀여운','분위기 있는','경엉'],
-    },
-    {
-      id: 3,
-      title: 'Ghost of Tsushima 디렉터스 컷',
-      imageUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`, // 이미지 경로를 적절히 수정하세요
-      price: '₩62,800원',
-      releaseDate: '2023.06.03',
-      platform: '스팀',
-      languageSupport: '한국어 지원',
-      category : ['시뮬레이션','캐주얼','귀여운','분위기 있는','경엉'],
-    },
-  ];
+import React from 'react';
 
-  const trending = [
-    {
-      id: 1,
-      title: 'Baldur\'s Gate 3',
-      imageUrl: '/path/to/baldurs_gate_image.png', // 이미지 경로를 적절히 수정하세요
-      price: '₩60,000원',
-      releaseDate: '2023.07.01',
-      platform: '스팀',
-      languageSupport: '한국어 지원',
-      category : ['액션','어드벤처','오픈 월드','풍부한 스토리','전투'],
-    },
-    {
-      id: 2,
-      title: 'HELLDIVERS™ 2',
-      imageUrl: '/path/to/helldivers_image.png', // 이미지 경로를 적절히 수정하세요
-      price: '₩44,800원',
-      releaseDate: '2023.07.02',
-      platform: '스팀',
-      languageSupport: '한국어 지원',
-      category :['액션','어드벤처','오픈 월드','풍부한 스토리','전투']
-    },
-    {
-      id: 3,
-      title: 'PUBG: BATTLEGROUNDS',
-      imageUrl: '/path/to/pubg_image.png', // 이미지 경로를 적절히 수정하세요
-      price: '무료',
-      releaseDate: '2023.07.03',
-      platform: '스팀',
-      languageSupport: '한국어 지원',
-      category : ['액션','어드벤처','오픈 월드','풍부한 스토리','전투'],
-    },
-    {
-          id: 4,
-          title: 'PUBG: BATTLEGROUNDS',
-          imageUrl: '/path/to/pubg_image.png', // 이미지 경로를 적절히 수정하세요
-          price: '무료',
-          releaseDate: '2023.07.03',
-          platform: '스팀',
-          languageSupport: '한국어 지원',
-          category : ['액션','어드벤처','오픈 월드','풍부한 스토리','전투'],
-        },
-  ];
-// function CustomNextArrow(props) {
-//   const { className, style, onClick } = props;
-//   return (
-//     <div
-//       className={`${className} custom-arrow custom-next-arrow`}
-//       style={{ ...style, display: 'block', borderRadius: '50%', width: '60px', height: '60px', zIndex: 1 }}
-//       onClick={onClick}
-//     >
-//     </div>
-//   );
-// }
-function CustomNextArrow(props) {
-  const { className, style, onClick } = props;
+function HistoryComponent() {
   return (
-    <div
-      className={`${className} custom-arrow custom-next-arrow`}
-      style={{ ...style, display: 'block', background: 'rgba(230,230,230, 0.5)', borderRadius: '50%', width: '60px', height: '60px', zIndex: 1 }}
-      onClick={onClick}
-    >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007BFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative',top:'18px', left: '18px' }}>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-        <polyline points="12 5 19 12 12 19"></polyline>
-      </svg>
-    </div>
-  );
-}
-function CustomPrevArrow(props) {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={`${className} custom-arrow custom-prev-arrow`}
-      style={{ ...style, display: 'block', background: 'rgba(230,230,230, 0.5)', borderRadius: '50%' , width: '60px', height: '60px', zIndex: 1}}
-      onClick={onClick}
-    >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007BFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative',top:'18px', left: '18px' }}>
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-    </div>
-  );
-}
-
-const settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 4,
-  slidesToScroll: 1,
-  nextArrow: <CustomNextArrow />,
-  prevArrow: <CustomPrevArrow />,
-};
-
-export default function Gamelist() {
-  const [gameDetails, setGameDetails] = useState([]);
-/*
-  useEffect(() => {
-    const fetchGameDetails = async () => {
-      try {
-        const details = await gamesAPI.getGameDetails();
-        console.log(details);
-        setGameDetails(details);
-      } catch (error) {
-        console.error('Error fetching game details:', error);
-      }
-    };
-
-    fetchGameDetails();
-  }, []);*/
-
-
-  return (
-
-        <div>
-        <style jsx global>{`
-                .slick-prev:before, .slick-next:before {
-                  display: none; // 기본 화살표 아이콘 숨기기
-                }
-              `}</style>
-             <div className="bg-white py-24 sm:py-10" >
-               <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                 <div className="mx-auto max-w-2xl lg:mx-0">
-                   <p className="mt-2 py-5 text-3xl leading-8  text-black-600 font-bold" >신규 출시</p>
-                 </div>
-                 <Slider {...settings}>
-                   {newReleases.map((post) => (
-                     <div key={post.id} className="p-2">
-                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                         <Image  className = "w-full h-64 object-cover" src={post.imageUrl} alt={post.title} width={500} height={200}  />
-                         <div className="p-6">
-                           <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
-
-                           <p className="text-gray-600">
-                           {post.category}
-                           </p>
-                           <p className="text-gray-600">가격: {post.price}</p>
-                           <p className="text-gray-600">출시일: {post.releaseDate}</p>
-                           <p className="text-gray-600">플랫폼: {post.platform}</p>
-                           <p className="text-gray-600">언어 지원: {post.languageSupport}</p>
-                         </div>
-                       </div>
-                     </div>
-                   ))}
-                 </Slider>
-               </div>
-             </div>
-
-             <div className="bg-blue-50 py-24 sm:py-10">
-               <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                 <div className="mx-auto max-w-2xl lg:mx-0">
-                   <p className="mt-2 py-5 text-3xl leading-8  text-black-600 font-bold" >인기 급상승</p>
-                 </div>
-                 <Slider {...settings}>
-                   {trending.map((post) => (
-                     <div key={post.id} className="p-2">
-                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                         <Image className = "w-full h-64 object-cover"src={post.imageUrl} alt={post.title} width={500} height={300} />
-                         <div className="p-6">
-                           <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
-                           <p className="text-gray-600">{post.category}</p>
-                           <p className="text-gray-600">가격: {post.price}</p>
-                           <p className="text-gray-600">출시일: {post.releaseDate}</p>
-                           <p className="text-gray-600">플랫폼: {post.platform}</p>
-                           <p className="text-gray-600">언어 지원: {post.languageSupport}</p>
-
-                         </div>
-                       </div>
-                     </div>
-                   ))}
-                 </Slider>
-               </div>
-             </div>
-             <div className="bg-white py-24 sm:py-10">
-                            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                              <div className="mx-auto max-w-2xl lg:mx-0">
-                                <p className="mt-2 py-5 text-3xl leading-8  text-black-600 font-bold" >내가 추천한 게임</p>
-                              </div>
-                              <Slider {...settings}>
-                                {newReleases.map((post) => (
-                                  <div key={post.id} className="p-2">
-                                    <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                                      <Image  className = "w-full h-64 object-cover" src={post.imageUrl} alt={post.title} width={500} height={200}  />
-                                      <div className="p-6">
-                                        <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
-                                        <p className="text-gray-600">가격: {post.price}</p>
-                                        <p className="text-gray-600">출시일: {post.releaseDate}</p>
-                                        <p className="text-gray-600">플랫폼: {post.platform}</p>
-                                        <p className="text-gray-600">언어 지원: {post.languageSupport}</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </Slider>
-                            </div>
-                          </div>
-
-                          <div className="bg-blue-50 py-24 sm:py-10">
-                            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                              <div className="mx-auto max-w-2xl lg:mx-0">
-                                <p className="mt-2 py-5 text-3xl leading-8  text-black-600 font-bold" >압도적으로 긍정적인 게임</p>
-                              </div>
-                              <Slider {...settings}>
-                                {trending.map((post) => (
-                                  <div key={post.id} className="p-2">
-                                    <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                                      <Image className = "w-full h-64 object-cover"src={post.imageUrl} alt={post.title} width={500} height={300} />
-                                      <div className="p-6">
-                                        <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
-                                        <p className="text-gray-600">가격: {post.price}</p>
-                                        <p className="text-gray-600">출시일: {post.releaseDate}</p>
-                                        <p className="text-gray-600">플랫폼: {post.platform}</p>
-                                        <p className="text-gray-600">언어 지원: {post.languageSupport}</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </Slider>
-                            </div>
-                          </div>
+    <div className="flex flex-col justify-center items-center h-[100vh] pt-4">
+      <div className="relative flex flex-col items-center rounded-[10px] border-[1px] border-gray-200 w-[576px] mx-auto p-4 bg-white bg-clip-border shadow-md shadow-[#F3F3F3] dark:border-[#ffffff33] dark:!bg-navy-800 dark:text-white dark:shadow-none">
+        <div className="flex items-center justify-between rounded-t-3xl p-3 w-full">
+          <div className="text-lg font-bold text-navy-700 dark:text-white">
+            History
+          </div>
+          <button className="linear rounded-[20px] bg-lightPrimary px-4 py-2 text-base font-medium text-brand-500 transition duration-200 hover:bg-gray-100 active:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20">
+            See all
+          </button>
         </div>
+        {/* History items */}
+        <div className="flex flex-col gap-4 w-full mt-4">
+          {/* History item */}
+          <div className="flex items-start justify-between rounded-md border-[1px] border-[transparent] dark:hover:border-white/20 bg-white px-3 py-[20px] transition-all duration-150 hover:border-gray-200 dark:!bg-navy-800 dark:hover:!bg-navy-700">
+            {/* Image */}
+            <div className="flex h-16 w-16 items-center justify-center">
+              <img
+                className="h-full w-full rounded-xl"
+                src="https://horizon-tailwind-react-corporate-7s21b54hb-horizon-ui.vercel.app/static/media/Nft1.0fea34cca5aed6cad72b.png"
+                alt=""
+              />
+            </div>
+            {/* Text */}
+            <div className="flex flex-col">
+              <h5 className="text-base font-bold text-navy-700 dark:text-white">
+                Colorful Heaven
+              </h5>
+              <p className="mt-1 text-sm font-normal text-gray-600">
+                Mark Benjamin
+              </p>
+            </div>
+            {/* ETH info */}
+            <div className="flex items-center justify-center text-navy-700 dark:text-white">
+              <div>
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  strokeWidth="0"
+                  viewBox="0 0 320 512"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"></path>
+                </svg>
+              </div>
+              <div className="ml-1 flex items-center text-sm font-bold text-navy-700 dark:text-white">
+                <p>   </p>
+                0.4<p className="ml-1">ETH</p>
+              </div>
+              <div className="ml-2 flex items-center text-sm font-normal text-gray-600 dark:text-white">
+                <p>30s</p>
+                <p className="ml-1">ago</p>
+              </div>
+            </div>
+          </div>
+          {/* Repeat other history items similarly */}
+        </div>
+      </div>
 
+    </div>
   );
 }
+
+export default HistoryComponent;
