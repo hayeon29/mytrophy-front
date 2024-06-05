@@ -9,9 +9,20 @@ import {
   CardBody,
   Avatar,
   Pagination,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Input,
+  Textarea,
 } from '@nextui-org/react';
 
 export default function Article() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const modalPlacement = 'center';
+
   return (
     <div className="bg-white h-screen mx-auto">
       <div className="max-w-7xl mx-auto relative bg-white pt-4">
@@ -41,11 +52,59 @@ export default function Article() {
             color="default"
             variant="faded"
             className="ml-4 flex-grow test-small"
+            onPress={onOpen}
           >
             클릭 후 글을 작성해보세요.
           </Button>
         </div>
       </div>
+
+      {/* 게시글 작성 모달창 */}
+      <Modal
+        isOpen={isOpen}
+        size="4xl"
+        onOpenChange={onOpenChange}
+        placement={modalPlacement}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                게시글 작성
+              </ModalHeader>
+              <ModalBody>
+                <p>게임 검색</p>
+                <Input
+                  placeholder="게임을 검색해주세요."
+                  width="100%"
+                  className="mb-4"
+                />
+                <hr style={{ border: '1px solid #ddd' }} />
+                <p>제목</p>
+                <Input
+                  placeholder="제목을 입력해주세요."
+                  width="100%"
+                  className="mb-4"
+                />
+                <p>내용</p>
+                <Textarea
+                  placeholder="내용을 입력해주세요."
+                  width="100%"
+                  className="mb-4"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  취소
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  작성
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
 
       {/* 게시글 Card */}
       <div className="flex justify-center items-center py-4">
