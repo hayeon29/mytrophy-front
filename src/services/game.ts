@@ -1,4 +1,3 @@
-import { log } from 'console';
 import api from '../config/AxiosConfig';
 
 const API_URL = process.env.NEXT_PUBLIC_GAME_API_URL;

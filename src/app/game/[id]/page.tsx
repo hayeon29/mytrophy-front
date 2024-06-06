@@ -4,26 +4,56 @@ import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import gameAPI from '@/services/game';
+import GameDetail from '@/components/game/detail';
+import GameReview from '@/components/game/review';
+import GameSimilar from '@/components/game/similar';
+import {
+  GetGameDetailDTO,
+  GetGamePlayerNumberDTO,
+  GetTopGameDTO,
+  GetGameCategoryDTO,
+  GetGameScreenshotDTO,
+} from '@/types/game';
 
-interface GameProps {
+type Props = {
   params: {
     id: string;
   };
-}
+};
 
-export default function Game(proops: GameProps) {
-  const [gameDetail, setGameDetail] = useState(null);
-  const [playerNumber, setPlayerNumber] = useState(null);
-  const [selectedScreenshot, setSelectedScreenshot] = useState(null);
-  const [allScreenshots, setAllScreenshots] = useState([]);
-  const [currentScreenshotIndex, setCurrentScreenshotIndex] = useState(0);
-  const smallScreenshotsRef = useRef(null);
-  const [formattedDate, setFormattedDate] = useState(null);
+export default function Game({ params }: Props) {
+  const { id: appId } = params;
+  const [gameDetail, setGameDetail] = useState<GetGameDetailDTO | null>(null);
+  const [playerNumber, setPlayerNumber] =
+    useState<GetGamePlayerNumberDTO | null>(null);
+  const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(
+    null
+  );
+  const [allScreenshots, setAllScreenshots] = useState<GetGameScreenshotDTO[]>(
+    []
+  );
+  const [currentScreenshotIndex, setCurrentScreenshotIndex] =
+    useState<number>(0);
+  const smallScreenshotsRef = useRef<HTMLDivElement>(null);
+  const [formattedDate, setFormattedDate] = useState<string | null>(null);
+  const [selectedComponent, setSelectedComponent] = useState<
+    'detail' | 'similar' | 'review'
+  >('detail');
+
+  const scrollSmallScreenshots = (direction: number) => {
+    if (smallScreenshotsRef.current) {
+      const scrollAmount = 200; // 스크롤할 양
+      smallScreenshotsRef.current.scrollBy({
+        left: scrollAmount * direction,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchGameDetail = async () => {
       try {
-        const response = await gameAPI.getGameDetail('582010');
+        const response = await gameAPI.getGameDetail(parseInt(appId));
         setGameDetail(response);
 
         if (response.getGameScreenshotDTOList.length > 0) {
@@ -42,22 +72,22 @@ export default function Game(proops: GameProps) {
         });
         setFormattedDate(formattedReleaseDate);
       } catch (error) {
-        // 에러 처리
+        console.error('Error fetching game detail:', error);
       }
     };
 
     const fetchGamePlayerNumber = async () => {
       try {
-        const response = await gameAPI.getGamePlayerNumber('582010');
-        setPlayerNumber(response.playerNumber);
+        const response = await gameAPI.getGamePlayerNumber(appId);
+        setPlayerNumber(response);
       } catch (error) {
-        // 에러 처리
+        console.error('Error fetching game player number:', error);
       }
     };
 
     fetchGameDetail();
     fetchGamePlayerNumber();
-  }, []);
+  }, [appId]);
 
   const handlePrevScreenshot = () => {
     setCurrentScreenshotIndex((prevIndex) =>
@@ -75,19 +105,9 @@ export default function Game(proops: GameProps) {
     scrollSmallScreenshots(1);
   };
 
-  const handleThumbnailClick = (index) => {
+  const handleThumbnailClick = (index: number) => {
     setCurrentScreenshotIndex(index);
     setSelectedScreenshot(allScreenshots[index].fullImagePath);
-  };
-
-  const scrollSmallScreenshots = (direction) => {
-    if (smallScreenshotsRef.current) {
-      const scrollAmount = 200; // 스크롤할 양
-      smallScreenshotsRef.current.scrollBy({
-        left: scrollAmount * direction,
-        behavior: 'smooth',
-      });
-    }
   };
 
   if (!gameDetail || !playerNumber) {
@@ -149,8 +169,8 @@ export default function Game(proops: GameProps) {
         <div className="w-[45%] h-[100%] ml-[32px] block ">
           <div className="w-[100%] h-[7.5%] py-3 flex justify-end items-center">
             <div className="w-[10%] h-[100%]">
-              <Link href="">
-                <span className="w-[100%] h-[100%] border-1 border-[#cbd5e1] font-bold text-[#cbd5e1] text-[12px] text-white text-center rounded-[10px] flex justify-center items-center">
+              <Link href="/">
+                <span className="w-[100%] h-[100%] border-1 border-[#cbd5e1] font-bold text-[#cbd5e1] text-[12px] text-[#CBD5E1] text-center rounded-[10px] flex justify-center items-center">
                   목록으로
                 </span>
               </Link>
@@ -165,7 +185,7 @@ export default function Game(proops: GameProps) {
                 <span>
                   {playerNumber === '조회 불가 게임'
                     ? playerNumber
-                    : `현재 ${Number(playerNumber).toLocaleString()}명이 게임 중`}
+                    : `현재 ${playerNumber.playerNumber}명이 게임 중`}
                 </span>
               </div>
             </div>
@@ -195,7 +215,7 @@ export default function Game(proops: GameProps) {
                 <span className="w-[80%] h-[100%] text-[12px]">
                   {gameDetail.developer
                     .split('&')
-                    .map((name) => name.trim())
+                    .map((name: any) => name.trim())
                     .join(', ')
                     .replace(/, ([^,]*)$/, ' $1')}
                 </span>
@@ -207,7 +227,7 @@ export default function Game(proops: GameProps) {
                 <span className="w-[80%] h-[100%] text-[12px]">
                   {gameDetail.publisher
                     .split('&')
-                    .map((name) => name.trim())
+                    .map((name: string) => name.trim())
                     .join(', ')
                     .replace(/, ([^,]*)$/, ' $1')}
                 </span>
@@ -219,9 +239,9 @@ export default function Game(proops: GameProps) {
               </div>
               <div className="flex flex-wrap">
                 {gameDetail.getGameCategoryDTOList
-                  .filter((category) => category.id >= 100)
+                  .filter((category: any) => category.id >= 100)
                   .slice(0, 5)
-                  .map((category) => (
+                  .map((category: any) => (
                     <span
                       key={category.id}
                       className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
@@ -230,15 +250,15 @@ export default function Game(proops: GameProps) {
                     </span>
                   ))}
                 {gameDetail.getGameCategoryDTOList
-                  .filter((category) => category.id < 100)
+                  .filter((category: any) => category.id < 100)
                   .slice(
                     0,
                     5 -
                       gameDetail.getGameCategoryDTOList.filter(
-                        (category) => category.id >= 100
+                        (category: any) => category.id >= 100
                       ).length
                   )
-                  .map((category) => (
+                  .map((category: any) => (
                     <span
                       key={category.id}
                       className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
@@ -249,15 +269,15 @@ export default function Game(proops: GameProps) {
               </div>
             </div>
             <div className="w-[100%] h-[8%] mb-4">
-              <Link href="">
-                <span className="block w-full h-full bg-[#5779e9] font-bold text-[16px] text-white text-center rounded-[20px] flex justify-center items-center">
+              <Link href="/">
+                <span className="block w-full h-full bg-[#5779e9] font-bold text-[16px] text-white rounded-[20px] flex justify-center items-center">
                   커뮤니티
                 </span>
               </Link>
             </div>
             <div className="w-[100%] h-[8%] mb-4">
-              <Link href="https://store.steampowered.com/app/582010">
-                <span className="block w-full h-full border-1 border-[#5779e9] font-bold text-[#5779e9] text-[16px] text-white text-center rounded-[20px] flex justify-center items-center">
+              <Link href={`https://store.steampowered.com/app/${appId}`}>
+                <span className="block w-full h-full bg-white font-bold border-[#5779e9] border-1 text-[16px] text-[#5779e9] rounded-[20px] flex justify-center items-center">
                   스팀 페이지로 이동
                 </span>
               </Link>
@@ -266,23 +286,39 @@ export default function Game(proops: GameProps) {
         </div>
       </div>
       <div className="w-[100%] h-[61px] bg-[#5779e9] flex">
-        <div className="w-[33%] h-[96%] bg-[#f6f7ff] flex justify-center items-center">
+        <button
+          type="button"
+          className={`w-[33%] h-[96%] bg-${selectedComponent === 'detail' ? '[#5779e9]' : '[#f6f7ff]'} flex justify-center items-center text-${selectedComponent === 'detail' ? 'white' : 'black'}`}
+          onClick={() => setSelectedComponent('detail')}
+        >
           <span>상세 게임</span>
-        </div>
+        </button>
         <div className="w-0 h-[100%] flex justify-center items-center">
-          <div className="w-0 h-[70%] border-1 border-[#5779e9]"></div>
+          <div className="w-0 h-[70%] border-1 border-[#5779e9]" />
         </div>
-        <div className="w-[34%] h-[96%] bg-[#f6f7ff] flex justify-center items-center">
+        <button
+          type="button"
+          className={`w-[34%] h-[96%] bg-${selectedComponent === 'similar' ? '[#5779e9]' : '[#f6f7ff]'} flex justify-center items-center text-${selectedComponent === 'similar' ? 'white' : 'black'}`}
+          onClick={() => setSelectedComponent('similar')}
+        >
           <span>유사 게임</span>
-        </div>
+        </button>
         <div className="w-0 h-[100%] flex justify-center items-center">
-          <div className="w-0 h-[70%] border-1 border-[#5779e9]"></div>
+          <div className="w-0 h-[70%] border-1 border-[#5779e9]" />
         </div>
-        <div className="w-[33%] h-[96%] bg-[#f6f7ff] flex justify-center items-center">
+        <button
+          type="button"
+          className={`w-[33%] h-[96%] bg-${selectedComponent === 'review' ? '[#5779e9]' : '[#f6f7ff]'} flex justify-center items-center text-${selectedComponent === 'review' ? 'white' : 'black'}`}
+          onClick={() => setSelectedComponent('review')}
+        >
           <span>리뷰</span>
-        </div>
+        </button>
       </div>
-      <div className="w-[100%] h-[500px] bg-[#ffffff] flex"></div>
+      {selectedComponent === 'detail' && <GameDetail gameDetail={gameDetail} />}
+      {selectedComponent === 'similar' && (
+        <GameSimilar gameDetail={gameDetail} />
+      )}
+      {selectedComponent === 'review' && <GameReview gameDetail={gameDetail} />}
     </div>
   );
 }
