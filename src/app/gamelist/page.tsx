@@ -1,75 +1,63 @@
 'use client';
 import { useEffect, useState } from 'react';
-import clsx from 'clsx';
 import Image from 'next/image';
 import gamesAPI from '@/services/games';
+import moment from "moment";
 
-import React from 'react';
+export default function GameList() {
+  const [gameDetailsByRelease, setGameDetailsByRelease] = useState([]);
 
-function HistoryComponent() {
+  useEffect(() => {
+    const fetchGameDetails = async () => {
+      try {
+        const details = await gamesAPI.getGameDetailsByRelease();
+        console.log(details.content);
+        setGameDetailsByRelease(details.content);
+      } catch (error) {
+        console.error('Error fetching game details:', error);
+      }
+    };
+
+    fetchGameDetails();
+  }, []);
+
   return (
-    <div className="flex flex-col justify-center items-center h-[100vh] pt-4">
-      <div className="relative flex flex-col items-center rounded-[10px] border-[1px] border-gray-200 w-[576px] mx-auto p-4 bg-white bg-clip-border shadow-md shadow-[#F3F3F3] dark:border-[#ffffff33] dark:!bg-navy-800 dark:text-white dark:shadow-none">
-        <div className="flex items-center justify-between rounded-t-3xl p-3 w-full">
-          <div className="text-lg font-bold text-navy-700 dark:text-white">
-            History
-          </div>
-          <button className="linear rounded-[20px] bg-lightPrimary px-4 py-2 text-base font-medium text-brand-500 transition duration-200 hover:bg-gray-100 active:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20">
-            See all
-          </button>
+    <div className="bg-white py-5 sm:py-10">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:mx-0">
+          <p className="pb-5 text-3xl leading-8 text-black-600 font-bold">게임 목록</p>
         </div>
-        {/* History items */}
-        <div className="flex flex-col gap-4 w-full mt-4">
-          {/* History item */}
-          <div className="flex items-start justify-between rounded-md border-[1px] border-[transparent] dark:hover:border-white/20 bg-white px-3 py-[20px] transition-all duration-150 hover:border-gray-200 dark:!bg-navy-800 dark:hover:!bg-navy-700">
-            {/* Image */}
-            <div className="flex h-16 w-16 items-center justify-center">
-              <img
-                className="h-full w-full rounded-xl"
-                src="https://horizon-tailwind-react-corporate-7s21b54hb-horizon-ui.vercel.app/static/media/Nft1.0fea34cca5aed6cad72b.png"
-                alt=""
-              />
-            </div>
-            {/* Text */}
-            <div className="flex flex-col">
-              <h5 className="text-base font-bold text-navy-700 dark:text-white">
-                Colorful Heaven
-              </h5>
-              <p className="mt-1 text-sm font-normal text-gray-600">
-                Mark Benjamin
-              </p>
-            </div>
-            {/* ETH info */}
-            <div className="flex items-center justify-center text-navy-700 dark:text-white">
-              <div>
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 320 512"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"></path>
-                </svg>
-              </div>
-              <div className="ml-1 flex items-center text-sm font-bold text-navy-700 dark:text-white">
-                <p>   </p>
-                0.4<p className="ml-1">ETH</p>
-              </div>
-              <div className="ml-2 flex items-center text-sm font-normal text-gray-600 dark:text-white">
-                <p>30s</p>
-                <p className="ml-1">ago</p>
+        <div className="grid grid-cols-1 gap-6">
+          {gameDetailsByRelease.map((post) => (
+            <div key={post.id} className="flex items-start p-4 rounded-lg bg-white shadow-md">
+              <Image className="w-48 h-24 object-cover rounded-lg" src={post.headerImagePath} alt={post.name} width={96} height={96} />
+              <div className="ml-4 flex flex-col justify-between flex-grow">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{post.name}</h3>
+                  <div className="flex flex-wrap mb-1">
+                    {post.getGameCategoryDTOList.map((category) => (
+                      <span key={category.id} className="text-gray-600 rounded bg-blue-100 ring-1 ring-gray-300 px-2 mx-1 mb-1">
+                        {category.name}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-gray-600"><strong>출시일:</strong> {moment(post.releaseDate).format('YYYY.MM.DD')}</p>
+                  <div className="flex justify-between items-center mt-1">
+                    <p className="text-gray-600 flex items-center"><strong>한국어 지원:</strong>
+                      {post.koIsPosible ? (
+                        <img className="w-6 h-6 ml-2" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75" alt="지원" />
+                      ) : (
+                        <img className="w-6 h-6 ml-2" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e" alt="미지원" />
+                      )}
+                    </p>
+                    <p className="text-gray-600"><strong>가격:</strong> {post.price}원</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          {/* Repeat other history items similarly */}
+          ))}
         </div>
       </div>
-
     </div>
   );
 }
-
-export default HistoryComponent;
