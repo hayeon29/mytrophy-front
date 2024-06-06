@@ -67,7 +67,7 @@ export default function NavigationBar() {
         <div className="flex items-center gap-8">
           <NavbarBrand>
             <Image
-              src="/svgs/logo.svg"
+              src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
               width={32}
               height={32}
               alt="logo on navigation bar"
@@ -113,7 +113,7 @@ export default function NavigationBar() {
             placeholder="검색"
             startContent={
               <Image
-                src="/svgs/search.svg"
+                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/search.svg`}
                 alt="search icon"
                 width={18}
                 height={18}
@@ -137,7 +137,7 @@ export default function NavigationBar() {
       <div className="flex items-center gap-4">
         <span className="text-white">유저</span>
         <Avatar
-          src={`/image/sample_icon.jpg`}
+          src={`${process.env.NEXT_PUBLIC_FRONT_URL}/image/sample_icon.jpg`}
           size="sm"
         />
       </div>
@@ -152,7 +152,7 @@ export default function NavigationBar() {
               로그인
             </Button>
             <Button className="bg-white text-primary border-primary border-0 rounded-full">
-              <Link href="/signup" className="w-full h-full text-sm">
+              <Link href="/signup" className="w-full h-full">
                 회원가입
               </Link>
             </Button>
@@ -173,7 +173,7 @@ export default function NavigationBar() {
                   <div className="w-96">
                     <ModalBody className="flex flex-col items-center justify-center gap-6 mt-6 mb-16">
                       <Image
-                        src="/svgs/logo.svg"
+                        src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
                         alt="logo on login modal"
                         width={64}
                         height={64}
@@ -232,8 +232,8 @@ export default function NavigationBar() {
                             <Image
                               src={
                                 isPasswordVisible
-                                  ? `/svgs/visibility_off_24dp.svg`
-                                  : `/svgs/visibility_24dp.svg`
+                                  ? `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_off_24dp.svg`
+                                  : `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`
                               }
                               alt="password visibility icon"
                               width={28}
@@ -263,7 +263,7 @@ export default function NavigationBar() {
                         size="lg"
                         startContent={
                           <Image
-                            src="/svgs/google_logo.svg"
+                            src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/google_logo.svg`}
                             alt="google logo on login"
                             width={24}
                             height={24}
@@ -277,8 +277,8 @@ export default function NavigationBar() {
                         size="lg"
                         startContent={
                           <Image
-                            src="/image/kakaotalk_icon.png"
-                            alt="kakaotalk"
+                            src={`${process.env.NEXT_PUBLIC_FRONT_URL}/image/kakaotalk_icon.png`}
+                            alt="kakaotalk icon"
                             width={24}
                             height={24}
                           />
@@ -286,41 +286,6 @@ export default function NavigationBar() {
                       >
                         카카오로 로그인하기
                       </Button>
-                      <Button
-                        className="bg-gradient-to-br from-steamGradientFrom via-steamGradientVia to-steamGradientTo rounded-xl w-full py-4 text-white text-sm font-bold"
-                        size="lg"
-                        startContent={
-                          <Image
-                            src="/svgs/steam_logo.svg"
-                            alt="steam logo on login"
-                            width={24}
-                            height={24}
-                          />
-                        }
-                      >
-                        스팀으로 로그인하기
-                      </Button>
-
-                      <Link
-                        href={`${process.env.NEXT_PUBLIC_BACK_URL}/oauth2/authorization/naver`}
-                        className="w-full h-full text-white text-center"
-                      >
-                        <Button
-                          id="naverIdLogin"
-                          className="bg-naver rounded-xl w-full py-4 text-white text-sm font-bold"
-                          size="lg"
-                          startContent={
-                            <Image
-                              src="/image/naver.png"
-                              alt="naver logo on login"
-                              width={24}
-                              height={24}
-                            />
-                          }
-                        >
-                          네이버로 로그인하기
-                        </Button>
-                      </Link>
                     </ModalBody>
                   </div>
                 </>

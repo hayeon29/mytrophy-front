@@ -40,10 +40,8 @@ export default function SignUp() {
 
   const handleUserExistClick = async () => {
     try {
-      const isMemberExist = await membersAPI
-        .isMemberExist(userInfo.username)
-        .then((response) => response.data);
-      if (isMemberExist) {
+      const data = await membersAPI.isMemberExist(userInfo.username);
+      if (data) {
         setCheckMessage({ ...checkMessage, username: '아이디가 중복됩니다.' });
       } else {
         setIsUsernameExistChecked(true);

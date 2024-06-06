@@ -23,10 +23,6 @@ const config: Config = {
         blueBlack: '#2E396C',
         kakao: '#FFEB00',
         kakaoText: '#3C1E1E',
-        steamGradientFrom: '#101C2F',
-        steamGradientVia: '#0D2252',
-        steamGradientTo: '#1382B3',
-        naver: '#03C75A',
         disable: '#D9D9D9',
       },
       boxShadow: {
