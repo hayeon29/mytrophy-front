@@ -8,12 +8,11 @@ import GameDetail from '@/components/game/detail';
 import GameReview from '@/components/game/review';
 import GameSimilar from '@/components/game/similar';
 import {
+  GetGameCategoryDTO,
   GetGameDetailDTO,
   GetGamePlayerNumberDTO,
-  GetTopGameDTO,
-  GetGameCategoryDTO,
   GetGameScreenshotDTO,
-} from '@/types/game';
+} from '@/types/GameDetail';
 
 type Props = {
   params: {
@@ -24,7 +23,7 @@ type Props = {
 export default function Game({ params }: Props) {
   const { id: appId } = params;
   const [gameDetail, setGameDetail] = useState<GetGameDetailDTO | null>(null);
-  const [playerNumber, setPlayerNumber] =
+  const [playerNumbers, setPlayerNumbers] =
     useState<GetGamePlayerNumberDTO | null>(null);
   const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(
     null
@@ -53,7 +52,7 @@ export default function Game({ params }: Props) {
   useEffect(() => {
     const fetchGameDetail = async () => {
       try {
-        const response = await gameAPI.getGameDetail(parseInt(appId));
+        const response = await gameAPI.getGameDetail(appId);
         setGameDetail(response);
 
         if (response.getGameScreenshotDTOList.length > 0) {
@@ -72,16 +71,16 @@ export default function Game({ params }: Props) {
         });
         setFormattedDate(formattedReleaseDate);
       } catch (error) {
-        console.error('Error fetching game detail:', error);
+        // 에러 처리
       }
     };
 
     const fetchGamePlayerNumber = async () => {
       try {
         const response = await gameAPI.getGamePlayerNumber(appId);
-        setPlayerNumber(response);
+        setPlayerNumbers(response);
       } catch (error) {
-        console.error('Error fetching game player number:', error);
+        // 에러 처리
       }
     };
 
@@ -105,16 +104,16 @@ export default function Game({ params }: Props) {
     scrollSmallScreenshots(1);
   };
 
-  const handleThumbnailClick = (index: number) => {
+  const handleThumbnailClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    clickedElement: HTMLButtonElement
+  ) => {
+    const index: number = Number(clickedElement.getAttribute('id'));
     setCurrentScreenshotIndex(index);
     setSelectedScreenshot(allScreenshots[index].fullImagePath);
   };
 
-  if (!gameDetail || !playerNumber) {
-    return <></>;
-  }
-
-  return (
+  return gameDetail && playerNumbers ? (
     <div className="w-full min-h-dvh bg-white px-8 block justify-center">
       <div className="w-[100%] h-[900px] py-[32px] m-0 flex">
         <div className="w-[55%] h-[75%] block">
@@ -123,7 +122,7 @@ export default function Game({ params }: Props) {
           </div>
           <div className="w-[100%] h-[75%] pb-[24px]">
             {selectedScreenshot && (
-              <img
+              <Image
                 src={selectedScreenshot}
                 alt="Selected Screenshot"
                 className="w-[100%] h-[100%] mb-4 rounded-[20px]"
@@ -145,13 +144,21 @@ export default function Game({ params }: Props) {
                 ref={smallScreenshotsRef}
               >
                 {allScreenshots.map((screenshot, index) => (
-                  <img
+                  <button
+                    type="button"
+                    className="w-auto h-[95px] mr-[10px] flex-none border-0 bg-none p-0"
                     key={screenshot.id}
-                    src={screenshot.thumbnailImagePath}
-                    alt={`Screenshot ${index + 1}`}
-                    className="w-auto h-[95px] mr-[10px] cursor-pointer flex-none"
-                    onClick={() => handleThumbnailClick(index)}
-                  />
+                    id={`${index}`}
+                    onClick={(event) => {
+                      handleThumbnailClick(event, this);
+                    }}
+                  >
+                    <Image
+                      src={screenshot.thumbnailImagePath}
+                      alt={`Screenshot ${index + 1}`}
+                      className="w-full h-full"
+                    />
+                  </button>
                 ))}
               </div>
               <Image
@@ -183,13 +190,13 @@ export default function Game({ params }: Props) {
               </div>
               <div className="w-[50%] h-[100%] text-[12px] text-[#1e293b] flex justify-end items-center">
                 <span>
-                  {playerNumber === '조회 불가 게임'
-                    ? playerNumber
-                    : `현재 ${playerNumber.playerNumber}명이 게임 중`}
+                  {playerNumbers.playerNumber === '조회 불가 게임'
+                    ? playerNumbers.playerNumber
+                    : `현재 ${playerNumbers.playerNumber}명이 게임 중`}
                 </span>
               </div>
             </div>
-            <img
+            <Image
               src={gameDetail.headerImagePath}
               alt="headerImagePath"
               className="w-[100%] h-[40%] my-4"
@@ -215,7 +222,7 @@ export default function Game({ params }: Props) {
                 <span className="w-[80%] h-[100%] text-[12px]">
                   {gameDetail.developer
                     .split('&')
-                    .map((name: any) => name.trim())
+                    .map((name: string) => name.trim())
                     .join(', ')
                     .replace(/, ([^,]*)$/, ' $1')}
                 </span>
@@ -239,9 +246,9 @@ export default function Game({ params }: Props) {
               </div>
               <div className="flex flex-wrap">
                 {gameDetail.getGameCategoryDTOList
-                  .filter((category: any) => category.id >= 100)
+                  .filter((category: GetGameCategoryDTO) => category.id >= 100)
                   .slice(0, 5)
-                  .map((category: any) => (
+                  .map((category: GetGameCategoryDTO) => (
                     <span
                       key={category.id}
                       className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
@@ -250,15 +257,15 @@ export default function Game({ params }: Props) {
                     </span>
                   ))}
                 {gameDetail.getGameCategoryDTOList
-                  .filter((category: any) => category.id < 100)
+                  .filter((category: GetGameCategoryDTO) => category.id < 100)
                   .slice(
                     0,
                     5 -
                       gameDetail.getGameCategoryDTOList.filter(
-                        (category: any) => category.id >= 100
+                        (category: GetGameCategoryDTO) => category.id >= 100
                       ).length
                   )
-                  .map((category: any) => (
+                  .map((category: GetGameCategoryDTO) => (
                     <span
                       key={category.id}
                       className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
@@ -270,14 +277,14 @@ export default function Game({ params }: Props) {
             </div>
             <div className="w-[100%] h-[8%] mb-4">
               <Link href="/">
-                <span className="block w-full h-full bg-[#5779e9] font-bold text-[16px] text-white rounded-[20px] flex justify-center items-center">
+                <span className=" w-full h-full bg-[#5779e9] font-bold text-[16px] text-white rounded-[20px] flex justify-center items-center">
                   커뮤니티
                 </span>
               </Link>
             </div>
             <div className="w-[100%] h-[8%] mb-4">
               <Link href={`https://store.steampowered.com/app/${appId}`}>
-                <span className="block w-full h-full bg-white font-bold border-[#5779e9] border-1 text-[16px] text-[#5779e9] rounded-[20px] flex justify-center items-center">
+                <span className="w-full h-full bg-white font-bold border-[#5779e9] border-1 text-[16px] text-[#5779e9] rounded-[20px] flex justify-center items-center">
                   스팀 페이지로 이동
                 </span>
               </Link>
@@ -320,5 +327,5 @@ export default function Game({ params }: Props) {
       )}
       {selectedComponent === 'review' && <GameReview gameDetail={gameDetail} />}
     </div>
-  );
+  ) : null;
 }

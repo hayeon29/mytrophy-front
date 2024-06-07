@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../styles/globals.css';
 import NavigationBar from '@/components/common/NavigationBar';
-import Providers from '../providers/NextUiProvider';
+import RecoilRootProvider from '@/providers/RecoilRootProvider';
+import Providers from '@/providers/NextUiProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>
-          <NavigationBar />
-          {children}
-        </Providers>
+        <RecoilRootProvider>
+          <Providers>
+            <NavigationBar />
+            {children}
+          </Providers>
+        </RecoilRootProvider>
       </body>
     </html>
   );

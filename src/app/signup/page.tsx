@@ -1,16 +1,21 @@
 'use client';
 
 import clsx from 'clsx';
-import Validation from '@/constants/validation';
+import VALIDATION from '@/constants/validation';
 import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
 import { UserSignUpInfo, UserAdditionalSignUpInfo } from '@/types/SignUpInfo';
 import membersAPI from '@/services/members';
+import { useModal } from '@/hooks/useModal';
+import OkModal from '@/components/modals/OkModal';
 
 export default function SignUp() {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isCheckPasswordVisible, setIsCheckPasswordVisible] = useState(false);
-  const [isUsernameExistChecked, setIsUsernameExistChecked] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [isCheckPasswordVisible, setIsCheckPasswordVisible] =
+    useState<boolean>(false);
+  const [isUsernameExistChecked, setIsUsernameExistChecked] =
+    useState<boolean>(false);
+  const { openModal, modals } = useModal();
 
   const [userInfo, setUserInfo] = useState<UserAdditionalSignUpInfo>({
     username: '',
@@ -32,7 +37,7 @@ export default function SignUp() {
     const keyOfConditions: string[] = Object.keys(checkMessage);
     return keyOfConditions.every((key: string) => {
       if (key === 'email') {
-        return Validation.email[0].validateFunction(userInfo.email);
+        return VALIDATION.email[0].validateFunction(userInfo.email);
       }
       return checkMessage[key].length === 0 && userInfo[key].length > 0;
     });
@@ -40,10 +45,14 @@ export default function SignUp() {
 
   const handleUserExistClick = async () => {
     try {
-      const data = await membersAPI.isMemberExist(userInfo.username);
-      if (data) {
+      const isMemberExist = await membersAPI
+        .isMemberExist(userInfo.username)
+        .then((response) => response.data);
+      if (isMemberExist) {
+        openModal(<OkModal message="중복된 아이디입니다." />);
         setCheckMessage({ ...checkMessage, username: '아이디가 중복됩니다.' });
       } else {
+        openModal(<OkModal message="사용 가능한 아이디입니다." />);
         setIsUsernameExistChecked(true);
       }
     } catch (error) {
@@ -61,8 +70,8 @@ export default function SignUp() {
 
   const handleInput = (event: FormEvent<HTMLInputElement>) => {
     const { name, value } = event.target as HTMLInputElement;
-    if (Validation[name] !== undefined) {
-      const newValidationMessage = Validation[name]
+    if (VALIDATION[name] !== undefined) {
+      const newValidationMessage = VALIDATION[name]
         .filter((eachCondition) => !eachCondition.validateFunction(value))
         .map((eachCondition) => eachCondition.name)
         .join(', ');
@@ -94,172 +103,177 @@ export default function SignUp() {
   );
 
   return (
-    <div className="w-screen min-h-dvh bg-gradient-to-br from-primary to-second flex items-center justify-center">
-      <div className="bg-white rounded-3xl py-6 px-32 z-10 flex flex-col items-center max-w-[535px] ">
-        <Image
-          src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
-          alt="my trophy logo"
-          width={64}
-          height={64}
-          priority
-          className="w-16 h-16"
-        />
-        <form className="pb-2 w-full">
-          <label
-            className="font-black text-sm pb-2 inline-block"
-            htmlFor="username"
-          >
-            아이디
-          </label>
-          <div className="flex justify-between gap-x-2">
-            <input
-              type="text"
-              className={`${inputClassName} ${checkMessage.username.length > 0 && '!border-second'}`}
-              placeholder="아이디를 입력해주세요."
-              name="username"
-              id="username"
-              maxLength={12}
-              onChange={handleInput}
-            />
-            <button
-              type="button"
-              className={`${buttonClassName} ${(userInfo.username.length === 0 || checkMessage.username.length > 0 || isUsernameExistChecked) && '!bg-disable !cursor-not-allowed'}`}
-              onClick={handleUserExistClick}
+    <>
+      {modals.map(({ component, id }) => {
+        return <div key={id}>{component}</div>;
+      })}
+      <div className="w-screen min-h-dvh bg-gradient-to-br from-primary to-second flex items-center justify-center">
+        <div className="bg-white rounded-3xl py-6 px-32 z-10 flex flex-col items-center max-w-[535px] ">
+          <Image
+            src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
+            alt="my trophy logo"
+            width={64}
+            height={64}
+            priority
+            className="w-16 h-16"
+          />
+          <form className="pb-2 w-full">
+            <label
+              className="font-black text-sm pb-2 inline-block"
+              htmlFor="username"
             >
-              아이디 확인
-            </button>
+              아이디
+            </label>
+            <div className="flex justify-between gap-x-2">
+              <input
+                type="text"
+                className={`${inputClassName} ${checkMessage.username.length > 0 && '!border-second'}`}
+                placeholder="아이디를 입력해주세요."
+                name="username"
+                id="username"
+                maxLength={12}
+                onChange={handleInput}
+              />
+              <button
+                type="button"
+                className={`${buttonClassName} ${userInfo.username.length === 0 || checkMessage.username.length > 0 || (isUsernameExistChecked && '!bg-disable !cursor-not-allowed')}`}
+                onClick={handleUserExistClick}
+              >
+                아이디 확인
+              </button>
+            </div>
+            <p className="text-second text-xs pt-1 break-keep">
+              {checkMessage.username}
+            </p>
+          </form>
+          <div className="pb-2 w-full">
+            <label
+              className="font-black text-sm pb-2 inline-block"
+              htmlFor="password"
+            >
+              비밀번호
+            </label>
+            <div className="flex justify-between gap-x-2 relative ">
+              <input
+                type={isPasswordVisible ? 'text' : 'password'}
+                className={`${inputClassName} ${checkMessage.password.length > 0 && '!border-second'}`}
+                placeholder="비밀번호를 입력해주세요."
+                name="password"
+                id="password"
+                onInput={handleInput}
+              />
+              <Image
+                src={
+                  isPasswordVisible
+                    ? `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_off_24dp.svg`
+                    : `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`
+                }
+                alt="password visibility icon"
+                width={28}
+                height={24}
+                className="absolute top-2/4 right-3 translate-y-[-50%] cursor-pointer w-7 h-6"
+                onClick={handlePasswordCheck}
+              />
+            </div>
+            <p className="text-second text-xs pt-1 break-keep">
+              {checkMessage.password.length > 0 && checkMessage.password}
+            </p>
           </div>
-          <p className="text-second text-xs pt-1 break-keep">
-            {checkMessage.username}
-          </p>
-        </form>
-        <div className="pb-2 w-full">
-          <label
-            className="font-black text-sm pb-2 inline-block"
-            htmlFor="password"
+          <div className="pb-2 w-full">
+            <label
+              className="font-black text-sm pb-2 inline-block"
+              htmlFor="checkPassword"
+            >
+              비밀번호 확인
+            </label>
+            <div className="flex justify-between gap-x-2 relative ">
+              <input
+                type={isCheckPasswordVisible ? 'text' : 'password'}
+                className={`${inputClassName} ${checkMessage.checkPassword.length > 0 && '!border-second'}`}
+                placeholder="비밀번호를 다시 한 번 입력해주세요."
+                name="checkPassword"
+                id="checkPassword"
+                onInput={handleInput}
+              />
+              <Image
+                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`}
+                alt="password check visibility icon"
+                width={28}
+                height={24}
+                className=" absolute top-2/4 right-3 translate-y-[-50%] cursor-pointer w-7 h-6"
+                onClick={handleCheckPasswordCheck}
+              />
+            </div>
+            <p className="text-second text-xs pt-1 break-keep">
+              {checkMessage.checkPassword}
+            </p>
+          </div>
+          <div className="pb-2 w-full">
+            <label
+              className="font-black text-sm pb-2 inline-block"
+              htmlFor="name"
+            >
+              이름
+            </label>
+            <div className="flex justify-between gap-x-2 relative ">
+              <input
+                type="text"
+                className={inputClassName}
+                placeholder="이름을 입력해주세요."
+                name="name"
+                id="name"
+                onInput={handleInput}
+              />
+            </div>
+          </div>
+          <div className="pb-2 w-full">
+            <label
+              className="font-black text-sm pb-2 inline-block"
+              htmlFor="nickname"
+            >
+              닉네임
+            </label>
+            <div className="flex justify-between gap-x-2 relative ">
+              <input
+                type="text"
+                className={inputClassName}
+                placeholder="닉네임을 입력해주세요."
+                name="nickname"
+                id="nickname"
+                onInput={handleInput}
+              />
+            </div>
+          </div>
+          <div className="pb-2 w-full">
+            <label
+              className="font-black text-sm pb-2 inline-block"
+              htmlFor="email"
+            >
+              이메일
+            </label>
+            <div className="flex justify-between gap-x-2 relative ">
+              <input
+                type="email"
+                className={`${inputClassName} ${checkMessage.email.length > 0 && '!border-second'}`}
+                placeholder="이메일을 입력해주세요."
+                name="email"
+                id="email"
+                onInput={handleInput}
+              />
+            </div>
+            <p className="text-second text-xs pt-1 break-keep">
+              {checkMessage.email}
+            </p>
+          </div>
+          <button
+            type="button"
+            className={`w-full ${buttonClassName} ${!isSignUpAvailable && isUsernameExistChecked && '!bg-disable !cursor-not-allowed'}`}
+            onClick={handleSignUpClick}
           >
-            비밀번호
-          </label>
-          <div className="flex justify-between gap-x-2 relative ">
-            <input
-              type={isPasswordVisible ? 'text' : 'password'}
-              className={`${inputClassName} ${checkMessage.password.length > 0 && '!border-second'}`}
-              placeholder="비밀번호를 입력해주세요."
-              name="password"
-              id="password"
-              onInput={handleInput}
-            />
-            <Image
-              src={
-                isPasswordVisible
-                  ? `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_off_24dp.svg`
-                  : `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`
-              }
-              alt="password visibility icon"
-              width={28}
-              height={24}
-              className="absolute top-2/4 right-3 translate-y-[-50%] cursor-pointer w-7 h-6"
-              onClick={handlePasswordCheck}
-            />
-          </div>
-          <p className="text-second text-xs pt-1 break-keep">
-            {checkMessage.password.length > 0 && checkMessage.password}
-          </p>
+            회원가입
+          </button>
         </div>
-        <div className="pb-2 w-full">
-          <label
-            className="font-black text-sm pb-2 inline-block"
-            htmlFor="checkPassword"
-          >
-            비밀번호 확인
-          </label>
-          <div className="flex justify-between gap-x-2 relative ">
-            <input
-              type={isCheckPasswordVisible ? 'text' : 'password'}
-              className={`${inputClassName} ${checkMessage.checkPassword.length > 0 && '!border-second'}`}
-              placeholder="비밀번호를 다시 한 번 입력해주세요."
-              name="checkPassword"
-              id="checkPassword"
-              onInput={handleInput}
-            />
-            <Image
-              src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`}
-              alt="password check visibility icon"
-              width={28}
-              height={24}
-              className=" absolute top-2/4 right-3 translate-y-[-50%] cursor-pointer w-7 h-6"
-              onClick={handleCheckPasswordCheck}
-            />
-          </div>
-          <p className="text-second text-xs pt-1 break-keep">
-            {checkMessage.checkPassword}
-          </p>
-        </div>
-        <div className="pb-2 w-full">
-          <label
-            className="font-black text-sm pb-2 inline-block"
-            htmlFor="name"
-          >
-            이름
-          </label>
-          <div className="flex justify-between gap-x-2 relative ">
-            <input
-              type="text"
-              className={inputClassName}
-              placeholder="이름을 입력해주세요."
-              name="name"
-              id="name"
-              onInput={handleInput}
-            />
-          </div>
-        </div>
-        <div className="pb-2 w-full">
-          <label
-            className="font-black text-sm pb-2 inline-block"
-            htmlFor="nickname"
-          >
-            닉네임
-          </label>
-          <div className="flex justify-between gap-x-2 relative ">
-            <input
-              type="text"
-              className={inputClassName}
-              placeholder="닉네임을 입력해주세요."
-              name="nickname"
-              id="nickname"
-              onInput={handleInput}
-            />
-          </div>
-        </div>
-        <div className="pb-2 w-full">
-          <label
-            className="font-black text-sm pb-2 inline-block"
-            htmlFor="email"
-          >
-            이메일
-          </label>
-          <div className="flex justify-between gap-x-2 relative ">
-            <input
-              type="email"
-              className={`${inputClassName} ${checkMessage.email.length > 0 && '!border-second'}`}
-              placeholder="이메일을 입력해주세요."
-              name="email"
-              id="email"
-              onInput={handleInput}
-            />
-          </div>
-          <p className="text-second text-xs pt-1 break-keep">
-            {checkMessage.email}
-          </p>
-        </div>
-        <button
-          type="button"
-          className={`w-full ${buttonClassName} ${!isSignUpAvailable && isUsernameExistChecked && '!bg-disable !cursor-not-allowed'}`}
-          onClick={handleSignUpClick}
-        >
-          회원가입
-        </button>
       </div>
-    </div>
+    </>
   );
 }
