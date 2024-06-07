@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import gameAPI from '@/services/game';
+import { GetGameDetailDTO } from '@/types/GameDetail';
+import React from 'react';
 
-export default function GameReview({ gameDetail }) {
+export default function GameReview({
+  gameDetail,
+}: {
+  gameDetail: GetGameDetailDTO;
+}) {
   return (
     <div>
       <h2>qweqwe</h2>
