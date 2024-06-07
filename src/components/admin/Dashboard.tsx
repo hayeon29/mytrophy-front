@@ -1,7 +1,38 @@
-import React from 'react';
-import { Card, CardHeader, CardBody, Divider } from '@nextui-org/react';
+import React, { useEffect, useState } from 'react';
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Divider,
+  Spinner,
+} from '@nextui-org/react';
+import adminAPI from '@/services/admin';
 
 export default function Dashboard() {
+  const [memberCount, setMemberCount] = useState(0);
+  const [articleCount, setArticleCount] = useState(0);
+  const [gameCount, setGameCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      adminAPI.getMemberCount(),
+      adminAPI.getArticleCount(),
+      adminAPI.getGameCount(),
+    ])
+      .then(([memberData, articleData, gameData]) => {
+        setMemberCount(memberData);
+        setArticleCount(articleData);
+        setGameCount(gameData);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div className="m-4">
       <div className="m-4">
@@ -16,7 +47,11 @@ export default function Dashboard() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <p className="text-2xl text-danger">3</p>
+            {loading ? (
+              <Spinner color="danger" />
+            ) : (
+              <p className="text-2xl text-danger">3</p>
+            )}
           </CardBody>
         </Card>
         <Card className="w-[200px] m-1">
@@ -27,7 +62,11 @@ export default function Dashboard() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <p className="text-2xl text-warning">3</p>
+            {loading ? (
+              <Spinner color="warning" />
+            ) : (
+              <p className="text-2xl text-warning">{memberCount}</p>
+            )}
           </CardBody>
         </Card>
         <Card className="w-[200px] m-1">
@@ -38,7 +77,11 @@ export default function Dashboard() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <p className="text-2xl text-success">3</p>
+            {loading ? (
+              <Spinner color="success" />
+            ) : (
+              <p className="text-2xl text-success">{articleCount}</p>
+            )}
           </CardBody>
         </Card>
         <Card className="w-[200px] m-1">
@@ -49,7 +92,11 @@ export default function Dashboard() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <p className="text-2xl text-primary">3</p>
+            {loading ? (
+              <Spinner color="primary" />
+            ) : (
+              <p className="text-2xl text-primary">{gameCount}</p>
+            )}
           </CardBody>
         </Card>
       </div>
