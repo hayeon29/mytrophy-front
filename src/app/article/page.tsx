@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Button,
   Image,
@@ -21,12 +21,37 @@ import {
   Checkbox,
 } from '@nextui-org/react';
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_URL;
+
 export default function Article() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const modalPlacement = 'center';
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [checkedFiles, setCheckedFiles] = useState<boolean[]>([]);
   const [activeButton, setActiveButton] = useState('');
+  const [articles, setArticles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/api/articles?page=${currentPage - 1}`
+        );
+        setArticles(response.data.content);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      }
+    };
+
+    fetchArticles();
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
@@ -219,58 +244,64 @@ export default function Article() {
         </ModalContent>
       </Modal>
 
-      {/* 게시글 Card */}
-      <div className="flex justify-center items-center py-4">
-        <Card className="w-full max-w-7xl">
-          <CardHeader className="justify-between flex-row px-6 py-4">
-            <div className="flex gap-5 items-center">
-              <Avatar
-                isBordered
-                radius="full"
-                size="md"
-                src="/svgs/profile.svg"
-              />
-              <div className="flex gap-1 items-center">
-                <h4 className="text-small font-semibold leading-none text-default-600">
-                  유저 이름
-                </h4>
-                <h5 className="text-small tracking-tight text-default-400">
-                  유저 아이디
-                </h5>
+      {/* 게시글 Cards */}
+      {articles.map((article) => (
+        <div key={article.id} className="flex justify-center items-center py-4">
+          <Card className="w-full max-w-7xl">
+            <CardHeader className="justify-between flex-row px-6 py-4">
+              <div className="flex gap-5 items-center">
+                <Avatar
+                  isBordered
+                  radius="full"
+                  size="md"
+                  src="/svgs/profile.svg"
+                />
+                <div className="flex gap-1 items-center">
+                  <h4 className="text-small font-semibold leading-none text-default-600">
+                    {article.username} {/* 유저 이름 */}
+                  </h4>
+                  <h5 className="text-small tracking-tight text-default-400">
+                    {article.username} {/* 유저 아이디 */}
+                  </h5>
+                </div>
               </div>
+              <div className="flex gap-3 items-center">
+                <Image width={16} alt="vector" src="/svgs/vector.svg" />
+                <span className="text-sm text-gray-500 text-default-400">
+                  {article.cntUp} {/* 좋아요 수 */}
+                </span>
+                <Image width={16} alt="comment" src="/svgs/commenticon.svg" />
+                <span className="text-sm text-gray-500 text-default-400">
+                  {article.commentCount} {/* 댓글 수 */}
+                </span>
+              </div>
+            </CardHeader>
+            <div className="flex p-4">
+              <CardBody className="px-3 py-0 text-small text-black flex-grow">
+                <h1 className="text-lg font-bold">{article.name}</h1>{' '}
+                {/* 게시글 제목 */}
+                <p>
+                  {article.content} {/* 게시글 내용 */}
+                </p>
+              </CardBody>
+              <Image
+                width={240}
+                height={144}
+                alt="side image"
+                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/thembnail.svg`}
+              />
             </div>
-            <div className="flex gap-3 items-center">
-              <Image width={16} alt="vector" src="/svgs/vector.svg" />
-              <span className="text-sm text-gray-500 text-default-400">10</span>
-              <Image width={16} alt="comment" src="/svgs/commenticon.svg" />
-              <span className="text-sm text-gray-500 text-default-400">5</span>
-            </div>
-          </CardHeader>
-          <div className="flex p-4">
-            <CardBody className="px-3 py-0 text-small text-black flex-grow">
-              <h1 className="text-lg font-bold">게시글 제목</h1>
-              <p>
-                게시글 내용 게시글 내용 게시글 내용 게시글 내용 게시글 내용
-                게시글 내용 게시글 내용 게시글 내용 게시글 내용
-              </p>
-            </CardBody>
-            <Image
-              width={240}
-              height={144}
-              alt="side image"
-              src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/thembnail.svg`}
-            />
-          </div>
-        </Card>
-      </div>
-
+          </Card>
+        </div>
+      ))}
       <div className="flex flex-wrap gap-4 items-center justify-center mt-8">
         <Pagination
           loop
           showControls
           color="primary"
-          total={5}
-          initialPage={1}
+          total={totalPages}
+          initialPage={currentPage}
+          onChange={handlePageChange}
         />
       </div>
     </div>
