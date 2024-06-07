@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+
 import {
   Button,
   Image,
+  Pagination,
   Card,
   CardHeader,
   CardBody,
   Avatar,
-  Pagination,
   Modal,
   ModalContent,
   ModalHeader,
@@ -262,6 +263,7 @@ export default function Article() {
           </div>
         </Card>
       </div>
+
       <div className="flex flex-wrap gap-4 items-center justify-center mt-8">
         <Pagination
           loop
