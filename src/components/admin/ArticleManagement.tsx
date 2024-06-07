@@ -8,6 +8,7 @@ import {
   TableCell,
   Chip,
   Tooltip,
+  Pagination,
 } from '@nextui-org/react';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 
@@ -22,22 +23,22 @@ export default function ArticleManagement() {
 
   const columns = [
     { name: 'id', uid: 'id' },
-    { name: '제목', uid: 'title' },
-    { name: '댓글 수', uid: 'comments' },
+    { name: '내용', uid: 'content' },
+    { name: '댓글 수', uid: 'commentCount' },
     { name: '말머리', uid: 'header' },
-    { name: '작성자', uid: 'author' },
-    { name: '작성 일자', uid: 'date' },
+    { name: '작성자', uid: 'member_id' },
+    { name: '작성 일자', uid: 'createdAt' },
     { name: '', uid: 'delete' },
   ];
 
   const articles = [
     {
       id: 1,
-      title: '대머리 독수리 오형제 살인사건',
-      comments: 4,
+      content: '대머리 독수리 오형제 살인사건',
+      commentCount: 4,
       header: 'REVIEW',
-      author: '찬돌',
-      date: '2024-06-04 10:22:32',
+      member_id: '찬돌',
+      createdAt: '2024-06-04 10:22:32',
     },
   ];
 
@@ -45,10 +46,10 @@ export default function ArticleManagement() {
     switch (columnKey) {
       case 'id':
         return item.id;
-      case 'title':
-        return item.title;
-      case 'comments':
-        return item.comments;
+      case 'content':
+        return item.content;
+      case 'commentCount':
+        return item.commentCount;
       case 'header':
         return (
           <Chip
@@ -60,10 +61,10 @@ export default function ArticleManagement() {
             {item.header}
           </Chip>
         );
-      case 'author':
-        return item.author;
-      case 'date':
-        return <span className="text-xs">{item.date}</span>;
+      case 'member_id':
+        return item.member_id;
+      case 'createdAt':
+        return <span className="text-xs">{item.createdAt}</span>;
       case 'delete':
         return (
           <Tooltip color="danger" content="게시물 삭제">
@@ -106,6 +107,9 @@ export default function ArticleManagement() {
             )}
           </TableBody>
         </Table>
+        <div className="flex justify-center mt-4">
+          <Pagination total={10} initialPage={1} />
+        </div>
       </div>
     </div>
   );

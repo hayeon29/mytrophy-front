@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableHeader,
@@ -9,7 +9,10 @@ import {
   User,
   Chip,
   Tooltip,
+  Pagination,
+  Spinner, // Import the Spinner component
 } from '@nextui-org/react';
+import adminAPI from '@/services/admin';
 import { EditIcon } from '../../../public/icon/EditIcon';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
@@ -26,47 +29,33 @@ const columns = [
   { name: 'ID/Email', uid: 'id' },
   { name: '로그인 타입', uid: 'loginType' },
   { name: '스팀 연동', uid: 'steamId' },
-  { name: '가입 날짜', uid: 'created_at' },
+  { name: '가입 날짜', uid: 'createdAt' },
   { name: '회원 관리', uid: 'actions' },
 ];
 
-const users = [
-  {
-    id: 1,
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', // image_path
-    name: '김찬혁',
-    nickname: '찬돌',
-    username: 'chandol',
-    email: 'chandol@gmail.com',
-    loginType: 'mytrophy',
-    steamId: '', // 없으면 null
-    created_at: '2024-06-04 10:22:32.010524',
-  },
-  {
-    id: 1,
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', // image_path
-    name: '김찬혁',
-    nickname: '찬돌',
-    username: 'chandol',
-    email: 'chandol@gmail.com',
-    loginType: 'naver',
-    steamId: '1231423', // 없으면 null
-    created_at: '2024-06-04 10:22:32.010524',
-  },
-  {
-    id: 1,
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', // image_path
-    name: '김찬혁',
-    nickname: '찬돌',
-    username: 'chandol',
-    email: 'chandol@gmail.com',
-    loginType: 'steam',
-    steamId: '1231423', // 없으면 null
-    created_at: '2024-06-04 10:22:32.010524',
-  },
-];
-
 export default function Dashboard() {
+  const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true); // State to manage loading
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true); // Set loading to true before fetching data
+        const response = await adminAPI.getMemberList();
+        setUsers(response); // 응답 데이터를 상태로 설정
+        // 페이지 네이션 처리 (예: totalPages 계산)
+        setTotalPages(Math.ceil(response.length / 10)); // 예시로 페이지당 10개 항목
+      } catch (error) {
+        console.error('Error fetching member list:', error);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched
+      }
+    }
+    fetchData();
+  }, [currentPage]);
+
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
 
@@ -74,17 +63,24 @@ export default function Dashboard() {
       case 'name':
         return (
           <User
-            avatarProps={{ radius: 'lg', src: user.avatar }}
-            description={user.email}
+            avatarProps={{
+              radius: 'lg',
+              src:
+                user.imagePath ||
+                `${process.env.NEXT_PUBLIC_FRONT_URL}/image/eao1.png`,
+            }}
+            description={user.nickname}
             name={cellValue}
           >
-            {user.nickname}
+            {user.name}
           </User>
         );
       case 'id':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm">{user.username}</p>
+            <p className="text-bold text-sm w-[200px] break-words">
+              {user.username}
+            </p>
             <p className="text-bold text-sm text-default-600">{user.email}</p>
           </div>
         );
@@ -100,10 +96,16 @@ export default function Dashboard() {
           </Chip>
         );
       case 'steamId':
-        return <p className="text-bold text-sm capitalize">{user.steamId}</p>;
-      case 'created_at':
         return (
-          <p className="text-bold text-xs capitalize">{user.created_at}</p>
+          <p className="text-bold text-sm capitalize">
+            {user.steamId || '연동 안됨'}
+          </p>
+        );
+      case 'createdAt':
+        return (
+          <p className="text-bold text-xs capitalize">
+            {new Date(user.createdAt).toLocaleString()}
+          </p>
         );
       case 'actions':
         return (
@@ -135,24 +137,42 @@ export default function Dashboard() {
       <div className="m-4">
         <p className="text-2xl">회원 관리</p>
       </div>
-      <Table removeWrapper aria-label="회원 리스트" className="p-3">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.uid} align="center">
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={users}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
+      {loading ? (
+        <div className="flex justify-center items-center h-full">
+          <Spinner /> {/* Display spinner while loading */}
+        </div>
+      ) : (
+        <>
+          <Table removeWrapper aria-label="회원 리스트" className="p-3">
+            <TableHeader columns={columns}>
+              {(column) => (
+                <TableColumn key={column.uid} align="center">
+                  {column.name}
+                </TableColumn>
               )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody
+              items={users.slice((currentPage - 1) * 10, currentPage * 10)}
+            >
+              {(item) => (
+                <TableRow key={item.username}>
+                  {(columnKey) => (
+                    <TableCell>{renderCell(item, columnKey)}</TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <div className="flex justify-center mt-4">
+            <Pagination
+              total={totalPages}
+              initialPage={1}
+              page={currentPage}
+              onChange={setCurrentPage}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

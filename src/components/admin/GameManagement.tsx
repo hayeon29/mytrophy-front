@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
+  Pagination,
 } from '@nextui-org/react';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 
@@ -99,6 +100,9 @@ export default function Dashboard() {
             )}
           </TableBody>
         </Table>
+        <div className="flex justify-center mt-4">
+          <Pagination total={10} initialPage={1} />
+        </div>
       </div>
     </div>
   );
