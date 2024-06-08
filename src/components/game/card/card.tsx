@@ -34,7 +34,7 @@ export default function GameCard({ gameDetail }) {
               src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_a262c53b8629de7c6547933dc0b49d31f4e1b1f1.1920x1080.jpg?t=1711328912"
               alt="card_Hader_Img"
               className="w-full h-[50%] rounded-t-[20px]"
-            ></img>
+            />
             <div className="w-full h-[50%] px-[24px] py-[16px] rounded-b-[20px]">
               <div className="w-full h-[25%] text-[20px] font-bold flex items-center">
                 V Rising
@@ -81,7 +81,7 @@ export default function GameCard({ gameDetail }) {
               src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_a262c53b8629de7c6547933dc0b49d31f4e1b1f1.1920x1080.jpg?t=1711328912"
               alt="card_Hader_Img"
               className="w-full h-[50%] rounded-t-[20px]"
-            ></img>
+            />
             <div className="w-full h-[50%] px-[24px] py-[16px] rounded-b-[20px]">
               <div className="w-full h-[25%] text-[20px] font-bold flex items-center">
                 V Rising
@@ -128,7 +128,7 @@ export default function GameCard({ gameDetail }) {
               src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_a262c53b8629de7c6547933dc0b49d31f4e1b1f1.1920x1080.jpg?t=1711328912"
               alt="card_Hader_Img"
               className="w-full h-[50%] rounded-t-[20px]"
-            ></img>
+            />
             <div className="w-full h-[50%] px-[24px] py-[16px] rounded-b-[20px]">
               <div className="w-full h-[25%] text-[20px] font-bold flex items-center">
                 V Rising
