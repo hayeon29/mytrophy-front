@@ -5,11 +5,12 @@ import axios, {
 } from 'axios';
 
 const api: AxiosInstance = axios.create({
-  timeout: 3000,
+  timeout: 100000,
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
+  baseURL: process.env.NEXT_PUBLIC_BACK_URL,
 });
 
 api.interceptors.request.use(
