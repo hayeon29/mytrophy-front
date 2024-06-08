@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import gameAPI from '@/services/game';
+import { GetGameDetailDTO } from '@/types/GameDetail';
+import React from 'react';
 
-export default function GameSimilar({ gameDetail }) {
+export default function GameSimilar({
+  gameDetail,
+}: {
+  gameDetail: GetGameDetailDTO;
+}) {
   return (
     <div className="w-[100%] h-[1421px] p-[32px] block bg-red-100 justify-start">
       <div className="w-[100%] h-[410px] bg-red-300">

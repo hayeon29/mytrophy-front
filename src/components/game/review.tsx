@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import gameAPI from '@/services/game';
+import { GetGameDetailDTO } from '@/types/GameDetail';
+import React from 'react';
 
-export default function GameReview({ gameDetail }) {
+export default function GameReview({
+  gameDetail,
+}: {
+  gameDetail: GetGameDetailDTO;
+}) {
   return (
     <div className="p-4 flex justify-center">
       <div className="block w-[384px] h-[358px] rounded-[20px] shadow-2xl ">

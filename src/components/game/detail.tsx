@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import gameAPI from '@/services/game';
 
 export default function GameDetail({ gameDetail }) {
   const getPositiveString = (positive) => {
@@ -65,11 +63,7 @@ export default function GameDetail({ gameDetail }) {
         <div className="w-[100%] h-[55%]block">
           <span className="text-[16px] font-bold">시스템 요구사항</span>
         </div>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: gameDetail.requirement.replace(':', '').replace('*', ''),
-          }}
-        />
+        <div>{gameDetail.requirement.replace(':', '').replace('*', '')}</div>
       </div>
     </div>
   );
