@@ -1,112 +1,194 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import homeAPI from '@/services/home';
+import { HomeGame } from '@/types/HomeGame';
+import { HomeCategory } from '@/types/HomeCategory';
+import Category from '@/components/home/Category';
+import { HomeArticle } from '@/types/HomeArticle';
+import ArticleCard from '@/components/home/ArticleCard';
+import { FaCheck, FaTimes, FaTimesCircle } from 'react-icons/fa';
+
 
 export default function Home() {
+  const [topGames, setTopGames] = useState<HomeGame[]>([]);
+  const [topArticles, setTopArticles] = useState<HomeArticle[]>([]);
+  const [loadingGames, setLoadingGames] = useState(true);
+  const [loadingArticles, setLoadingArticles] = useState(true);
+
+  useEffect(() => {
+    const getTopGames = async () => {
+      setLoadingGames(true);
+      try {
+        const response = await homeAPI.topGames(1, 10);
+        setTopGames(response.data.content);
+      } catch (error) {
+        console.error('top100 가져오기 실패', error);
+      } finally {
+        setLoadingGames(false);
+      }
+    };
+
+    const getTopArticles = async() => {
+      setLoadingArticles(true);
+      try {
+        const response = await homeAPI.topArticles();
+        setTopArticles(response.data.content);
+      } catch (error) {
+        console.error('게시글 가져오기 실패', error);
+      } finally {
+        setLoadingArticles(false);
+      }
+    };
+
+    getTopGames();
+    getTopArticles();
+  }, []);
+
+  const topGame = topGames[0];
+  const remainingGames = topGames.slice(1);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main className="flex min-h-screen flex-col items-center justify-start">
+      <div className="w-full flex justify-center">
+        <Image
+          src="/svgs/event_header.svg"
+          alt="Event Header"
+          width={1280}
+          height={300}
+          priority
+          className="w-full h-auto"
+        />
+      </div>
+      
+      <div className="w-full h-[600px] flex justify-center items-center bg-[#6078EA]">
+        <div className="w-full max-w-7xl h-[500px] flex items-center justify-center">
+          {/* 데일리랭킹 */}
+          <div className="flex-[0.6] h-full bg-white rounded-xl flex-col justify-start">
+            <h2 className="text-[1.6rem] font-bold m-6 ml-8">데일리 랭킹</h2> 
+            <div className="flex">
+              <div className="flex-[0.5] max-h-[400px] ml-10">
+                <h2 className="text-[1.4rem] font-bold mb-4">1위</h2>
+                {loadingGames ? (
+                  <p className="text-lg">로딩중...</p>
+                ) : (
+                  topGame && (
+                    <div className="flex flex-col items-start w-[300px]">
+                      <img
+                        src={topGame.headerImagePath}
+                        alt={topGame.name}
+                        className="mb-4 rounded-3xl"
+                        style={{ width: 300, height: 'auto'}}
+                      />
+                      <h3 className="text-xl font-bold mb-3">{topGame.name}</h3>
+                      <Category categories={topGame.getGameCategoryDTOList as HomeCategory[]} />
+                      <p className="text-base mt-2 mb-2">
+                        <span className="font-bold">가격</span>
+                        <span className="font-normal ml-3">{topGame.price === 0 ? '무료' : `${topGame.price}원`}</span>
+                      </p>
+                      <p className="text-base flex items-center">
+                        <span className="font-bold">한국어 지원 여부 </span>
+                        <span className="font-normal">
+                          {topGame.koIsPosible ? (
+                            <FaCheck className="text-green-500 ml-3" />
+                          ) : (
+                            <FaTimes className="text-red-500 ml-3" />
+                          )}
+                        </span>
+                      </p>
+                    </div>
+                  )
+                )}
+              </div>
+              <div className="flex-[0.5] h-full flex flex-col justify-between">
+                {loadingGames ? (
+                  <p className="text-lg">로딩중...</p>
+                ) : (
+                  <ol className="list-decimal list-inside w-[300px] h-full flex flex-col justify-between">
+                    {remainingGames.map((game, index) => (
+                      <li key={game.id} className="text-lg mb-3 flex justify-between items-center">
+                          <span className="font-bold w-[20px] text-right">{index + 2}</span>
+                          <span className="w-[100px] ml-4 flex-grow whitespace-nowrap overflow-hidden text-ellipsis">
+                            {game.name}
+                          </span>
+                          <span className="ml-4 flex">
+                          {Array.isArray(game.getGameCategoryDTOList) && game.getGameCategoryDTOList.length > 0 && (
+                            <Category categories={[game.getGameCategoryDTOList[1]]} />
+                          )}
+                          </span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div> 
+            </div>       
+          </div>
+
+          <div className="h-full flex flex-col justify-between flex-[0.4] ml-8">
+            {/* 공략 */}
+            <div className="h-[230px] bg-white rounded-xl p-6 flex flex-col">
+              <div className="flex justify-between">
+                <div className="flex-[0.6] flex flex-col">
+                  <h2 className="text-2xl font-bold mb-6">공략</h2>
+                  <div className="text-base leading-6">
+                    <p>유저들이 작성한 공략을 확인하고</p>
+                    <p>게임을 더 재밌게 즐겨보세요!</p>
+                  </div>
+                </div>
+                <div className="flex-[0.4] flex justify-center items-center h-full">
+                  <Image
+                    src="/svgs/target.svg"
+                    alt="Target"
+                    width={200}
+                    height={200}
+                  />
+                </div>
+              </div>
+            </div>
+            {/* 게임메이트모집 */}
+            <div className="h-[230px] bg-white rounded-xl p-6 flex flex-col">
+              <div className="flex justify-between">
+                  <div className="flex-[0.6] flex flex-col">
+                    <h2 className="text-2xl font-bold mb-6">게임 메이트 모집</h2>
+                    <div className="text-base leading-6">
+                      <p>같이 게임할 사람을 구하시나요?</p>
+                      <p>모집 글을 올리고 함께 게임을 즐겨보세요!</p>
+                    </div>
+                  </div>
+                  <div className="flex-[0.4] flex justify-center items-center h-full">
+                    <Image
+                      src="/svgs/telescope.svg"
+                      alt="Target"
+                      width={200}
+                      height={200}
+                    />
+                  </div>
+                </div>
+            </div>
+          </div>         
         </div>
       </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className="w-full h-[550px] flex justify-center items-center bg-[#D2DAF8]">
+        <div className="w-full max-w-7xl h-[450px] flex items-start justify-start">
+            <h2 className="text-2xl font-bold">게임 추천</h2>
+        </div>
       </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      {/* 인기게시글 */}
+      <div className="w-full h-[450px] flex justify-center items-center bg-white">
+        <div className="w-full max-w-7xl h-[350px] flex flex-col items-start justify-start">
+          <h2 className="text-2xl font-bold mb-6">인기 게시글</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {loadingArticles ? (
+            <p>로딩중...</p>
+          ) : (
+            topArticles.map(article => (
+              <ArticleCard key={article.id} article={article} />
+            ))
+          )}
+        </div>
+        </div>
       </div>
     </main>
   );
