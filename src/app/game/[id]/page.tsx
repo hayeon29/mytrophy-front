@@ -23,19 +23,20 @@ type Props = {
 export default function Game({ params }: Props) {
   const { id: appId } = params;
   const [gameDetail, setGameDetail] = useState<GetGameDetailDTO | null>(null);
-  const [gameSimilar1, setGameSimilar1] = useState<GetGameDetailDTO | null>(
-    null
-  );
-  const [gameSimilar2, setGameSimilar2] = useState<GetGameDetailDTO | null>(
-    null
-  );
-  const [gameSimilar3, setGameSimilar3] = useState<GetGameDetailDTO | null>(
-    null
-  );
-  const [similarCategory, setSimilarCategory] =
-    useState<GetGameCategoryDTO | null>(null);
+  // const [gameSimilar1, setGameSimilar1] = useState<GetGameDetailDTO | null>(
+  //   null
+  // );
+  // const [gameSimilar2, setGameSimilar2] = useState<GetGameDetailDTO | null>(
+  //   null
+  // );
+  // const [gameSimilar3, setGameSimilar3] = useState<GetGameDetailDTO | null>(
+  //   null
+  // );
+  const [similarCategory, setSimilarCategory] = useState<
+    GetGameCategoryDTO[] | null
+  >(null);
   const [category, setCategory] = useState<GetGameCategoryDTO | null>(null);
-  const [playerNumber, setPlayerNumber] =
+  const [playerNumbers, setPlayerNumbers] =
     useState<GetGamePlayerNumberDTO | null>(null);
   const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(
     null
@@ -61,11 +62,11 @@ export default function Game({ params }: Props) {
     }
   };
 
-  const similarGameFetch = (category) => {
+  const similarGameFetch = (categories: GetGameCategoryDTO[]) => {
     let prioritizedCategories = [];
     let remainingSlots = 3;
 
-    const prioritized100Categories = category.filter(
+    const prioritized100Categories = categories.filter(
       (cate) => cate.id >= 100 && cate.id < 200
     );
     prioritizedCategories = [
@@ -76,7 +77,7 @@ export default function Game({ params }: Props) {
 
     // 1부터 99까지의 카테고리 추출
     if (remainingSlots > 0) {
-      const remainingCategories = category.filter(
+      const remainingCategories = categories.filter(
         (cate) => cate.id >= 1 && cate.id < 100
       );
       const remainingExtractedCategories = remainingCategories.slice(
@@ -94,7 +95,6 @@ export default function Game({ params }: Props) {
   useEffect(() => {
     const fetchGameDetail = async () => {
       try {
-        const response = await gameAPI.getGameDetail(appId);
         const response = await gameAPI.getGameDetail(appId);
         setGameDetail(response);
         setCategory(response.getGameCategoryDTOList);
@@ -131,24 +131,27 @@ export default function Game({ params }: Props) {
 
     fetchGameDetail();
     fetchGamePlayerNumber();
-  }, []);
+  }, [appId]);
 
   useEffect(() => {
     const fetchSimilarGames = async () => {
       if (similarCategory && similarCategory.length > 0) {
         try {
-          const gameSimilarResponses = await Promise.all(
-            similarCategory.slice(0, 3).map(async (category) => {
-              return await gameAPI.getGameSimilar(category.id);
-            })
-          );
-
-          setGameSimilar1(gameSimilarResponses[0].content || null);
-          console.log(gameSimilarResponses[0].content || null);
-          setGameSimilar2(gameSimilarResponses[1] || null);
-          setGameSimilar3(gameSimilarResponses[2] || null);
+          // const gameSimilarResponses = await Promise.all(
+          //   similarCategory
+          //     .slice(0, 3)
+          //     .map(async (eachCategory: GetGameCategoryDTO) => {
+          //       const response = await gameAPI.getGameSimilar(
+          //         `${eachCategory.id}`
+          //       );
+          //       return response;
+          //     })
+          // );
+          // setGameSimilar1(gameSimilarResponses[0].content || null);
+          // setGameSimilar2(gameSimilarResponses[1] || null);
+          // setGameSimilar3(gameSimilarResponses[2] || null);
         } catch (error) {
-          console.error('Error fetching similar games:', error);
+          // 에러 처리
         }
       }
     };
@@ -181,11 +184,6 @@ export default function Game({ params }: Props) {
     setSelectedScreenshot(allScreenshots[index].fullImagePath);
   };
 
-  if (!gameDetail || !playerNumber) {
-    return <> </>;
-  }
-
-  return (
   return gameDetail && playerNumbers ? (
     <div className="w-full min-h-dvh bg-white px-8 block justify-center">
       <div className="w-[100%] h-[900px] py-[32px] m-0 flex">
@@ -198,12 +196,14 @@ export default function Game({ params }: Props) {
               <Image
                 src={selectedScreenshot}
                 alt="Selected Screenshot"
+                width={660}
+                height={370}
                 className="w-[100%] h-[100%] mb-4 rounded-[20px]"
               />
             )}
             <div className="w-[100%] h-[30%] flex items-center overflow-hidden">
               <Image
-                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/left_button.svg`}
+                src="/svgs/left_button.svg"
                 alt="이전 스크린샷"
                 width={8}
                 height={8}
@@ -229,13 +229,15 @@ export default function Game({ params }: Props) {
                     <Image
                       src={screenshot.thumbnailImagePath}
                       alt={`Screenshot ${index + 1}`}
+                      width={100}
+                      height={56}
                       className="w-full h-full"
                     />
                   </button>
                 ))}
               </div>
               <Image
-                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/right_button.svg`}
+                src="/svgs/right_button.svg"
                 alt="다음 스크린샷"
                 width={8}
                 height={8}
@@ -250,7 +252,7 @@ export default function Game({ params }: Props) {
           <div className="w-[100%] h-[7.5%] py-3 flex justify-end items-center">
             <div className="w-[10%] h-[100%]">
               <Link href="/">
-                <span className="w-[100%] h-[100%] border-1 border-[#cbd5e1] font-bold text-[#cbd5e1] text-[12px] text-[#CBD5E1] text-center rounded-[10px] flex justify-center items-center">
+                <span className="w-[100%] h-[100%] border-1 border-gray font-bold text-gray text-[12px] text-center rounded-[10px] flex justify-center items-center">
                   목록으로
                 </span>
               </Link>
@@ -272,6 +274,8 @@ export default function Game({ params }: Props) {
             <Image
               src={gameDetail.headerImagePath}
               alt="headerImagePath"
+              width={476}
+              height={222}
               className="w-[100%] h-[40%] my-4"
             />
             <div className="w-[100%] min-h-[6%] text-[12px] leading-tight m-0">
@@ -319,31 +323,36 @@ export default function Game({ params }: Props) {
               </div>
               <div className="flex flex-wrap">
                 {gameDetail.getGameCategoryDTOList
-                  .filter((category: GetGameCategoryDTO) => category.id >= 100)
+                  .filter(
+                    (eachCategory: GetGameCategoryDTO) => eachCategory.id >= 100
+                  )
                   .slice(0, 5)
-                  .map((category: GetGameCategoryDTO) => (
+                  .map((eachCategory: GetGameCategoryDTO) => (
                     <span
                       key={category.id}
                       className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
                     >
-                      {category.name}
+                      {eachCategory.name}
                     </span>
                   ))}
                 {gameDetail.getGameCategoryDTOList
-                  .filter((category: GetGameCategoryDTO) => category.id < 100)
+                  .filter(
+                    (eachCategory: GetGameCategoryDTO) => eachCategory.id < 100
+                  )
                   .slice(
                     0,
                     5 -
                       gameDetail.getGameCategoryDTOList.filter(
-                        (category: GetGameCategoryDTO) => category.id >= 100
+                        (eachCategory: GetGameCategoryDTO) =>
+                          eachCategory.id >= 100
                       ).length
                   )
-                  .map((category: GetGameCategoryDTO) => (
+                  .map((eachCategory: GetGameCategoryDTO) => (
                     <span
-                      key={category.id}
+                      key={eachCategory.id}
                       className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
                     >
-                      {category.name}
+                      {eachCategory.name}
                     </span>
                   ))}
               </div>

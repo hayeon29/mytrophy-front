@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@nextui-org/react';
 import { useState } from 'react';
 
@@ -12,7 +10,7 @@ export default function SelectButton({
   name: string;
   onClick: (id: number) => boolean;
 }) {
-  const [isClicked, setIsClicked] = useState<boolean>(false);
+  const [isClicked, setIsClicked] = useState(false);
   const handleButtonClick = () => {
     if (onClick(id)) {
       setIsClicked((prevIsClicked) => !prevIsClicked);
