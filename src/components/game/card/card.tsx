@@ -3,9 +3,28 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import gameAPI from '@/services/game';
 
-export default function GameReview({ gameDetail }) {
+export default function GameCard({ gameDetail }) {
+  const getPositiveString = (positive) => {
+    switch (positive) {
+      case 'OVERWHELMING_POSITIVE':
+        return '압도적으로 긍정적';
+      case 'VERY_POSITIVE':
+        return '매우 긍정적';
+      case 'MOSTLY_POSITIVE':
+        return '대체로 긍정적';
+      case 'MIXED':
+        return '중립적';
+      case 'MOSTLY_NEGATIVE':
+        return '대체로 부정적';
+      case 'VERY_NEGATIVE':
+        return '매우 부정적';
+      case 'UNKNOWN':
+        return '알 수 없음';
+      default:
+        return '';
+    }
+  };
   return (
     <div className="p-4 flex justify-center">
       <div className="block w-[384px] h-[358px] rounded-[20px] shadow-2xl ">

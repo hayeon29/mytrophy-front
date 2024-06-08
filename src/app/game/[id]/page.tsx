@@ -24,6 +24,18 @@ type Props = {
 export default function Game({ params }: Props) {
   const { id: appId } = params;
   const [gameDetail, setGameDetail] = useState<GetGameDetailDTO | null>(null);
+  const [gameSimilar1, setGameSimilar1] = useState<GetGameDetailDTO | null>(
+    null
+  );
+  const [gameSimilar2, setGameSimilar2] = useState<GetGameDetailDTO | null>(
+    null
+  );
+  const [gameSimilar3, setGameSimilar3] = useState<GetGameDetailDTO | null>(
+    null
+  );
+  const [similarCategory, setSimilarCategory] =
+    useState<GetGameCategoryDTO | null>(null);
+  const [category, setCategory] = useState<GetGameCategoryDTO | null>(null);
   const [playerNumber, setPlayerNumber] =
     useState<GetGamePlayerNumberDTO | null>(null);
   const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(
@@ -50,11 +62,43 @@ export default function Game({ params }: Props) {
     }
   };
 
+  const similarGameFetch = (category) => {
+    let prioritizedCategories = [];
+    let remainingSlots = 3;
+
+    const prioritized100Categories = category.filter(
+      (cate) => cate.id >= 100 && cate.id < 200
+    );
+    prioritizedCategories = [
+      ...prioritizedCategories,
+      ...prioritized100Categories,
+    ];
+    remainingSlots -= prioritized100Categories.length;
+
+    // 1부터 99까지의 카테고리 추출
+    if (remainingSlots > 0) {
+      const remainingCategories = category.filter(
+        (cate) => cate.id >= 1 && cate.id < 100
+      );
+      const remainingExtractedCategories = remainingCategories.slice(
+        0,
+        remainingSlots
+      );
+      prioritizedCategories = [
+        ...prioritizedCategories,
+        ...remainingExtractedCategories,
+      ];
+      setSimilarCategory(prioritizedCategories);
+    }
+  };
+
   useEffect(() => {
     const fetchGameDetail = async () => {
       try {
-        const response = await gameAPI.getGameDetail(parseInt(appId));
+        const response = await gameAPI.getGameDetail(appId);
         setGameDetail(response);
+        setCategory(response.getGameCategoryDTOList);
+        similarGameFetch(response.getGameCategoryDTOList);
 
         if (response.getGameScreenshotDTOList.length > 0) {
           setSelectedScreenshot(
@@ -87,7 +131,30 @@ export default function Game({ params }: Props) {
 
     fetchGameDetail();
     fetchGamePlayerNumber();
-  }, [appId]);
+  }, []);
+
+  useEffect(() => {
+    const fetchSimilarGames = async () => {
+      if (similarCategory && similarCategory.length > 0) {
+        try {
+          const gameSimilarResponses = await Promise.all(
+            similarCategory.slice(0, 3).map(async (category) => {
+              return await gameAPI.getGameSimilar(category.id);
+            })
+          );
+
+          setGameSimilar1(gameSimilarResponses[0].content || null);
+          console.log(gameSimilarResponses[0].content || null);
+          setGameSimilar2(gameSimilarResponses[1] || null);
+          setGameSimilar3(gameSimilarResponses[2] || null);
+        } catch (error) {
+          console.error('Error fetching similar games:', error);
+        }
+      }
+    };
+
+    fetchSimilarGames();
+  }, [similarCategory]);
 
   const handlePrevScreenshot = () => {
     setCurrentScreenshotIndex((prevIndex) =>
@@ -111,7 +178,7 @@ export default function Game({ params }: Props) {
   };
 
   if (!gameDetail || !playerNumber) {
-    return <></>;
+    return <> </>;
   }
 
   return (
@@ -288,7 +355,7 @@ export default function Game({ params }: Props) {
       <div className="w-[100%] h-[61px] bg-[#5779e9] flex">
         <button
           type="button"
-          className={`w-[33%] h-[96%] bg-${selectedComponent === 'detail' ? '[#5779e9]' : '[#f6f7ff]'} flex justify-center items-center text-${selectedComponent === 'detail' ? 'white' : 'black'}`}
+          className={`w-[33%] h-[96%] ${selectedComponent === 'detail' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center`}
           onClick={() => setSelectedComponent('detail')}
         >
           <span>상세 게임</span>
@@ -298,7 +365,7 @@ export default function Game({ params }: Props) {
         </div>
         <button
           type="button"
-          className={`w-[34%] h-[96%] bg-${selectedComponent === 'similar' ? '[#5779e9]' : '[#f6f7ff]'} flex justify-center items-center text-${selectedComponent === 'similar' ? 'white' : 'black'}`}
+          className={`w-[34%] h-[96%] ${selectedComponent === 'similar' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center`}
           onClick={() => setSelectedComponent('similar')}
         >
           <span>유사 게임</span>
@@ -308,7 +375,7 @@ export default function Game({ params }: Props) {
         </div>
         <button
           type="button"
-          className={`w-[33%] h-[96%] bg-${selectedComponent === 'review' ? '[#5779e9]' : '[#f6f7ff]'} flex justify-center items-center text-${selectedComponent === 'review' ? 'white' : 'black'}`}
+          className={`w-[33%] h-[96%] ${selectedComponent === 'review' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center`}
           onClick={() => setSelectedComponent('review')}
         >
           <span>리뷰</span>

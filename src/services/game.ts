@@ -10,5 +10,8 @@ const gameAPI = {
   async getGamePlayerNumber(appId: string) {
     return (await api.get(`${API_URL}/request/players/${appId}`)).data;
   },
+  async getGameSimilar(appId: string) {
+    return (await api.get(`${API_URL}/category/${appId}`)).data;
+  },
 };
 export default gameAPI;
