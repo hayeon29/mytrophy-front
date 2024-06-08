@@ -30,10 +30,10 @@ const columns = [
   { name: '로그인 타입', uid: 'loginType' },
   { name: '스팀 연동', uid: 'steamId' },
   { name: '가입 날짜', uid: 'createdAt' },
-  { name: '회원 관리', uid: 'actions' },
+  { name: '', uid: 'actions' },
 ];
 
-export default function Dashboard() {
+export default function MemberManagement() {
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,9 +71,7 @@ export default function Dashboard() {
             }}
             description={user.nickname}
             name={cellValue}
-          >
-            {user.name}
-          </User>
+          />
         );
       case 'id':
         return (
@@ -110,17 +108,17 @@ export default function Dashboard() {
       case 'actions':
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip content="Details">
+            <Tooltip content="회원 조회">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                 <EyeIcon />
               </span>
             </Tooltip>
-            <Tooltip content="Edit user">
+            <Tooltip content="회원 수정">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                 <EditIcon />
               </span>
             </Tooltip>
-            <Tooltip color="danger" content="Delete user">
+            <Tooltip color="danger" content="회원 삭제">
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
                 <DeleteIcon />
               </span>

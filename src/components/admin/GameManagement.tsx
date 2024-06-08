@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Table,
@@ -7,56 +7,99 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  Image,
   Tooltip,
   Pagination,
+  Spinner,
 } from '@nextui-org/react';
+import adminAPI from '@/services/admin';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
+import { EyeIcon } from '../../../public/icon/EyeIcon';
+import { EditIcon } from '../../../public/icon/EditIcon';
 
-export default function Dashboard() {
-  const columns = [
-    { name: 'id', uid: 'id' },
-    { name: '게임', uid: 'title' },
-    { name: '가격', uid: 'price' },
-    { name: '추천수', uid: 'recommendation' },
-    { name: '발매일', uid: 'releaseDate' },
-    { name: '', uid: 'delete' },
-  ];
+const columns = [
+  { name: 'id', uid: 'id' },
+  { name: '게임', uid: 'title' },
+  { name: '개발사/배급사', uid: 'developer' },
+  { name: '가격', uid: 'price' },
+  { name: '추천수', uid: 'recommendation' },
+  { name: '발매일', uid: 'releaseDate' },
+  { name: '', uid: 'actions' },
+];
 
-  const articles = [
-    {
-      id: 1,
-      title: '대머리 독수리 오형제 살인사건',
-      imagePath: '이미지 주소',
-      price: 42000,
-      recommendation: 4,
-      releaseDate: '2024-06-04 10:22:32',
-    },
-  ];
+export default function GameManagement() {
+  const [games, setGames] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const renderCell = (item, columnKey) => {
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const response = await adminAPI.getGameList(currentPage, 10);
+        setGames(response.content);
+        setTotalPages(response.totalPages);
+      } catch (error) {
+        console.error('Error fetching game list:', error);
+        setGames([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [currentPage]);
+
+  const renderCell = (game, columnKey) => {
     switch (columnKey) {
       case 'id':
-        return item.id;
+        return game.id;
       case 'title':
         return (
+          <div className="flex items-center gap-2 w-[300px]">
+            <Image
+              src={game.headerImagePath}
+              alt="게임 헤더 이미지"
+              width={90}
+              height={40}
+              radius="md"
+            />
+            <p className="w-[200px] break-words">{game.name}</p>
+          </div>
+        );
+      case 'developer':
+        return (
           <div>
-            <span>{item.imagePath}</span>
-            <span>{item.title}</span>
+            <p className="text-xs">{game.developer.slice(0, -1)}/</p>
+            <p className="text-xs">{game.publisher.slice(0, -1)}</p>
           </div>
         );
       case 'price':
-        return item.price;
+        return game.price;
       case 'recommendation':
-        return item.recommendation;
+        return game.recommendation;
       case 'releaseDate':
-        return <span className="text-xs">{item.releaseDate}</span>;
-      case 'delete':
+        return <span className="text-xs">{game.releaseDate}</span>;
+      case 'actions':
         return (
-          <Tooltip color="danger" content="게시물 삭제">
-            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-              <DeleteIcon />
-            </span>
-          </Tooltip>
+          <div className="relative flex items-center gap-2">
+            <Tooltip content="게임 조회">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <EyeIcon />
+              </span>
+            </Tooltip>
+            <Tooltip content="게임 수정">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <EditIcon />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="게임 삭제">
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <DeleteIcon />
+              </span>
+            </Tooltip>
+          </div>
         );
       default:
         return null;
@@ -76,34 +119,45 @@ export default function Dashboard() {
           게임 추가
         </Button>
       </div>
-      <div className="flex flex-col gap-3">
-        <Table
-          removeWrapper
-          aria-label="게시물 리스트"
-          className="p-3"
-          selectionMode="single"
-        >
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.uid} align="center">
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={articles}>
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <div className="flex justify-center mt-4">
-          <Pagination total={10} initialPage={1} />
+      {loading ? (
+        <div className="flex justify-center items-center h-full">
+          <Spinner />
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <Table
+            removeWrapper
+            aria-label="게임 리스트"
+            className="p-3"
+            selectionMode="single"
+          >
+            <TableHeader columns={columns}>
+              {(column) => (
+                <TableColumn key={column.uid} align="center">
+                  {column.name}
+                </TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={games}>
+              {(item) => (
+                <TableRow key={item.id}>
+                  {(columnKey) => (
+                    <TableCell>{renderCell(item, columnKey)}</TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <div className="flex justify-center mt-4">
+            <Pagination
+              total={totalPages}
+              initialPage={1}
+              page={currentPage}
+              onChange={(page) => setCurrentPage(page)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
