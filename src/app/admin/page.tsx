@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Listbox, ListboxItem } from '@nextui-org/react';
+import { Listbox, ListboxItem, Selection } from '@nextui-org/react';
 import { ListboxWrapper } from '@/components/admin/ListboxWrapper';
 import Container from '@/components/admin/Container';
 import Dashboard from '@/components/admin/Dashboard';
@@ -10,13 +10,23 @@ import ArticleManagement from '@/components/admin/ArticleManagement';
 import GameManagement from '@/components/admin/GameManagement';
 
 export default function Admin() {
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
-  const handleItemClick = (itemKey) => {
+  const handleItemClick = (itemKey: string) => {
     setSelectedItem(itemKey);
   };
 
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set(['text']));
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(
+    new Set(['text'])
+  );
+
+  const handleSelectionChange = (keys: Selection) => {
+    if (keys instanceof Set) {
+      setSelectedKeys(keys as Set<string>);
+    } else {
+      setSelectedKeys(new Set([keys as string]));
+    }
+  };
 
   const renderContent = () => {
     switch (selectedItem) {
@@ -44,7 +54,7 @@ export default function Admin() {
               disallowEmptySelection
               selectionMode="single"
               selectedKeys={selectedKeys}
-              onSelectionChange={setSelectedKeys}
+              onSelectionChange={handleSelectionChange}
             >
               <ListboxItem
                 key="dashboard"

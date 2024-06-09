@@ -390,16 +390,10 @@ export default function MemberManagement() {
               )}
             </ModalBody>
             <ModalFooter className="flex justify-center">
-              <Button
-                auto
-                variant="ghost"
-                flat
-                color="danger"
-                onClick={onClose}
-              >
+              <Button variant="ghost" color="danger" onClick={onClose}>
                 닫기
               </Button>
-              <Button auto color="primary" onClick={handleEditUser}>
+              <Button color="primary" onClick={handleEditUser}>
                 저장
               </Button>
             </ModalFooter>
@@ -416,10 +410,8 @@ export default function MemberManagement() {
           <ModalHeader>회원 삭제</ModalHeader>
           <ModalBody>정말로 이 회원을 삭제하시겠습니까?</ModalBody>
           <ModalFooter>
-            <Button auto flat onClick={() => setIsDeleteModalOpen(false)}>
-              취소
-            </Button>
-            <Button auto color="error" onClick={handleDelete}>
+            <Button onClick={() => setIsDeleteModalOpen(false)}>취소</Button>
+            <Button color="danger" onClick={handleDelete}>
               삭제
             </Button>
           </ModalFooter>
