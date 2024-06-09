@@ -28,7 +28,6 @@ export default function Article() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [gameImage, setGameImage] = useState('');
 
   useEffect(() => {
     const fetchArticles = async () => {
