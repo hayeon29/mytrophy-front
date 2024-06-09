@@ -24,46 +24,54 @@ export default function GameDetail({ gameDetail }) {
         return '';
     }
   };
+
+  const cleanRequirementString = (requirement) => {
+    return requirement.replace(/[:*]/g, '');
+  };
+
   return (
-    <div className="w-[100%] h-[600px] py-[32px] m-0 block">
-      <div className="w-[100%] h-[550px] px-[24px] py-[29px] block bg-[#F6F7FF] rounded-[20px]">
-        <div className="w-[100%] h-[15%] text-[16px] flex items-start bg-none">
+    <div className="w-full h-[600px] py-8 m-0 block">
+      <div className="w-full h-[550px] px-6 py-7 block bg-[#F6F7FF] rounded-[20px]">
+        <div className="w-full h-[15%] text-lg flex items-start bg-none">
           <span>{gameDetail.description}</span>
         </div>
-        <div className="w-[100%] h-[25%] block bg-none">
-          <div className="w-[100%] h-[33%] flex justify-start items-start">
-            <span className="text-[14px] font-bold mr-2">가격</span>
-            <span className="text-[14px]">
+        <div className="w-full h-[25%] block bg-none">
+          <div className="w-full h-[33%] flex justify-start items-start">
+            <span className="text-base font-bold mr-2">가격</span>
+            <span className="text-base">
               {gameDetail.price
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               원
             </span>
           </div>
-          <div className="w-[100%] h-[33%] flex justify-start items-start">
-            <span className="text-[14px] font-bold mr-2">평가</span>
-            <span className="text-[14px]">
+          <div className="w-full h-[33%] flex justify-start items-start">
+            <span className="text-base font-bold mr-2">평가</span>
+            <span className="text-base">
               {getPositiveString(gameDetail.positive)}
             </span>
           </div>
-          <div className="w-[100%] h-[33%] flex justify-start items-start">
-            <span className="text-[14px] font-bold mr-2">한국어 지원 여부</span>
+          <div className="w-full h-[33%] flex justify-start items-start">
+            <span className="text-base font-bold mr-2">한국어 지원 여부</span>
             {gameDetail.koIsPosible && (
               <Image
                 src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/check.svg`}
                 alt="한국어 지원"
-                width={6}
-                height={6}
+                width={24}
+                height={24}
                 priority
-                className="w-6 h-6"
               />
             )}
           </div>
         </div>
-        <div className="w-[100%] h-[55%]block">
-          <span className="text-[16px] font-bold">시스템 요구사항</span>
+        <div className="w-full h-[55%] block">
+          <span className="text-lg font-bold">시스템 요구사항</span>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: cleanRequirementString(gameDetail.requirement),
+            }}
+          />
         </div>
-        <div>{gameDetail.requirement.replace(':', '').replace('*', '')}</div>
       </div>
     </div>
   );

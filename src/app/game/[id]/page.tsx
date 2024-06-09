@@ -175,11 +175,7 @@ export default function Game({ params }: Props) {
     scrollSmallScreenshots(1);
   };
 
-  const handleThumbnailClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    clickedElement: HTMLButtonElement
-  ) => {
-    const index: number = Number(clickedElement.getAttribute('id'));
+  const handleThumbnailClick = (index) => {
     setCurrentScreenshotIndex(index);
     setSelectedScreenshot(allScreenshots[index].fullImagePath);
   };
@@ -221,16 +217,13 @@ export default function Game({ params }: Props) {
                     type="button"
                     className="w-auto h-[95px] mr-[10px] flex-none border-0 bg-none p-0"
                     key={screenshot.id}
-                    id={`${index}`}
-                    onClick={(event) => {
-                      handleThumbnailClick(event, this);
-                    }}
+                    onClick={() => handleThumbnailClick(index)}
                   >
                     <Image
                       src={screenshot.thumbnailImagePath}
                       alt={`Screenshot ${index + 1}`}
-                      width={100}
-                      height={56}
+                      width={999}
+                      height={999}
                       className="w-full h-full"
                     />
                   </button>
