@@ -1,5 +1,5 @@
 # 이미지 생성 단계
-FROM node:14 AS builder
+FROM node:18 AS builder
 
 # 앱 디렉토리 생성
 WORKDIR /app
@@ -12,7 +12,7 @@ RUN npm install
 RUN npm run build
 
 # 실행 단계
-FROM node:14-alpine
+FROM node:18-alpine
 
 # 앱 디렉토리 생성
 WORKDIR /app
