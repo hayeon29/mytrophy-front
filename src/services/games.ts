@@ -18,7 +18,18 @@ const gamesAPI = {
           size
         }
       })).data;
-    }
+    },
+    async getGameDetailsByPositive(page = 1,size = 10) {
+          return (await api.get(`${API_URL}/positive`, {
+            params: {
+              page,
+              size
+            }
+          })).data;
+    },
+    async getFilteredGames(filterData) {
+        return (await api.post(`${API_URL}/search`, filterData)).data;
+      }
 };
 
 export default gamesAPI;

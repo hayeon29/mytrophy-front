@@ -8,38 +8,8 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import moment from "moment";
 
-const newReleases = [
-    {
-      id: 1,
-      title: 'Animal Trainer Simulator: Prologue',
-      imageUrl: "https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/steam2.png?alt=media&token=da0a75bb-5eb7-423a-ac25-d62809224da6",
-      price: '무료',
-      releaseDate: '2023.06.01',
-      platform: '스팀',
-      languageSupport: true,
-      category : ['시뮬레이션','캐주얼','귀여운','분위기 있는','경엉'],
-    },
-    {
-      id: 2,
-      title: 'Morbid: The Lords of Ire',
-      imageUrl: "https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/steam3.png?alt=media&token=55345148-49fb-444f-bbfe-65623d3f4684",
-      price: '무료',
-      releaseDate: '2023.06.02',
-      platform: '스팀',
-      languageSupport: true,
-      category : ['시뮬레이션','캐주얼','귀여운','분위기 있는','경엉'],
-    },
-    {
-      id: 3,
-      title: 'Ghost of Tsushima 디렉터스 컷',
-      imageUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`,
-      price: '62,800원',
-      releaseDate: '2023.06.03',
-      platform: '스팀',
-      languageSupport: false,
-      category : ['시뮬레이션','캐주얼','귀여운','분위기 있는','경엉'],
-    },
-  ];
+
+
 
   const trending = [
     {
@@ -140,13 +110,13 @@ const positivityMapping = {
 export default function Recommend() {
   const [gameDetailsByRelease, setGameDetailsByRelease] = useState([]);
   const [gameDetailsByTop, setGameDetailsByTop] = useState([]);
+  const [gameDetailsByPositive, setGameDetailsByPositive] = useState([]);
 
   useEffect(() => {
     const fetchGameDetailsByRelease = async () => {
       try {
         const details = await gamesAPI.getGameDetailsByRelease();
         console.log(details.content);
-        console.log(details.content[0].getGameCategoryDTOList[1].name);
         setGameDetailsByRelease(details.content);
       } catch (error) {
         console.error('Error fetching game details:', error);
@@ -160,7 +130,6 @@ export default function Recommend() {
         try {
           const details = await gamesAPI.getGameDetailsByTop();
           console.log(details.content);
-          console.log(details.content[0].getGameCategoryDTOList[1].name);
           setGameDetailsByTop(details.content);
         } catch (error) {
           console.error('Error fetching game details:', error);
@@ -169,10 +138,29 @@ export default function Recommend() {
 
       fetchGameDetailsByTop();
     }, []);
+    useEffect(() => {
+          const fetchGameDetailsByPositive = async () => {
+            try {
+              const details = await gamesAPI.getGameDetailsByPositive();
+              console.log(details.content);
+              console.log(details.content[0].getGameCategoryDTOList[1].name);
+              setGameDetailsByPositive(details.content);
+            } catch (error) {
+              console.error('Error fetching game details:', error);
+            }
+          };
 
-  if (!gameDetailsByTop || !gameDetailsByRelease) {
-        return <div>Loading...</div>;
-     }
+          fetchGameDetailsByPositive();
+        }, []);
+    const truncateString = (str, num) => {
+        if (str.length <= num) {
+          return str;
+        }
+        return str.slice(0, num) + '..';
+      };
+    if (!gameDetailsByTop || !gameDetailsByRelease) {
+       return <div>Loading...</div>;
+    }
   return (
 
         <div>
@@ -192,19 +180,25 @@ export default function Recommend() {
                        <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
                          <Image  className = "w-full h-64 object-cover" src={post.headerImagePath} alt={post.title} width={500} height={200}  />
                          <div className="p-6">
-                           <h3 className="text-lg font-semibold text-gray-900 mb-1">{post.name}</h3>
-                           {post.getGameCategoryDTOList.slice(0, 4).map((category) => (
-                               <span key={category} className="text-gray-600 rounded bg-blue-100 ring-1  sm:px-1 py-1 mx-1">
-                                 {category.name}
+                           <h3 className="text-lg font-semibold text-gray-900 mb-1">{truncateString(post.name, 35)}</h3>
+
+                           {post.getGameCategoryDTOList.slice(0, 4).map((category) => {
+                             const shortenedName = category.name.length > 7
+                               ? `${category.name.slice(0, 7)}..`
+                               : category.name;
+                             return (
+                               <span key={category.name} className="text-gray-600 rounded bg-blue-100 ring-1 sm:px-0.5 py-1 mx-1">
+                                 {shortenedName}
                                </span>
-                             ))}
-                             <p className="text-gray-600 mt-2"><strong>가격</strong>&nbsp; {post.price}원</p>
-                             <p className="text-gray-600"><strong>평가</strong>&nbsp; {positivityMapping[post.positive]}</p>
-                             <p className="text-gray-600"><strong>출시일</strong> &nbsp; {moment(post.releaseDate).format('YYYY.MM.DD')}</p>
-                             <p className="text-gray-600 flex"><strong>한국어 지원 여부</strong> &nbsp;
-                              {post.koIsPosible ?
-                             (<img className = "w-6 h-6 flex"  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75"/>) :
-                             (<img  className = "w-5 h-5 flex" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
+                             );
+                           })}
+                           <p className="text-gray-600 mt-2"><strong>가격</strong>&nbsp; {post.price}원</p>
+                           <p className="text-gray-600"><strong>평가</strong>&nbsp; {positivityMapping[post.positive]}</p>
+                           <p className="text-gray-600"><strong>출시일</strong> &nbsp; {moment(post.releaseDate).format('YYYY.MM.DD')}</p>
+                           <p className="text-gray-600 flex"><strong>한국어 지원 여부</strong> &nbsp;
+                            {post.koIsPosible ?
+                           (<img className = "w-6 h-6 flex"  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75"/>) :
+                           (<img  className = "w-5 h-5 flex" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
                          </div>
                        </div>
                      </div>
@@ -226,22 +220,22 @@ export default function Recommend() {
                          <div className="p-6">
                            <h3 className="text-lg font-semibold text-gray-900 mb-1">{post.name}</h3>
                            {post.getGameCategoryDTOList.slice(0, 4).map((category) => {
-                                          const shortenedName = category.name.length > 8
-                                            ? `${category.name.slice(0, 8)}..`
-                                            : category.name;
-                                          return (
-                                            <span key={category.name} className="text-gray-600 rounded bg-blue-100 ring-1 sm:px-1 py-1 mx-1">
-                                              {shortenedName}
-                                            </span>
-                                          );
-                                        })}
-                             <p className="text-gray-600 mt-2"><strong>가격</strong>&nbsp; {post.price}원</p>
-                             <p className="text-gray-600"><strong>평가</strong>&nbsp; {positivityMapping[post.positive]}</p>
-                             <p className="text-gray-600"><strong>출시일</strong> &nbsp; {moment(post.releaseDate).format('YYYY.MM.DD')}</p>
-                             <p className="text-gray-600 flex"><strong>한국어 지원 여부</strong> &nbsp;
-                              {post.koIsPosible ?
-                             (<img className = "w-6 h-6 flex"  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75"/>) :
-                             (<img  className = "w-5 h-5 flex" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
+                             const shortenedName = category.name.length > 7
+                               ? `${category.name.slice(0, 7)}..`
+                               : category.name;
+                             return (
+                               <span key={category.name} className="text-gray-600 rounded bg-blue-100 ring-1 sm:px-0.5 py-1 mx-1">
+                                 {shortenedName}
+                               </span>
+                             );
+                           })}
+                           <p className="text-gray-600 mt-2"><strong>가격</strong>&nbsp; {post.price}원</p>
+                           <p className="text-gray-600"><strong>평가</strong>&nbsp; {positivityMapping[post.positive]}</p>
+                           <p className="text-gray-600"><strong>출시일</strong> &nbsp; {moment(post.releaseDate).format('YYYY.MM.DD')}</p>
+                           <p className="text-gray-600 flex"><strong>한국어 지원 여부</strong> &nbsp;
+                            {post.koIsPosible ?
+                           (<img className = "w-6 h-6 flex"  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75"/>) :
+                           (<img  className = "w-5 h-5 flex" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
                          </div>
                        </div>
                      </div>
@@ -255,24 +249,29 @@ export default function Recommend() {
                    <p className="pb-5 text-3xl leading-8  text-black-600 font-bold" >내가 추천한 게임</p>
                  </div>
                  <Slider {...settings}>
-                   {newReleases.map((post) => (
+                   {gameDetailsByPositive.map((post) => (
                      <div key={post.id} className="p-2">
                        <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                         <Image  className = "w-full h-64 object-cover" src={post.imageUrl} alt={post.title} width={500} height={200}  />
+                       <Image className = "w-full h-64 object-cover"src={post.headerImagePath} alt={post.title} width={500} height={300} />
                          <div className="p-6">
-                           <h3 className="text-lg font-semibold text-gray-900 mb-1">{post.title}</h3>
-                           {post.category.map((category) => (
-                               <span key={category} className="text-gray-600 rounded bg-blue-100 ring-1  sm:px-1 py-1 mx-1">
-                                 {category}
+                           <h3 className="text-lg font-semibold text-gray-900 mb-1">{post.name}</h3>
+                           {post.getGameCategoryDTOList.slice(0, 4).map((category) => {
+                             const shortenedName = category.name.length > 7
+                               ? `${category.name.slice(0, 7)}..`
+                               : category.name;
+                             return (
+                               <span key={category.name} className="text-gray-600 rounded bg-blue-100 ring-1 sm:px-0.5 py-1 mx-1">
+                                 {shortenedName}
                                </span>
-                             ))}
-                           <p className="text-gray-600 mt-1"><strong>가격</strong>&nbsp; {post.price}</p>
-                           <p className="text-gray-600 inline"><strong>출시일</strong> &nbsp;</p>{post.releaseDate}
-                           <p className="text-gray-600 "><strong>플랫폼</strong>&nbsp; {post.platform}</p>
-                           <p className="text-gray-600 flex"><strong>한국어 지원</strong>&nbsp;
-                           {post.languageSupport ?
+                             );
+                           })}
+                           <p className="text-gray-600 mt-2"><strong>가격</strong>&nbsp; {post.price}원</p>
+                           <p className="text-gray-600"><strong>평가</strong>&nbsp; {positivityMapping[post.positive]}</p>
+                           <p className="text-gray-600"><strong>출시일</strong> &nbsp; {moment(post.releaseDate).format('YYYY.MM.DD')}</p>
+                           <p className="text-gray-600 flex"><strong>한국어 지원 여부</strong> &nbsp;
+                            {post.koIsPosible ?
                            (<img className = "w-6 h-6 flex"  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75"/>) :
-                           (<img  className = "w-5 h-5 object-cover" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
+                           (<img  className = "w-5 h-5 flex" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
                          </div>
                        </div>
                      </div>
@@ -287,25 +286,29 @@ export default function Recommend() {
                    <p className="pb-5 text-3xl leading-8  text-black-600 font-bold" >압도적으로 긍정적인 게임</p>
                  </div>
                  <Slider {...settings}>
-                   {trending.map((post) => (
+                   {gameDetailsByPositive.map((post) => (
                      <div key={post.id} className="p-2">
                        <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                         <Image className = "w-full h-64 object-cover"src={post.imageUrl} alt={post.title} width={500} height={300} />
+                       <Image className = "w-full h-64 object-cover"src={post.headerImagePath} alt={post.title} width={500} height={300} />
                          <div className="p-6">
-                           <h3 className="text-lg font-semibold text-gray-900 mb-1">{post.title}</h3>
-                           {post.category.map((category) => (
-                               <span key={category} className="text-gray-600 rounded bg-blue-100 ring-1  sm:px-1 py-1 mx-1">
-                                 {category}
+                           <h3 className="text-lg font-semibold text-gray-900 mb-1">{post.name}</h3>
+                           {post.getGameCategoryDTOList.slice(0, 4).map((category) => {
+                             const shortenedName = category.name.length > 7
+                               ? `${category.name.slice(0, 7)}..`
+                               : category.name;
+                             return (
+                               <span key={category.name} className="text-gray-600 rounded bg-blue-100 ring-1 sm:px-0.5 py-1 mx-1">
+                                 {shortenedName}
                                </span>
-                             ))}
-
-                           <p className="text-gray-600 mt-1"><strong>가격</strong>&nbsp; {post.price}</p>
-                           <p className="text-gray-600 inline"><strong>출시일</strong> &nbsp;</p>{post.releaseDate}
-                           <p className="text-gray-600 "><strong>플랫폼</strong>&nbsp; {post.platform}</p>
-                           <p className="text-gray-600 flex"><strong>한국어 지원</strong>&nbsp;
-                           {post.languageSupport ?
+                             );
+                           })}
+                           <p className="text-gray-600 mt-2"><strong>가격</strong>&nbsp; {post.price}원</p>
+                           <p className="text-gray-600"><strong>평가</strong>&nbsp; {positivityMapping[post.positive]}</p>
+                           <p className="text-gray-600"><strong>출시일</strong> &nbsp; {moment(post.releaseDate).format('YYYY.MM.DD')}</p>
+                           <p className="text-gray-600 flex"><strong>한국어 지원 여부</strong> &nbsp;
+                            {post.koIsPosible ?
                            (<img className = "w-6 h-6 flex"  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75"/>) :
-                           (<img  className = "w-5 h-5 object-cover" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
+                           (<img  className = "w-5 h-5 flex" src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"/>)}  </p>
                          </div>
                        </div>
                      </div>

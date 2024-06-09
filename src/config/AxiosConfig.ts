@@ -5,7 +5,7 @@ import axios, {
 } from 'axios';
 
 const api: AxiosInstance = axios.create({
-  timeout: 10000,
+  timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
   },
