@@ -1,15 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Image,
   Pagination,
-  Card,
-  CardHeader,
-  CardBody,
-  Avatar,
   Modal,
   ModalContent,
   ModalHeader,
@@ -18,10 +13,10 @@ import {
   useDisclosure,
   Input,
   Textarea,
-  Checkbox,
+  Checkbox, Card, CardHeader, Avatar, CardBody,
 } from '@nextui-org/react';
-
-const API_URL = process.env.NEXT_PUBLIC_BACK_URL;
+import articleAPI from "@/services/article";
+import gameAPI from "@/services/game";
 
 export default function Article() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -30,24 +25,67 @@ export default function Article() {
   const [checkedFiles, setCheckedFiles] = useState<boolean[]>([]);
   const [activeButton, setActiveButton] = useState('');
   const [articles, setArticles] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [gameImage, setGameImage] = useState('');
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/api/articles?page=${currentPage - 1}`
+        setLoading(true);
+
+        // 게시글 목록 가져오기
+        const response = await articleAPI.getArticleList(currentPage - 1, 10);
+        const articles = response.content;
+        setArticles(articles);
+        setTotalPages(response.totalPages);
+
+        // 각 게시물의 appId를 사용하여 게임 세부 정보를 가져오기
+        const articlesWithGameDetails = await Promise.all(
+            articles.map(async (article) => {
+              // 게임 세부 정보를 가져오고
+              const gameDetail = await gameAPI.getGameDetail(article.appId);
+
+              // 해당 게임 세부 정보를 해당 게시물에 추가하여 새로운 객체를 생성
+              return {
+                ...article,
+                gameDetail: gameDetail,
+              };
+            })
         );
-        setArticles(response.data.content);
-        setTotalPages(response.data.totalPages);
+
+        // 게임 세부 정보가 추가된 게시물 목록으로 상태를 업데이트
+        setArticles(articlesWithGameDetails);
       } catch (error) {
         console.error('Error fetching articles:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchArticles();
   }, [currentPage]);
+
+  const handleLike = async (articleId) => {
+    try {
+      // 게시글을 추천하고 결과를 받아옴
+      const response = await articleAPI.articleLike(articleId);
+
+      // 성공적으로 처리된 경우
+      console.log(response); // 성공 메시지 또는 응답 데이터 출력
+
+      // 추천 후에 게시글 정보를 업데이트하거나 필요한 작업을 수행할 수 있습니다.
+    } catch (error) {
+      // 오류 발생 시
+      console.error('게시글 추천에 실패했습니다:', error);
+    }
+  };
+
+  const handleLikeClick = (article) => {
+    handleLike(article.id); // 게시글 추천 함수 호출
+  };
+
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -245,63 +283,79 @@ export default function Article() {
       </Modal>
 
       {/* 게시글 Cards */}
-      {articles.map((article) => (
-        <div key={article.id} className="flex justify-center items-center py-4">
-          <Card className="w-full max-w-7xl">
-            <CardHeader className="justify-between flex-row px-6 py-4">
-              <div className="flex gap-5 items-center">
-                <Avatar
-                  isBordered
-                  radius="full"
-                  size="md"
-                  src="/svgs/profile.svg"
-                />
-                <div className="flex gap-1 items-center">
-                  <h4 className="text-small font-semibold leading-none text-default-600">
-                    {article.username} {/* 유저 이름 */}
-                  </h4>
-                  <h5 className="text-small tracking-tight text-default-400">
-                    {article.username} {/* 유저 아이디 */}
-                  </h5>
+      <div className="flex flex-col justify-center items-center py-4">
+        {articles.map((article) => (
+            <Card className="w-full max-w-7xl mb-4">
+              {/* Card Header */}
+              <CardHeader className="justify-between flex-row px-6 py-4">
+                <div className="flex gap-5 items-center">
+                  <Avatar
+                      isBordered
+                      radius="full"
+                      size="md"
+                      src={article.memberImage}
+                  />
+                  <div className="flex gap-1 items-center">
+                    <h4 className="text-small font-semibold leading-none text-default-600">
+                      {article.nickname} {/* 유저 이름 */}
+                    </h4>
+                    <h5 className="text-small tracking-tight text-default-400">
+                      {article.username} {/* 유저 아이디 */}
+                      {article.memberId}
+                    </h5>
+                  </div>
                 </div>
+                {/* Counts */}
+                <div className="flex gap-3 items-center">
+                  <button onClick={handleLikeClick}>
+                    <Image key={article.id} width={16} alt="vector" src="/svgs/likeIcon.svg" />
+                  </button>
+                  <span className="text-sm text-gray-500 text-default-400">
+            {article.cntUp}
+          </span>
+                  <Image width={16} alt="comment" src="/svgs/commentIcon.svg" />
+                  <span className="text-sm text-gray-500 text-default-400">
+            {article.commentCount}
+          </span>
+                </div>
+              </CardHeader>
+              <div className="flex p-4">
+                  <CardBody className="px-3 py-0 text-small text-black flex-grow">
+                      <h1 className="text-lg font-bold">{article.name}</h1>
+                      {/* 화면 너비가 768px 이하일 때, 최대 15자만 보여줌 */}
+                      <p className="hidden sm:block">
+                          {article.content.length > 300
+                              ? article.content.slice(0, 300) + "..."
+                              : article.content}
+                      </p>
+                      {/* 화면 너비가 768px 이하일 때, 최대 15자만 보여줌 */}
+                      <p className="sm:hidden">
+                          {article.content.length > 15
+                              ? article.content.slice(0, 15) + "..."
+                              : article.content}
+                      </p>
+                  </CardBody>
+                {/* Image */}
+                {article.gameDetail && (
+                    <div className="flex justify-center items-center">
+                      <Image
+                          width={240}
+                          height={144}
+                          alt="side image"
+                          src={article.gameDetail.headerImagePath}
+                      />
+                    </div>
+                )}
               </div>
-              <div className="flex gap-3 items-center">
-                <Image width={16} alt="vector" src="/svgs/vector.svg" />
-                <span className="text-sm text-gray-500 text-default-400">
-                  {article.cntUp} {/* 좋아요 수 */}
-                </span>
-                <Image width={16} alt="comment" src="/svgs/commenticon.svg" />
-                <span className="text-sm text-gray-500 text-default-400">
-                  {article.commentCount} {/* 댓글 수 */}
-                </span>
-              </div>
-            </CardHeader>
-            <div className="flex p-4">
-              <CardBody className="px-3 py-0 text-small text-black flex-grow">
-                <h1 className="text-lg font-bold">{article.name}</h1>{' '}
-                {/* 게시글 제목 */}
-                <p>
-                  {article.content} {/* 게시글 내용 */}
-                </p>
-              </CardBody>
-              <Image
-                width={240}
-                height={144}
-                alt="side image"
-                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/thembnail.svg`}
-              />
-            </div>
-          </Card>
-        </div>
-      ))}
-      <div className="flex flex-wrap gap-4 items-center justify-center mt-8">
+            </Card>
+        ))}
+      </div>
+      <div className="flex justify-center mt-4">
         <Pagination
-          loop
-          showControls
-          color="primary"
-          total={totalPages}
-          initialPage={currentPage}
-          onChange={handlePageChange}
+            total={totalPages}
+            initialPage={1}
+            page={currentPage}
+            onChange={handlePageChange}
         />
       </div>
     </div>
