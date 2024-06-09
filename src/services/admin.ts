@@ -14,14 +14,22 @@ const adminAPI = {
   async getGameCount() {
     return (await api.get(`${GAME_API_URL}/count`)).data;
   },
-  async getMemberList() {
-    return (await api.get(`${MEMBER_API_URL}/list`)).data;
+  async getMemberList(page = 0, size = 10) {
+    return (await api.get(`${MEMBER_API_URL}/list?page=${page}&size=${size}`))
+      .data;
   },
   async getArticleList(page = 0, size = 10) {
     return (await api.get(`${ARTICLE_API_URL}?page=${page}&size=${size}`)).data;
   },
   async getGameList(page = 1, size = 10) {
     return (await api.get(`${GAME_API_URL}?page=${page}&size=${size}`)).data;
+  },
+  async updateMemberById(id, memberData) {
+    const response = await api.patch(`${MEMBER_API_URL}/${id}`, memberData);
+    return response.data;
+  },
+  async deleteMemberById(id) {
+    return api.delete(`${MEMBER_API_URL}/${id}`);
   },
 };
 
