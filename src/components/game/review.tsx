@@ -2,6 +2,8 @@
 
 import { GetGameDetailDTO } from '@/types/GameDetail';
 import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function GameReview({
   gameDetail,
@@ -13,9 +15,11 @@ export default function GameReview({
       <div className="block w-[384px] h-[358px] rounded-[20px] shadow-2xl ">
         <Link href="/game/582010">
           <div className="w-full h-full">
-            <img
+            <Image
               src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_a262c53b8629de7c6547933dc0b49d31f4e1b1f1.1920x1080.jpg?t=1711328912"
               alt="card_Hader_Img"
+              width={384}
+              height={180}
               className="w-full h-[50%] rounded-t-[20px]"
             />
             <div className="w-full h-[50%] px-[24px] py-[16px] rounded-b-[20px]">
@@ -42,7 +46,7 @@ export default function GameReview({
                 <span className="text-[14px] font-bold mr-2">
                   한국어 지원 여부
                 </span>
-                {gameDetail.koIsPosible && (
+                {gameDetail.koIsPossible && (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/check.svg`}
                     alt="한국어 지원"
@@ -60,9 +64,11 @@ export default function GameReview({
       <div className="block w-[384px] h-[358px] rounded-[20px] shadow-2xl mx-4">
         <Link href="/game/582010">
           <div className="w-full h-full">
-            <img
+            <Image
               src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_a262c53b8629de7c6547933dc0b49d31f4e1b1f1.1920x1080.jpg?t=1711328912"
               alt="card_Hader_Img"
+              width={384}
+              height={180}
               className="w-full h-[50%] rounded-t-[20px]"
             />
             <div className="w-full h-[50%] px-[24px] py-[16px] rounded-b-[20px]">
@@ -89,7 +95,7 @@ export default function GameReview({
                 <span className="text-[14px] font-bold mr-2">
                   한국어 지원 여부
                 </span>
-                {gameDetail.koIsPosible && (
+                {gameDetail.koIsPossible && (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/check.svg`}
                     alt="한국어 지원"
@@ -107,9 +113,11 @@ export default function GameReview({
       <div className="block w-[384px] h-[358px] rounded-[20px] shadow-2xl  ">
         <Link href="/game/582010">
           <div className="w-full h-full">
-            <img
+            <Image
               src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_a262c53b8629de7c6547933dc0b49d31f4e1b1f1.1920x1080.jpg?t=1711328912"
               alt="card_Hader_Img"
+              width={384}
+              height={180}
               className="w-full h-[50%] rounded-t-[20px]"
             />
             <div className="w-full h-[50%] px-[24px] py-[16px] rounded-b-[20px]">
@@ -136,7 +144,7 @@ export default function GameReview({
                 <span className="text-[14px] font-bold mr-2">
                   한국어 지원 여부
                 </span>
-                {gameDetail.koIsPosible && (
+                {gameDetail.koIsPossible && (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/check.svg`}
                     alt="한국어 지원"
