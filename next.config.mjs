@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     remotePatterns: [
       {
@@ -9,8 +9,13 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'shared.akamai.steamstatic.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
-    domains: ['shared.akamai.steamstatic.com'],
   },
 };
 
