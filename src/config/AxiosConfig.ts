@@ -10,6 +10,7 @@ const api: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true,
+  baseURL: process.env.NEXT_PUBLIC_BACK_URL,
 });
 
 api.interceptors.request.use(
