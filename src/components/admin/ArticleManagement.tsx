@@ -88,7 +88,7 @@ export default function ArticleManagement() {
           </Chip>
         );
       case 'username':
-        return article.username;
+        return article.nickname;
       case 'createdAt':
         return (
           <p className="text-bold text-xs capitalize">
