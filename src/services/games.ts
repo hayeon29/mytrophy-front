@@ -29,7 +29,10 @@ const gamesAPI = {
     },
     async getFilteredGames(filterData) {
         return (await api.post(`${API_URL}/search`, filterData)).data;
-      }
+    },
+    async getTotalItems() {
+              return (await api.get(`${API_URL}/count`)).data;
+     }
 };
 
 export default gamesAPI;
