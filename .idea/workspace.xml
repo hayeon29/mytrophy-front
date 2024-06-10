@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="176746a8-f516-4529-9347-71b3f0c300c7" name="Changes" comment="merge dev into feature/4-admin-page">
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/team4-front.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/comment.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/edit.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/event_header.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/first-page-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/last-page-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/next-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/prev-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/recommend.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/star-empty.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/star-fill.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/star-mid.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/target.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/telescope.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/member/[memberId]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/common/PageSelectButton.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/game/card/adsf.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/game/card/card.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/home/ArticleCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/home/Category.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/icon/Rating.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/icon/Star.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/AchievementCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/ArticleThumbnail.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserArticle.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserGameAchievement.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserGameRating.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserRecommend.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/constants/color.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/home.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/HomeArticle.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/HomeCategory.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/HomeGame.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.prettierrc" beforeDir="false" afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/game/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/game/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/button/SelectButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/button/SelectButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/game/detail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/game/detail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/game/review.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/game/review.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/game/similar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/game/similar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/game.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/game.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2hMSC5RerV3My0z9bxGvZvSFoqo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Merging feature/4-admin-page",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/user/Desktop/최종프론트/team4-front",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "ts.external.directory.path": "C:\\Users\\modev\\Desktop\\team4-front\\node_modules\\typescript\\lib"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="176746a8-f516-4529-9347-71b3f0c300c7" name="Changes" comment="" />
+      <created>1717402322876</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1717402322876</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Fix: API service 분리">
+      <option name="closed" value="true" />
+      <created>1718001928689</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1718001928689</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Fix: API service 분리">
+      <option name="closed" value="true" />
+      <created>1718002231126</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1718002231126</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Feat: 관리자 페이지 게시물 삭제 추가">
+      <option name="closed" value="true" />
+      <created>1718007468993</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1718007468993</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Feat: 관리자 페이지 게임 삭제 추가">
+      <option name="closed" value="true" />
+      <created>1718010135257</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1718010135257</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Merge" />
+    <MESSAGE value="Fix: API service 분리" />
+    <MESSAGE value="Feat: 관리자 페이지 게시물 삭제 추가" />
+    <MESSAGE value="Feat: 관리자 페이지 게임 삭제 추가" />
+    <MESSAGE value="merge dev into feature/4-admin-page" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge dev into feature/4-admin-page" />
+  </component>
+</project>

@@ -27,5 +27,8 @@ const gameAPI = {
   async deleteGameById(id) {
     return api.delete(`${API_URL}/${id}`);
   },
+  async getGameSimilar(appId: string) {
+    return (await api.get(`${API_URL}/category/${appId}`)).data;
+  },
 };
 export default gameAPI;
