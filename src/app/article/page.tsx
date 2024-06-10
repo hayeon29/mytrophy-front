@@ -254,7 +254,7 @@ export default function Article() {
                       <Input type="text" label="게임을 검색해주세요."/>
                       <hr style={{border: '1px solid #ddd'}}/>
                       <p>제목</p>
-                      <Input placeholder="제목을 입력해주세요." className="mb-4"/>
+                      <Textarea placeholder="제목을 입력해주세요." className="mb-4"/>
                       <p>내용</p>
                       <Textarea placeholder="내용을 입력해주세요." className="mb-4"/>
                       <hr style={{border: '1px solid #ddd'}}/>

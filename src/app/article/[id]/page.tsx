@@ -4,7 +4,21 @@ import React, { useState, useEffect } from 'react';
 import articleAPI from '@/services/article';
 import gameAPI from '@/services/game';
 import membersAPI from '@/services/members';
-import { Image, User, Button } from "@nextui-org/react";
+import commentAPI from '@/services/comment';
+import Link from 'next/link';
+import {
+    Image,
+    User,
+    Button,
+    Input,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    useDisclosure,
+    Textarea
+} from "@nextui-org/react";
 
 type Props = {
     params: {
@@ -18,6 +32,13 @@ function ArticleDetail({ params }: Props) {
     const [loading, setLoading] = useState(true);
     const [gameDetail, setGameDetail] = useState(null); // 게임의 상세 정보 상태 추가
     const [commentAuthors, setCommentAuthors] = useState({});
+    const [newComment, setNewComment] = useState("");
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [editContent, setEditContent] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [commentToDelete, setCommentToDelete] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -55,6 +76,33 @@ function ArticleDetail({ params }: Props) {
         fetchArticleDetail();
     }, [articleId]);
 
+    const handleCommentSubmit = async () => {
+        try {
+            await commentAPI.createComment(articleId, newComment);
+            setNewComment('');
+        } catch (error) {
+            console.error('Error creating comment:', error);
+        }
+    };
+
+    const handleEditSubmit = async (commentId: string) => {
+        try {
+            await commentAPI.updateComment(commentId, editContent);
+            setIsEditing(false);
+            setEditContent('');
+        } catch (error) {
+            console.error('Error updating comment:', error);
+        }
+    };
+
+    const handleDeleteSubmit = async (commentId: string) => {
+        try {
+            await commentAPI.deleteComment(commentId);
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+        }
+    };
+
 
     if (loading) {
         return <div>Loading...</div>;
@@ -70,6 +118,16 @@ function ArticleDetail({ params }: Props) {
 
     return (
         <div className="bg-white py-4">
+            <div className="py-4 mx-auto max-w-7xl">
+                <Button
+                className="py-2 px-4 rounded border-none"
+            >
+                <Link href="/article">
+                    커뮤니티로 돌아가기
+                </Link>
+            </Button>
+            </div>
+
             <div className="max-w-7xl border border-gray p-4 rounded-lg shadow-md text-left mx-auto">
                 <div className="flex items-center justify-between">
                     <div className="mr-4">
@@ -101,7 +159,7 @@ function ArticleDetail({ params }: Props) {
                     />
                 </div>
                 <div className="mt-8 max-w-4xl mx-auto">
-                    <p>{article?.content}</p>
+                    <p style={{ wordWrap: 'break-word' }}>{article?.content}</p>
                 </div>
                 <div className="flex justify-end mt-4">
                     <div className="flex items-center mr-4">
@@ -134,7 +192,7 @@ function ArticleDetail({ params }: Props) {
 
                 <div className="mt-10">
                     {article.comments.map((comment) => (
-                        <div key={comment.id} className="flex border-b border-gray-300 py-2 items-center justify-between max-w-5xl mx-auto">
+                        <div key={comment.id} className="flex border-b border-gray-300 py-2 items-center justify-between max-w-5xl mx-auto mb-8">
                             <Image
                                 src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
                                 alt="프로필 사진"
@@ -150,24 +208,107 @@ function ArticleDetail({ params }: Props) {
                                 <div className="flex flex-col ml-2">
                                     <p className="mr-4">작성 날짜: {comment.createdAt}</p>
                                     <Button
-                                        className="py-2 px-4 rounded"
+                                        className="py-2 px-4 rounded mb-2"
                                         variant="ghost"
-                                        color="primary">
-                                        좋아요 {comment.likes}
-                                    </Button>
-                                    <Button
-                                        className="mt-2 py-2 px-4 rounded"
-                                        variant="contained"
                                         color="primary"
                                     >
-                                        댓글 달기
+                                        좋아요 {comment.likes}
                                     </Button>
+
+                                    <Button onPress={onOpen}
+                                            className="py-2 px-4 rounded"
+                                            variant="solid"
+                                            color="danger">수정</Button>
+                                    <Modal
+                                        isOpen={isOpen}
+                                        size="3xl"
+                                        onOpenChange={onOpenChange}
+                                    >
+                                        <ModalContent>
+                                            {(onClose) => (
+                                                <>
+                                                    <ModalHeader className="flex flex-col gap-1">댓글 수정</ModalHeader>
+                                                    <ModalBody style={{ wordWrap: 'break-word' }}>
+                                                        <Textarea
+                                                            placeholder="내용을 입력해주세요."
+                                                            className="mb-4 flex-1"
+                                                            label="댓글 수정하기"
+                                                            value={editContent}
+                                                            onChange={(e) => setEditContent(e.target.value)}
+                                                        />
+                                                    </ModalBody>
+                                                    <ModalFooter>
+                                                        <Button
+                                                            color="danger"
+                                                            variant="solid"
+                                                            onClick={() => {
+                                                                setCommentToDelete(comment);
+                                                                setIsDeleteModalOpen(true);
+                                                            }}
+                                                        >
+                                                            삭제
+                                                        </Button>
+                                                        <Button color="danger" variant="light" onPress={onClose}>
+                                                            취소
+                                                        </Button>
+                                                        <Button color="primary" onClick={() => handleEditSubmit(comment.id)}>
+                                                            수정
+                                                        </Button>
+                                                    </ModalFooter>
+                                                </>
+                                            )}
+                                        </ModalContent>
+                                    </Modal>
+
+                                    {isDeleteModalOpen && (
+                                        <Modal isOpen={isDeleteModalOpen} onOpenChange={() => setIsDeleteModalOpen(false)}>
+                                            <ModalContent>
+                                                <ModalHeader>댓글 삭제</ModalHeader>
+                                                <ModalBody>정말로 삭제하시겠습니까?</ModalBody>
+                                                <ModalFooter>
+                                                    <Button
+                                                        color="danger"
+                                                        variant="solid"
+                                                        onClick={() => {
+                                                            handleDeleteSubmit(commentToDelete.id);
+                                                            setIsDeleteModalOpen(false);
+                                                        }}
+                                                    >
+                                                        삭제
+                                                    </Button>
+                                                    <Button color="primary" onClick={() => setIsDeleteModalOpen(false)}>
+                                                        취소
+                                                    </Button>
+                                                </ModalFooter>
+                                            </ModalContent>
+                                        </Modal>
+                                    )}
                                 </div>
                             </div>
                         </div>
-
                     ))}
                 </div>
+                <div className="max-w-5xl mx-auto">
+                    <div className="flex items-center gap-4">
+                        <User
+                            name={<span style={{ fontSize: '1.1rem' }}>로그인 한 유저 닉네임</span>}
+                            avatarProps={{
+                                src: "",
+                                style: { border: '1px solid black' }
+                            }}
+                        />
+                        <Input type="text" label="댓글 작성하기" className="flex-1" value={newComment} onChange={(e) => setNewComment(e.target.value)} />
+                        <Button
+                            className="py-2 px-4 rounded"
+                            variant="ghost"
+                            color="primary"
+                            onClick={handleCommentSubmit}
+                        >
+                            댓글 작성
+                        </Button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
