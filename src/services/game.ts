@@ -18,5 +18,14 @@ const gameAPI = {
   async getGameList(page = 1, size = 10) {
     return (await api.get(`${API_URL}?page=${page}&size=${size}`)).data;
   },
+
+  async updateGameById(id, gameData) {
+    const response = await api.patch(`${API_URL}/${id}`, gameData);
+    return response.data;
+  },
+
+  async deleteGameById(id) {
+    return api.delete(`${API_URL}/${id}`);
+  },
 };
 export default gameAPI;
