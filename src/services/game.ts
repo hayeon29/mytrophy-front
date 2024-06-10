@@ -16,7 +16,7 @@ const gameAPI = {
   },
 
   async getGameList(page = 1, size = 10) {
-    return (await api.get(`${GAME_API_URL}?page=${page}&size=${size}`)).data;
+    return (await api.get(`${API_URL}?page=${page}&size=${size}`)).data;
   },
 };
 export default gameAPI;
