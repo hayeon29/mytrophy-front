@@ -7,12 +7,12 @@ const articleAPI = {
         return (await api.get(`${ARTICLE_API_URL}?page=${page}&size=${size}`)).data;
     },
 
-    async getArticlesByHeader(header: string, page = 1, size = 10, sort = 'cntUp,desc') {
-        return (await api.get(`${ARTICLE_API_URL}/headers/${header}`)).data;
+    async getArticlesByHeader(header: string, page = 1, size = 10) {
+        return (await api.get(`${ARTICLE_API_URL}/headers/${header}?page=${page}&size=${size}`)).data;
     },
 
-    async getMemberById(memberId: number) {
-        return (await api.get(`${ARTICLE_API_URL}/members/${memberId}`)).data;
+    async getArticleDetail(articleId: string) {
+        return (await api.get(`${ARTICLE_API_URL}/${articleId}`)).data;
     },
 
     async articleLike(articleId: number) {
