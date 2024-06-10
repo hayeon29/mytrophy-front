@@ -16,6 +16,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Input,
 } from '@nextui-org/react';
 import gameAPI from '@/services/game';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
@@ -39,6 +40,8 @@ export default function GameManagement() {
   const [loading, setLoading] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [gameToDelete, setGameToDelete] = useState(null);
+  const [isAddGameModalOpen, setIsAddGameModalOpen] = useState(false);
+  const [newGameAppId, setNewGameAppId] = useState('');
 
   useEffect(() => {
     async function fetchData() {
@@ -65,6 +68,48 @@ export default function GameManagement() {
       setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting game:', error);
+    }
+  };
+
+  const handleTop100Save = async () => {
+    try {
+      await gameAPI.readTopSteamGameData();
+      // Optionally, you could refresh the game list after saving top 100
+      setCurrentPage(1);
+    } catch (error) {
+      console.error('Error saving top 100 games:', error);
+    }
+  };
+
+  const handleSteamListUpdate = async () => {
+    try {
+      await gameAPI.readSteamGameData();
+      // Optionally, you could refresh the game list after updating the steam list
+      setCurrentPage(1);
+    } catch (error) {
+      console.error('Error updating steam list:', error);
+    }
+  };
+
+  const handleGameDetailUpdate = async () => {
+    try {
+      await gameAPI.saveDetailSteamGameData();
+      // Optionally, you could refresh the game list after updating game details
+      setCurrentPage(1);
+    } catch (error) {
+      console.error('Error updating game details:', error);
+    }
+  };
+
+  const handleAddGameByAppId = async () => {
+    try {
+      await gameAPI.readSteamGameDataOne(newGameAppId);
+      // Optionally, you could refresh the game list after adding a new game
+      setCurrentPage(1);
+      setIsAddGameModalOpen(false);
+      setNewGameAppId('');
+    } catch (error) {
+      console.error('Error adding game by app ID:', error);
     }
   };
 
@@ -154,12 +199,46 @@ export default function GameManagement() {
 
       {/* Action Buttons */}
       <div className="flex justify-end m-4">
-        <Button className="mx-4" color="success" variant="ghost">
-          게임 업데이트
-        </Button>
-        <Button className="mr-4" color="primary" variant="ghost">
-          게임 추가
-        </Button>
+        <Tooltip content="스팀의 TOP100 목록 다운">
+          <Button
+            className="mx-4"
+            color="success"
+            variant="ghost"
+            onClick={handleTop100Save}
+          >
+            top 100 저장
+          </Button>
+        </Tooltip>
+        <Tooltip content="스팀의 전체 게임 목록 DB에 다운 (appId List)">
+          <Button
+            className="mx-4"
+            color="success"
+            variant="ghost"
+            onClick={handleSteamListUpdate}
+          >
+            스팀 리스트 업데이트
+          </Button>
+        </Tooltip>
+        <Tooltip content="스팀의 전체 상세 게임 정보 DB에서 다운 (appId 별 detail)">
+          <Button
+            className="mx-4"
+            color="success"
+            variant="ghost"
+            onClick={handleGameDetailUpdate}
+          >
+            게임 상세 업데이트
+          </Button>
+        </Tooltip>
+        <Tooltip content="스팀 app ID로 게임 하나 다운">
+          <Button
+            className="mx-4"
+            color="success"
+            variant="ghost"
+            onClick={() => setIsAddGameModalOpen(true)}
+          >
+            스팀 app ID 로 게임 추가
+          </Button>
+        </Tooltip>
       </div>
 
       {/* Game Table */}
@@ -215,6 +294,29 @@ export default function GameManagement() {
             <Button onClick={() => setIsDeleteModalOpen(false)}>취소</Button>
             <Button color="danger" onClick={handleDelete}>
               삭제
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Add Game Modal */}
+      <Modal
+        isOpen={isAddGameModalOpen}
+        onClose={() => setIsAddGameModalOpen(false)}
+        size="sm"
+      >
+        <ModalContent>
+          <ModalHeader>스팀 app ID 로 게임 추가</ModalHeader>
+          <ModalBody>
+            <Input
+              value={newGameAppId}
+              onChange={(e) => setNewGameAppId(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => setIsAddGameModalOpen(false)}>취소</Button>
+            <Button color="success" onClick={handleAddGameByAppId}>
+              추가
             </Button>
           </ModalFooter>
         </ModalContent>

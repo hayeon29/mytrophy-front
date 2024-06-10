@@ -27,8 +27,25 @@ const gameAPI = {
   async deleteGameById(id) {
     return api.delete(`${API_URL}/${id}`);
   },
+
   async getGameSimilar(appId: string) {
     return (await api.get(`${API_URL}/category/${appId}`)).data;
+  },
+
+  async readTopSteamGameData() {
+    return (await api.get(`${API_URL}/request/game/top`)).data;
+  },
+
+  async readSteamGameData() {
+    return (await api.get(`${API_URL}/request/game/detail`)).data;
+  },
+
+  async saveDetailSteamGameData() {
+    return (await api.get(`${API_URL}/request/game/detail`)).data;
+  },
+
+  async readSteamGameDataOne(id) {
+    return (await api.get(`${API_URL}/request/game/${id}`)).data;
   },
 };
 export default gameAPI;
