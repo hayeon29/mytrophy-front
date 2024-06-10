@@ -35,6 +35,8 @@
     ],
     "import/prefer-default-export": "off",
     "react/tsx-props-no-spreading": "off",
+    "react/require-default-props": "off",
+    "react/no-array-index-key": "off",
     "prettier/prettier": [
       "error",
       {
