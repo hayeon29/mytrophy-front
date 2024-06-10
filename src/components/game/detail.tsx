@@ -30,10 +30,10 @@ export default function GameDetail({ gameDetail }) {
   };
 
   return (
-    <div className="w-full h-[600px] py-8 m-0 block">
-      <div className="w-full h-[550px] px-6 py-7 block bg-[#F6F7FF] rounded-[20px]">
-        <div className="w-full h-[15%] text-lg flex items-start bg-none">
-          <span>{gameDetail.description}</span>
+    <div className="w-full h-[800px] py-8 m-0 block">
+      <div className="w-full h-[750px] px-6 py-7 block bg-[#F6F7FF] rounded-[20px]">
+        <div className="w-full h-[30%] text-lg flex items-start bg-none">
+          <span className="">{gameDetail.description}</span>
         </div>
         <div className="w-full h-[25%] block bg-none">
           <div className="w-full h-[33%] flex justify-start items-start">
