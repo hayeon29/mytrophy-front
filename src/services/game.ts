@@ -10,5 +10,13 @@ const gameAPI = {
   async getGamePlayerNumber(appId: string) {
     return (await api.get(`${API_URL}/request/players/${appId}`)).data;
   },
+
+  async getGameCount() {
+    return (await api.get(`${API_URL}/count`)).data;
+  },
+
+  async getGameList(page = 1, size = 10) {
+    return (await api.get(`${GAME_API_URL}?page=${page}&size=${size}`)).data;
+  },
 };
 export default gameAPI;

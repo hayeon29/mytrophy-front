@@ -12,7 +12,7 @@ import {
   Pagination,
   Spinner,
 } from '@nextui-org/react';
-import adminAPI from '@/services/admin';
+import gameAPI from '@/services/game';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
@@ -37,7 +37,7 @@ export default function GameManagement() {
     async function fetchData() {
       try {
         setLoading(true);
-        const response = await adminAPI.getGameList(currentPage, 10);
+        const response = await gameAPI.getGameList(currentPage, 10);
         setGames(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {

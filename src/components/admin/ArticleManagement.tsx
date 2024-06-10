@@ -11,7 +11,7 @@ import {
   Pagination,
   Spinner,
 } from '@nextui-org/react';
-import adminAPI from '@/services/admin';
+import articlesAPI from '@/services/articles';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
@@ -45,7 +45,7 @@ export default function ArticleManagement() {
     const fetchArticles = async () => {
       try {
         setLoading(true);
-        const response = await adminAPI.getArticleList(currentPage - 1, 10);
+        const response = await articlesAPI.getArticleList(currentPage - 1, 10);
         setArticles(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {
