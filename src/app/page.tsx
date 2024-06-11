@@ -23,7 +23,7 @@ export default function Home() {
         const response = await homeAPI.topGames(1, 10);
         setTopGames(response.data.content);
       } catch (error) {
-        console.error('top100 가져오기 실패', error);
+        // 에러처리
       } finally {
         setLoadingGames(false);
       }
@@ -35,7 +35,7 @@ export default function Home() {
         const response = await homeAPI.topArticles();
         setTopArticles(response.data.content);
       } catch (error) {
-        console.error('게시글 가져오기 실패', error);
+        // 에러처리
       } finally {
         setLoadingArticles(false);
       }
@@ -74,11 +74,13 @@ export default function Home() {
                 ) : (
                   topGame && (
                     <div className="flex flex-col items-start w-[300px]">
-                      <img
+                      <Image
                         src={topGame.headerImagePath}
                         alt={topGame.name}
                         className="mb-4 rounded-3xl"
                         style={{ width: 300, height: 'auto' }}
+                        width={300}
+                        height={900}
                       />
                       <h3 className="text-xl font-bold mb-3">{topGame.name}</h3>
                       <Category

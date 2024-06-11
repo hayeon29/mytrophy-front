@@ -6,9 +6,9 @@ type GetGameDetailDTO = {
   publisher: string;
   requirement: string;
   price: number | null;
-  releaseDate: string; // 또는 Date 형식으로 변환해서 사용
+  releaseDate: string;
   recommendation: number;
-  positive: string; // 또는 Positive 열거형으로 변환해서 사용
+  positive: string;
   headerImagePath: string;
   koIsPossible: boolean;
   enIsPossible: boolean;
@@ -37,26 +37,18 @@ type GetGameScreenshotDTO = {
   fullImagePath: string;
 };
 
-// type GetTopGameDTO = {
-//   id: number;
-//   name: string;
-//   description: string;
-//   developer: string;
-//   publisher: string;
-//   requirement: string;
-//   price: number | null;
-//   releaseDate: string; // 또는 Date 형식으로 변환해서 사용
-//   recommendation: number;
-//   positive: string; // 또는 Positive 열거형으로 변환해서 사용
-//   headerImagePath: string;
-//   koIsPossible: boolean;
-//   enIsPossible: boolean;
-//   jpIsPossible: boolean;
-//   getGameCategoryDTOList: GetGameCategoryDTO[];
-//   getGameScreenshotDTOList: GetGameScreenshotDTO[];
-//   getGameAchievementDTOList: GetGameAchievementDTO[];
-//   rank: number;
-// };
+type GameArticleDTO = {
+  id: number;
+  header: string;
+  name: string;
+  content: string;
+  imagePath: string | null;
+  appId: number;
+  memberId: number;
+  username: string;
+  comments: string[];
+  commentCount: number;
+};
 
 type GetGamePlayerNumberDTO = {
   playerNumber: string;
@@ -68,4 +60,5 @@ export type {
   GetGameDetailDTO,
   GetGamePlayerNumberDTO,
   GetGameScreenshotDTO,
+  GameArticleDTO,
 };

@@ -28,7 +28,7 @@ export default function Dashboard() {
         setGameCount(gameData);
       })
       .catch((error) => {
-        console.error('Error fetching data:', error);
+        // 에러처리
       })
       .finally(() => {
         setLoading(false);

@@ -39,10 +39,11 @@ export default function GameDetail({ gameDetail }) {
           <div className="w-full h-[33%] flex justify-start items-start">
             <span className="text-base font-bold mr-2">가격</span>
             <span className="text-base">
-              {gameDetail.price
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              원
+              {gameDetail.price === 0
+                ? '무료'
+                : `${gameDetail.price
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
             </span>
           </div>
           <div className="w-full h-[33%] flex justify-start items-start">
@@ -67,6 +68,7 @@ export default function GameDetail({ gameDetail }) {
         <div className="w-full h-[55%] block">
           <span className="text-lg font-bold">시스템 요구사항</span>
           <div
+            // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
               __html: cleanRequirementString(gameDetail.requirement),
             }}

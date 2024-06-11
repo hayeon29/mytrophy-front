@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import gameAPI from '@/services/game';
+import articleAPI from '@/services/article';
 import GameDetail from '@/components/game/detail';
 import GameReview from '@/components/game/review';
 import GameSimilar from '@/components/game/similar';
@@ -12,6 +13,7 @@ import {
   GetGameDetailDTO,
   GetGamePlayerNumberDTO,
   GetGameScreenshotDTO,
+  GameArticleDTO,
 } from '@/types/GameDetail';
 
 type Props = {
@@ -23,6 +25,9 @@ type Props = {
 export default function Game({ params }: Props) {
   const { id: appId } = params;
   const [gameDetail, setGameDetail] = useState<GetGameDetailDTO | null>(null);
+  const [gameArticleDTOList, setGameArticleDTOList] = useState<
+    GameArticleDTO[] | null
+  >(null);
   const [similarGameDetail1, setSimilarGameDetail1] = useState<
     GetGameDetailDTO[] | null
   >(null);
@@ -139,8 +144,18 @@ export default function Game({ params }: Props) {
       }
     };
 
+    const fetchGameArticle = async () => {
+      try {
+        const response = await articleAPI.getGameArticleList(appId, null);
+        setGameArticleDTOList(response.content);
+      } catch (error) {
+        // 에러 처리
+      }
+    };
+
     fetchGameDetail();
     fetchGamePlayerNumber();
+    fetchGameArticle();
   }, [appId]);
 
   useEffect(() => {
@@ -175,18 +190,24 @@ export default function Game({ params }: Props) {
   }, [similarCategory]);
 
   const handlePrevScreenshot = () => {
-    setCurrentScreenshotIndex((prevIndex) =>
-      prevIndex === 0 ? allScreenshots.length - 1 : prevIndex - 1
+    const currentIndex = allScreenshots.findIndex(
+      (screenshot) => screenshot.fullImagePath === selectedScreenshot
     );
-    setSelectedScreenshot(allScreenshots[currentScreenshotIndex].fullImagePath);
+    const prevIndex =
+      currentIndex === 0 ? allScreenshots.length - 1 : currentIndex - 1;
+    setSelectedScreenshot(allScreenshots[prevIndex].fullImagePath);
+    setCurrentScreenshotIndex(prevIndex); // 인덱스 업데이트
     scrollSmallScreenshots(-1);
   };
 
   const handleNextScreenshot = () => {
-    setCurrentScreenshotIndex((prevIndex) =>
-      prevIndex === allScreenshots.length - 1 ? 0 : prevIndex + 1
+    const currentIndex = allScreenshots.findIndex(
+      (screenshot) => screenshot.fullImagePath === selectedScreenshot
     );
-    setSelectedScreenshot(allScreenshots[currentScreenshotIndex].fullImagePath);
+    const nextIndex =
+      currentIndex === allScreenshots.length - 1 ? 0 : currentIndex + 1;
+    setSelectedScreenshot(allScreenshots[nextIndex].fullImagePath);
+    setCurrentScreenshotIndex(nextIndex); // 인덱스 업데이트
     scrollSmallScreenshots(1);
   };
 
@@ -216,46 +237,57 @@ export default function Game({ params }: Props) {
                 />
               )}
               <div className="w-[100%] h-[30%] flex items-center overflow-hidden">
-                <Image
-                  src="/svgs/left_button.svg"
-                  alt="이전 스크린샷"
-                  width={8}
-                  height={8}
-                  priority
-                  className="w-8 h-8 cursor-pointer mr-[16px]"
-                  onClick={handlePrevScreenshot}
-                />
+                {currentScreenshotIndex !== 0 && (
+                  <Image
+                    src="/svgs/left_button.svg"
+                    alt="이전 스크린샷"
+                    width={8}
+                    height={8}
+                    priority
+                    className="w-8 h-8 cursor-pointer mr-[16px]"
+                    onClick={handlePrevScreenshot}
+                  />
+                )}
                 <div
                   className="flex overflow-x-hidden"
                   style={{ scrollSnapType: 'x mandatory' }}
                   ref={smallScreenshotsRef}
                 >
-                  {allScreenshots.map((screenshot, index) => (
-                    <button
-                      type="button"
-                      className="w-auto h-[95px] mr-[10px] flex-none border-0 bg-none p-0"
-                      key={screenshot.id}
-                      onClick={() => handleThumbnailClick(index)}
-                    >
-                      <Image
-                        src={screenshot.thumbnailImagePath}
-                        alt={`Screenshot ${index + 1}`}
-                        width={999}
-                        height={999}
-                        className="w-full h-full"
-                      />
-                    </button>
-                  ))}
+                  {allScreenshots.map((screenshot, index) => {
+                    const isSelected = index === currentScreenshotIndex;
+                    return (
+                      <button
+                        type="button"
+                        className={`w-auto h-[95px] mr-[10px] flex-none rounded-[5px] border-0 bg-none p-0 ${
+                          isSelected
+                            ? 'border-1 border-blue-500 rounded-[10px]'
+                            : 'border-none'
+                        }`}
+                        key={index}
+                        onClick={() => handleThumbnailClick(index)}
+                      >
+                        <Image
+                          src={screenshot.thumbnailImagePath}
+                          alt={`Screenshot ${index + 1}`}
+                          width={999}
+                          height={999}
+                          className="w-full h-full rounded-[5px]"
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
-                <Image
-                  src="/svgs/right_button.svg"
-                  alt="다음 스크린샷"
-                  width={8}
-                  height={8}
-                  priority
-                  className="w-8 h-8 cursor-pointer ml-[16px]"
-                  onClick={handleNextScreenshot}
-                />
+                {currentScreenshotIndex !== allScreenshots.length - 1 && (
+                  <Image
+                    src="/svgs/right_button.svg"
+                    alt="다음 스크린샷"
+                    width={8}
+                    height={8}
+                    priority
+                    className="w-8 h-8 cursor-pointer ml-[16px]"
+                    onClick={handleNextScreenshot}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -430,7 +462,7 @@ export default function Game({ params }: Props) {
           />
         )}
         {selectedComponent === 'review' && (
-          <GameReview gameDetail={gameDetail} />
+          <GameReview gameArticleDTOList={gameArticleDTOList} />
         )}
       </div>
     </div>
