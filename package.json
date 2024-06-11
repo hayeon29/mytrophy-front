@@ -11,6 +11,9 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.19",
     "@nextui-org/react": "^2.3.6",
     "axios": "^1.7.2",
     "clsx": "^2.1.1",

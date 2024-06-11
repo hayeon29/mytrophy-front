@@ -23,7 +23,7 @@ const articleAPI = {
   async articleLike(articleId: string) {
     return (await api.post(`${ARTICLE_API_URL}/${articleId}/like`)).data;
   },
-  async getGameArticleList(appId: string, page: string | null) {
+  async getGameArticleList(appId: string, page: number | null) {
     const url = page
       ? `${ARTICLE_API_URL}/appId/${appId}?page=${page}`
       : `${ARTICLE_API_URL}/appId/${appId}`;

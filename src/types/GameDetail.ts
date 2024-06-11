@@ -39,6 +39,7 @@ type GetGameScreenshotDTO = {
 
 type GameArticleDTO = {
   id: number;
+  nickname: string;
   header: string;
   name: string;
   content: string;
