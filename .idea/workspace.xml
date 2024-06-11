@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="176746a8-f516-4529-9347-71b3f0c300c7" name="Changes" comment="">
+    <list default="true" id="176746a8-f516-4529-9347-71b3f0c300c7" name="Changes" comment="feat: 게시글 상세 조회, 댓글 조회 기능 추가">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
@@ -14,24 +15,48 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feature/article-page" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2hMSC5RerV3My0z9bxGvZvSFoqo" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/user/Desktop/최종프론트/team4-front"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/article-page&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/Desktop/최종프론트/team4-front&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\Soonduck\\Desktop\\file\\coding\\codefiles\\team4-front\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Soonduck\Desktop\file\coding\codefiles\team4-front\src\components\article\[id]" />
+      <recent name="C:\Users\Soonduck\Desktop\file\coding\codefiles\team4-front\public\svgs" />
+      <recent name="C:\Users\Soonduck\Desktop\file\coding\codefiles\team4-front" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -40,7 +65,100 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1717402322876</updated>
+      <workItem from="1717912919941" duration="712000" />
+      <workItem from="1717913645800" duration="10258000" />
+      <workItem from="1717927158124" duration="2758000" />
+      <workItem from="1717981655498" duration="31115000" />
+      <workItem from="1718070638873" duration="418000" />
     </task>
+    <task id="LOCAL-00001" summary="Refactor: article get 요청 코드 리팩토링">
+      <option name="closed" value="true" />
+      <created>1717934830464</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1717934830464</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Refactor: git pull">
+      <option name="closed" value="true" />
+      <created>1717934965559</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1717934965559</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat: article 조회 api 추가">
+      <option name="closed" value="true" />
+      <created>1718002805919</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1718002805919</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Refactor: article List 페이지 리팩토링">
+      <option name="closed" value="true" />
+      <created>1718002840114</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1718002840114</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Refactor: member API url 추가">
+      <option name="closed" value="true" />
+      <created>1718009612565</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1718009612565</updated>
+    </task>
+    <task id="LOCAL-00006" summary="feat: memberId 조회 로직 추가">
+      <option name="closed" value="true" />
+      <created>1718009630100</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1718009630100</updated>
+    </task>
+    <task id="LOCAL-00007" summary="feat: article Detail 상세페이지 추가">
+      <option name="closed" value="true" />
+      <created>1718009655359</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1718009655359</updated>
+    </task>
+    <task id="LOCAL-00008" summary="feat: comment API 추가">
+      <option name="closed" value="true" />
+      <created>1718031320075</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1718031320075</updated>
+    </task>
+    <task id="LOCAL-00009" summary="feat: 게시글 상세 조회, 댓글 조회 기능 추가">
+      <option name="closed" value="true" />
+      <created>1718031339496</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1718031339496</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Refactor: article get 요청 코드 리팩토링" />
+    <MESSAGE value="Refactor: git pull" />
+    <MESSAGE value="feat: article 조회 api 추가" />
+    <MESSAGE value="Refactor: article List 페이지 리팩토링" />
+    <MESSAGE value="Refactor: member API url 추가" />
+    <MESSAGE value="feat: memberId 조회 로직 추가" />
+    <MESSAGE value="feat: article Detail 상세페이지 추가" />
+    <MESSAGE value="feat: comment API 추가" />
+    <MESSAGE value="feat: 게시글 상세 조회, 댓글 조회 기능 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: 게시글 상세 조회, 댓글 조회 기능 추가" />
   </component>
 </project>
