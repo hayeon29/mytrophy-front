@@ -18,12 +18,6 @@ import {
   CardHeader,
   Avatar,
   CardBody,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
 } from '@nextui-org/react';
 import articleAPI from "@/services/article";
 import gameAPI from "@/services/game";
@@ -39,7 +33,6 @@ export default function Article() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [gameTotalPages, setGameTotalPages] = useState(1);
-  const [gameCurrentPage, setGameCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -113,7 +106,7 @@ export default function Article() {
 
   const handleClickCreateArticle = async (onClose) => {
     try {
-      let fileUrls: string[] | null = null; // 파일 URL 배열을 초기화
+      let fileUrls = null; // 파일 URL 문자열을 초기화
 
       if (selectedFiles.length > 0) {
         const formData = new FormData();
@@ -124,17 +117,17 @@ export default function Article() {
         // 파일 업로드 API를 호출하여 파일 URL 배열을 가져옴
         const response = await articleAPI.articleFileUpload(formData);
 
-        // 파일이 업로드되었다면 파일 URL 배열을 설정
-        fileUrls = response.length > 0 ? response : null;
+        // 파일이 업로드되었다면 파일 URL들을 쉼표(,)로 구분하여 문자열로 변환
+        fileUrls = response.join(',');
       }
 
-      console.log('imagePaths:', fileUrls); // 파일 URL들을 로그로 출력
+      console.log('imagePaths:', fileUrls); // 파일 URL 문자열을 로그로 출력
 
       await articleAPI.articleCreate(
           activeButton,
           userInfo.name,
           userInfo.content,
-          selectedGameId,
+          selectedGameId, // 선택한 게임의 selectedGameId 사용
           fileUrls
       );
 
@@ -164,7 +157,6 @@ export default function Article() {
         // 게시글을 추천하고 결과를 받아옴
         const response = await articleAPI.articleLike(articleId);
 
-        // 추천 후에 게시글 정보를 업데이트하거나 필요한 작업을 수행할 수 있습니다.
       } catch (error) {
         // 오류 발생 시
         console.error('게시글 추천에 실패했습니다:', error);
@@ -178,10 +170,6 @@ export default function Article() {
     const handlePageChange = (page) => {
       setCurrentPage(page);
     };
-
-    const handleGamePageChange = (page) => {
-        setGameCurrentPage(page);
-    }
 
     const handleButtonClick = (buttonName: string) => {
       setActiveButton(buttonName);
@@ -240,7 +228,24 @@ export default function Article() {
   const handleGameSelect = (appId, gameName) => {
     setSelectedGameId(appId);
     setSelectedGameName(gameName);
-  }
+  };
+
+    const getBackgroundColor = (header) => {
+      switch (header) {
+        case 'FREE_BOARD':
+          return 'bg-blue-500';
+        case 'INFORMATION':
+          return 'bg-green-500';
+        case 'GUIDE':
+          return 'bg-yellow-500';
+        case 'REVIEW':
+          return 'bg-red-500';
+        case 'CHATING':
+          return 'bg-gray-500';
+        default:
+          return 'bg-gray-500';
+      }
+    };
 
     return (
         <div className="bg-white h-screen mx-auto">
@@ -286,15 +291,10 @@ export default function Article() {
           <div className="bg-white flex justify-center items-center py-4">
             <div
                 className="w-full max-w-7xl border border-gray p-4 flex items-center rounded-lg h-26 shadow-md text-left">
-              <Image
-                  width={64}
-                  alt="main profile image"
-                  src="/svgs/mainprofile.svg"
-              />
               <Button
                   color="default"
                   variant="faded"
-                  className="ml-4 flex-grow test-small"
+                  className="flex-grow test-small"
                   onPress={() => setIsPostModalOpen(true)}
               >
                 클릭 후 글을 작성해보세요.
@@ -342,6 +342,13 @@ export default function Article() {
                             color="primary"
                             variant={activeButton === 'REVIEW' ? 'solid' : 'ghost'}
                             onClick={() => handleButtonClick('REVIEW')}
+                        >
+                          리뷰
+                        </Button>
+                        <Button
+                            color="primary"
+                            variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
+                            onClick={() => handleButtonClick('CHATING')}
                         >
                           리뷰
                         </Button>
@@ -484,14 +491,18 @@ export default function Article() {
                           size="md"
                           src={article.memberImage}
                       />
-                      <div className="flex gap-1 items-center">
-                        <h4 className="text-small font-semibold leading-none text-default-600">
-                          {article.nickname} {/* 유저 이름 */}
-                        </h4>
-                        <h5 className="text-small tracking-tight text-default-400">
-                          {article.username} {/* 유저 아이디 */}
-                        </h5>
+                      <div className="flex gap-1 items-start flex-col sm:flex-row sm:items-center">
+                          <h5 className="text-small font-semibold leading-none text-default-600">
+                            {article.nickname} {/* 유저 이름 */}
+                          </h5>
+                          <h4 className="text-small tracking-tight text-default-400">
+                            {article.username} {/* 유저 아이디 */}
+                          </h4>
                       </div>
+                      <span className={`${getBackgroundColor(article.header)} rounded-sm text-white px-2 py-0.5 text-sm mr-2`}>
+                        {article.header}
+                      </span>
+
                     </div>
                     {/* Counts */}
                     <div className="flex gap-3 items-center">
