@@ -15,6 +15,10 @@ const membersAPI = {
   async login(form: { [key: string]: string }) {
     return api.post(`/api/login`, form);
   },
+
+  async getMemberById(memberId: string) {
+    return (await api.get(`${API_URL}/${memberId}`)).data;
+  }
 };
 
 export default membersAPI;
