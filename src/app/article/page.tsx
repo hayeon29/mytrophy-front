@@ -11,16 +11,26 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useDisclosure,
   Input,
   Textarea,
-  Checkbox, Card, CardHeader, Avatar, CardBody,
+  Checkbox,
+  Card,
+  CardHeader,
+  Avatar,
+  CardBody,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
 } from '@nextui-org/react';
 import articleAPI from "@/services/article";
 import gameAPI from "@/services/game";
 
 export default function Article() {
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const modalPlacement = 'center';
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [checkedFiles, setCheckedFiles] = useState<boolean[]>([]);
@@ -28,11 +38,14 @@ export default function Article() {
   const [articles, setArticles] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [gameTotalPages, setGameTotalPages] = useState(1);
+  const [gameCurrentPage, setGameCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedAppId, setSelectedAppId] = useState(null);
+  const [selectedGameId, setSelectedGameId] = useState(null);
+  const [selectedGameName, setSelectedGameName] = useState('');
   const [userInfo, setUserInfo] = useState({
     header: '',
     name: '',
@@ -80,16 +93,22 @@ export default function Article() {
   const handleSearch = async () => {
     try {
       setIsLoading(true);
-      const response = await gameAPI.searchGameByName(searchValue);
-      setSearchResults(response);
-      console.log('검색 결과:', response);
+      const response = await gameAPI.searchGameByName(currentPage - 1, 10, searchValue);
+      setSearchResults(response.content);
+      setIsSearchModalOpen(true);
+      setGameTotalPages(response.totalPages);
+      console.log('검색 결과:', searchResults);
     } catch (error) {
         console.error('게임 검색에 실패했습니다:', error);
     }
   }
 
-  const handleGameSelect = (appId) => {
-    setSelectedAppId(appId);
+  const handleGameSelectAppId = (appId, gameName, onClose) => {
+    setSelectedGameId(appId);
+    setSelectedGameName(gameName);
+    setIsLoading(false);
+    onClose();
+    setSearchValue(selectedGameName);
   };
 
   const handleClickCreateArticle = async (onClose) => {
@@ -115,7 +134,7 @@ export default function Article() {
           activeButton,
           userInfo.name,
           userInfo.content,
-          570,
+          selectedGameId,
           fileUrls
       );
 
@@ -124,8 +143,6 @@ export default function Article() {
       console.error('게시글 작성에 실패했습니다:', error);
     }
   };
-
-
 
   const handleClick = async (header) => {
     try {
@@ -158,10 +175,13 @@ export default function Article() {
       handleLike(article.id); // 게시글 추천 함수 호출
     };
 
-
     const handlePageChange = (page) => {
       setCurrentPage(page);
     };
+
+    const handleGamePageChange = (page) => {
+        setGameCurrentPage(page);
+    }
 
     const handleButtonClick = (buttonName: string) => {
       setActiveButton(buttonName);
@@ -208,6 +228,19 @@ export default function Article() {
       [name]: value,
     }));
   };
+
+  const handleCloseSearchModal = () => {
+    setIsSearchModalOpen(false);
+  };
+
+  const handleClosePostModal = () => {
+    setIsPostModalOpen(false);
+  };
+
+  const handleGameSelect = (appId, gameName) => {
+    setSelectedGameId(appId);
+    setSelectedGameName(gameName);
+  }
 
     return (
         <div className="bg-white h-screen mx-auto">
@@ -262,7 +295,7 @@ export default function Article() {
                   color="default"
                   variant="faded"
                   className="ml-4 flex-grow test-small"
-                  onPress={onOpen}
+                  onPress={() => setIsPostModalOpen(true)}
               >
                 클릭 후 글을 작성해보세요.
               </Button>
@@ -271,9 +304,9 @@ export default function Article() {
 
           {/* 게시글 작성 모달창 */}
           <Modal
-              isOpen={isOpen}
+              isOpen={isPostModalOpen}
               size="4xl"
-              onOpenChange={onOpenChange}
+              onOpenChange={handleClosePostModal}
               placement={modalPlacement}
           >
             <ModalContent>
@@ -322,6 +355,7 @@ export default function Article() {
                               value={searchValue}
                               onChange={(e) => setSearchValue(e.target.value)}
                           />
+
                           <Button
                               color="primary"
                               className="text-white"
@@ -331,22 +365,40 @@ export default function Article() {
                             {isLoading ? '검색 중...' : '게임 검색'}
                           </Button>
                         </div>
-                        {searchResults.length > 0 && (
-                            <div className="mt-4">
-                              <ul>
-                                {searchResults.map((game) => (
-                                    <li
-                                        key={game.id}
-                                        className="border-b border-gray-200 py-2 cursor-pointer"
-                                        onClick={() => handleGameSelect(game.appId)}
-                                    >
-                                      {game.name}
-                                    </li>
-                                ))}
-                              </ul>
-                            </div>
-                        )}
                       </div>
+                        <>
+                          <Modal isOpen={isSearchModalOpen} onOpenChange={handleCloseSearchModal}>
+                            <ModalContent>
+                              {(onClose) => (
+                                  <>
+                                    <ModalHeader className="flex flex-col gap-1 items-center">게임 검색</ModalHeader>
+                                    <ModalBody className="flex mx-auto">
+                                      <div className="flex flex-col items-center gap-4">
+                                        {searchResults.map((game, index) => (
+                                            <div key={index} className="flex items-center gap-2">
+                                              <input
+                                                  type="checkbox"
+                                                  onChange={() => handleGameSelect(game.id, game.name)}
+                                                  checked={selectedGameId === game.id} // 선택한 게임이 체크되도록 확인
+                                              />
+                                              <label>{game.name}</label>
+                                            </div>
+                                        ))}
+                                      </div>
+                                    </ModalBody>
+                                    <ModalFooter>
+                                      <Button color="danger" variant="light" onPress={onClose}>
+                                        취소
+                                      </Button>
+                                      <Button color="primary" onPress={() => handleGameSelectAppId(selectedGameId, selectedGameName, onClose)}>
+                                        선택
+                                      </Button>
+                                    </ModalFooter>
+                                  </>
+                              )}
+                            </ModalContent>
+                          </Modal>
+                        </>
 
                       <hr style={{ border: '1px solid #ddd' }} />
                       <p>제목</p>
