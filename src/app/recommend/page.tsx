@@ -161,7 +161,7 @@ export default function Recommend() {
                    {gameDetailsByRelease.map((post) => (
                      <div key={post.id} className="p-4">
                      <Link href={`/game/${String(post.id)}`}>
-                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ">
+                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg hover:shadow-xl">
                          <Image  className = "w-full h-48 object-cover" src={post.headerImagePath} alt={post.title} width={500} height={200}  />
                          <div className="p-6">
                            <h3 className="text-lg font-bold text-gray-900 mb-1">{truncateString(post.name, 35)}</h3>
@@ -209,7 +209,7 @@ export default function Recommend() {
                     {gameDetailsByTop.filter(post => post.id && post.name).map((post) => (
                       <div key={post.id} className="p-4">
                       <Link href={`/game/${String(post.id)}`}>
-                        <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg">
+                        <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg hover:shadow-xl">
                           <Image className = "w-full h-48 object-cover"src={post.headerImagePath} alt={post.title} width={500} height={300} />
                           <div className="p-6">
                             <h3 className="text-lg font-bold text-gray-900 mb-1">{post.name}</h3>
@@ -251,7 +251,7 @@ export default function Recommend() {
                    {gameDetailsByPositive.map((post) => (
                      <div key={post.id} className="p-4">
                      <Link href={`/game/${String(post.id)}`}>
-                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg">
+                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg hover:shadow-xl">
                        <Image className = "w-full h-48 object-cover"src={post.headerImagePath} alt={post.title} width={500} height={300} />
                          <div className="p-6">
                            <h3 className="text-lg font-bold text-gray-900 mb-1">{post.name}</h3>
@@ -303,7 +303,7 @@ export default function Recommend() {
                    {gameDetailsByPositive.map((post) => (
                      <div key={post.id} className="p-4">
                      <Link href={`/game/${String(post.id)}`}>
-                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ">
+                       <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg hover:shadow-xl">
                        <Image className = "w-full h-48 object-cover"src={post.headerImagePath} alt={post.title} width={500} height={300} />
                          <div className="p-6">
                            <h3 className="text-lg font-bold text-gray-900 mb-1">{post.name}</h3>
