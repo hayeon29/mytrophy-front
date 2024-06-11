@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import gameAPI from '@/services/games';
+import gameAPI from '@/services/game';
 import ReactPaginate from 'react-paginate';
 
 export default function GameList() {
