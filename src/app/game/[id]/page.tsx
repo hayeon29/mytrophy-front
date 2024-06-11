@@ -245,7 +245,7 @@ export default function Game({ params }: Props) {
                         type="button"
                         className={`w-auto h-[95px] mr-[10px] flex-none rounded-[5px] border-0 bg-none p-0 ${
                           isSelected
-                            ? 'border-1 border-blue-500 rounded-[10px]'
+                            ? 'border-3 border-blue-500 rounded-[15px]'
                             : 'border-none'
                         }`}
                         key={index}

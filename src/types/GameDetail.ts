@@ -49,6 +49,7 @@ type GameArticleDTO = {
   username: string;
   comments: string[];
   commentCount: number;
+  memberImage: string;
 };
 
 type GetGamePlayerNumberDTO = {
