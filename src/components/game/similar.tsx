@@ -76,13 +76,13 @@ export default function GameSimilar({
               similarCategory={gameCategory3DTO.name}
             />
           )}
-          {gameDetail3DTOList[1] && (
+          {gameDetail3DTOList[0] && (
             <GameCard
               gameDetail={gameDetail3DTOList[1]}
               similarCategory={gameCategory3DTO.name}
             />
           )}
-          {gameDetail3DTOList[2] && (
+          {gameDetail3DTOList[0] && (
             <GameCard
               gameDetail={gameDetail3DTOList[2]}
               similarCategory={gameCategory3DTO.name}

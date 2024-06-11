@@ -10,6 +10,7 @@ const membersAPI = {
   async signUp(form: { [key: string]: string }) {
     const { checkPassword: string, ...otherInfo } = form;
     return api.post(`${API_URL}/signup`, otherInfo);
+
   },
 
   async login(form: { [key: string]: string }) {

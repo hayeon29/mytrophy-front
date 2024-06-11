@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
+    domains: ['firebasestorage.googleapis.com','shared.akamai.steamstatic.com'],
     remotePatterns: [
       {
         protocol: 'http',

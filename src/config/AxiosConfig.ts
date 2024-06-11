@@ -1,11 +1,12 @@
 import axios, {
+  AxiosError,
   AxiosInstance,
   InternalAxiosRequestConfig,
   isAxiosError,
 } from 'axios';
 
 const api: AxiosInstance = axios.create({
-  timeout: 30000,
+  timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
   },

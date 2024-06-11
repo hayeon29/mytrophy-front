@@ -1,0 +1,29 @@
+.slick-arrow.slick-prev,
+.slick-arrow.slick-next {
+  display: none !important;
+}
+
+.custom-arrow {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  width: 60px !important;
+  height: 60px !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 50% !important;
+}
+
+.custom-next-arrow {
+  right: -30px !important;
+}
+
+.custom-prev-arrow {
+  left: -30px !important;
+}
+
+.custom-arrow svg {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  stroke: #007BFF;
+}
