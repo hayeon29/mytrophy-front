@@ -19,7 +19,7 @@ import {
   ModalBody,
   useDisclosure,
 } from '@nextui-org/react';
-import adminAPI from '@/services/admin';
+import membersAPI from '@/services/members';
 import { EditIcon } from '../../../public/icon/EditIcon';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
@@ -57,14 +57,14 @@ export default function MemberManagement() {
     async function fetchData() {
       try {
         setLoading(true);
-        const response = await adminAPI.getMemberList(
+        const response = await membersAPI.getMemberList(
           currentPage - 1,
           pageSize
         );
         setUsers(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {
-        console.error('Error fetching member list:', error);
+        // 에러처리
       } finally {
         setLoading(false);
       }
@@ -74,10 +74,10 @@ export default function MemberManagement() {
 
   const handleDelete = async () => {
     try {
-      await adminAPI.deleteMemberById(userToDelete.id);
+      await membersAPI.deleteMemberById(userToDelete.id);
       setUsers(users.filter((user) => user.id !== userToDelete.id));
     } catch (error) {
-      console.error('Error deleting member:', error);
+      // 에러처리
     } finally {
       setIsDeleteModalOpen(false);
     }
@@ -91,10 +91,10 @@ export default function MemberManagement() {
 
   const handleEditUser = async () => {
     try {
-      await adminAPI.updateMemberById(editedUser.id, editedUser);
+      await membersAPI.updateMemberById(editedUser.id, editedUser);
       onClose();
     } catch (error) {
-      console.error('Error updating member:', error);
+      // 에러처리
     }
   };
 

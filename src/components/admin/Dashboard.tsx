@@ -6,7 +6,9 @@ import {
   Divider,
   Spinner,
 } from '@nextui-org/react';
-import adminAPI from '@/services/admin';
+import gameAPI from '@/services/game';
+import membersAPI from '@/services/members';
+import articlesAPI from '@/services/articles';
 
 export default function Dashboard() {
   const [memberCount, setMemberCount] = useState(0);
@@ -16,9 +18,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      adminAPI.getMemberCount(),
-      adminAPI.getArticleCount(),
-      adminAPI.getGameCount(),
+      membersAPI.getMemberCount(),
+      articlesAPI.getArticleCount(),
+      gameAPI.getGameCount(),
     ])
       .then(([memberData, articleData, gameData]) => {
         setMemberCount(memberData);
@@ -26,7 +28,7 @@ export default function Dashboard() {
         setGameCount(gameData);
       })
       .catch((error) => {
-        console.error('Error fetching data:', error);
+        // 에러처리
       })
       .finally(() => {
         setLoading(false);
