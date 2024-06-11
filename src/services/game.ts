@@ -47,5 +47,11 @@ const gameAPI = {
   async readSteamGameDataOne(id) {
     return (await api.get(`${API_URL}/request/game/${id}`)).data;
   },
+
+  async searchGameByName(keyword: string) {
+    return (await api.post(`${API_URL}/search`, { keyword })).data;
+
+  },
+
 };
 export default gameAPI;
