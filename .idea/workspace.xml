@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f5720629-f8b1-44a4-b862-2c2ca3474566" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/team4-front.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/icon/DeleteIcon.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/icon/EditIcon.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/icon/EyeIcon.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/image/eao1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/image/naver.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/check.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/comment.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/commentIcon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/edit.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/event_header.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/first-page-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/last-page-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/left_button.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/likeIcon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/next-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/prev-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/recommend.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/right_button.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/star-empty.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/star-fill.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/star-mid.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/steam_logo.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/target.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svgs/telescope.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/game/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/member/[memberId]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/select-category/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/ArticleManagement.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/Container.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/Dashboard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/GameManagement.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/ListboxWrapper.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/MemberManagement.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/button/SelectButton.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/common/PageSelectButton.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/game/card/card.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/game/detail.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/game/review.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/game/similar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/home/ArticleCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/home/Category.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/icon/Rating.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/icon/Star.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/modals/OkModal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/AchievementCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/ArticleThumbnail.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserArticle.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserGameAchievement.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserGameRating.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/mypage/UserRecommend.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/constants/color.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/constants/gameCategory.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hooks/useModal.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/providers/RecoilRootProvider.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/article.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/articles.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/comment.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/game.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/home.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/GameCategory.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/GameDetail.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/HomeArticle.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/HomeCategory.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/HomeGame.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/ModalInfo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.prettierrc" beforeDir="false" afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/public/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/signup/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/signup/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/common/NavigationBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common/NavigationBar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/AxiosConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/AxiosConfig.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constants/validation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/validation.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/members.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/members.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2hPbfUPXi7PNirddQaMqqj96fuK" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Merging moon",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/user/IdeaProjects/team4-front"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="team4-front" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="team4-front" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f5720629-f8b1-44a4-b862-2c2ca3474566" name="Changes" comment="" />
+      <created>1717498763863</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1717498763863</updated>
+    </task>
+    <servers />
+  </component>
+</project>
