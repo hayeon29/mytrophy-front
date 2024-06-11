@@ -1,7 +1,6 @@
 import api from '../config/AxiosConfig';
 
 const GAME_API = process.env.NEXT_PUBLIC_GAME_API_URL;
-const MEMBER_API = process.env.NEXT_PUBLIC_MEMBER_API_URL;
 const ARTICLE_API = process.env.NEXT_PUBLIC_ARTICLE_API_URL;
 
 const homeAPI = {
@@ -21,28 +20,26 @@ const homeAPI = {
     return api.get(`${GAME_API}/${appId}`);
   },
 
-  async getMemberByMemberId(memberId: number) {
-    return api.get(`${MEMBER_API}/${memberId}`);
-  },
-
   async submitReview(appId: number, reviewStatus: string) {
     const accessToken = localStorage.getItem('access');
-    return api.post(`${GAME_API}/${appId}/reviews`,
+    return api.post(
+      `${GAME_API}/${appId}/reviews`,
       { reviewStatus },
       {
         headers: {
           access: accessToken,
         },
-      });
+      }
+    );
   },
 
   async getMyReview(appId: number) {
     const accessToken = localStorage.getItem('access');
     return api.get(`${GAME_API}/${appId}/myreview`, {
-        headers: {
-          access: accessToken,
-        },
-      });
+      headers: {
+        access: accessToken,
+      },
+    });
   },
 
   async getMyRecommendedGames() {
@@ -52,9 +49,7 @@ const homeAPI = {
         access: accessToken,
       },
     });
-  }
-
-
+  },
 };
 
 export default homeAPI;

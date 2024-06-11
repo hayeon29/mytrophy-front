@@ -4,8 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { HomeArticle } from '@/types/HomeArticle';
 import { MdRecommend } from 'react-icons/md';
 import homeAPI from '@/services/home';
-import { Avatar, Card, CardHeader, CardBody, CardFooter } from '@nextui-org/react';
-import { HomeMemberInfo } from '@/types/HomeMemberInfo';
+import {
+  Avatar,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+} from '@nextui-org/react';
 
 interface ArticleCardProps {
   article: HomeArticle;
@@ -13,12 +18,6 @@ interface ArticleCardProps {
 
 function ArticleCard({ article }: ArticleCardProps) {
   const [gameName, setGameName] = useState<string>('');
-  const [memberInfo, setMemberInfo] = useState<HomeMemberInfo>({
-    nickname: '',
-    imagePath: '',
-    name: '',
-    loginType: '',
-  });
 
   useEffect(() => {
     const fetchGameName = async () => {
@@ -30,31 +29,10 @@ function ArticleCard({ article }: ArticleCardProps) {
       }
     };
 
-    const fetchMemberInfo = async () => {
-      try {
-        const response = await homeAPI.getMemberByMemberId(article.memberId);
-        setMemberInfo({
-          nickname: response.data.nickname,
-          imagePath: response.data.imagePath,
-          name: response.data.name,
-          loginType: response.data.loginType,
-        });
-      } catch (error) {
-        // 에러처리
-      }
-    };
-
     fetchGameName();
-    fetchMemberInfo();
-  }, [article.appId, article.memberId]);
+  }, [article.appId]);
 
-  const getDisplayName = () => {
-    if (memberInfo.nickname === null) {
-      const firstName = memberInfo.name.charAt(0);
-      return `${firstName}${'*'.repeat(memberInfo.name.length - 1)}`;
-    }
-    return memberInfo.nickname || memberInfo.name;
-  };
+  const displayName = article.nickname || article.username;
 
   return (
     <Card className="w-full max-w-[400px] bg-[#F6F7FF] shadow-md rounded-3xl p-3">
@@ -69,7 +47,9 @@ function ArticleCard({ article }: ArticleCardProps) {
 
       <CardBody className="p-4 pt-0">
         <div className="flex justify-between mb-1">
-          <div className="text-[#2E396C] text-lg font-semibold">{article.name}</div>
+          <div className="text-[#2E396C] text-lg font-semibold">
+            {article.name}
+          </div>
           <div className="text-[#9CA3AF] text-md">
             {new Date(article.createdAt).toLocaleDateString()}
           </div>
@@ -82,17 +62,21 @@ function ArticleCard({ article }: ArticleCardProps) {
       <CardFooter className="flex flex-col items-start p-4 pt-0">
         <div className="flex items-center mb-4">
           <MdRecommend className="mr-1 text-[#5779E9] text-xl" />
-          <span className="text-[#5779E9] text-lg font-semibold">{article.cntUp}</span>
+          <span className="text-[#5779E9] text-lg font-semibold">
+            {article.cntUp}
+          </span>
         </div>
         <div className="flex items-center">
           <Avatar
             isBordered
             size="sm"
-            src={memberInfo.imagePath || undefined}
-            alt={getDisplayName()}
+            src={article.memberImage || undefined}
+            alt={displayName}
             className="mr-3"
           />
-          <span className="text-sm font-semibold text-black">{getDisplayName()}</span>
+          <span className="text-sm font-semibold text-black">
+            {displayName}
+          </span>
         </div>
       </CardFooter>
     </Card>
