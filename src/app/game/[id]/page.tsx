@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import gameAPI from '@/services/game';
-import articleAPI from '@/services/article';
 import GameDetail from '@/components/game/detail';
 import GameReview from '@/components/game/review';
 import GameSimilar from '@/components/game/similar';
@@ -13,7 +12,6 @@ import {
   GetGameDetailDTO,
   GetGamePlayerNumberDTO,
   GetGameScreenshotDTO,
-  GameArticleDTO,
 } from '@/types/GameDetail';
 
 type Props = {
@@ -25,9 +23,6 @@ type Props = {
 export default function Game({ params }: Props) {
   const { id: appId } = params;
   const [gameDetail, setGameDetail] = useState<GetGameDetailDTO | null>(null);
-  const [gameArticleDTOList, setGameArticleDTOList] = useState<
-    GameArticleDTO[] | null
-  >(null);
   const [similarGameDetail1, setSimilarGameDetail1] = useState<
     GetGameDetailDTO[] | null
   >(null);
@@ -144,18 +139,8 @@ export default function Game({ params }: Props) {
       }
     };
 
-    const fetchGameArticle = async () => {
-      try {
-        const response = await articleAPI.getGameArticleList(appId, null);
-        setGameArticleDTOList(response.content);
-      } catch (error) {
-        // 에러 처리
-      }
-    };
-
     fetchGameDetail();
     fetchGamePlayerNumber();
-    fetchGameArticle();
   }, [appId]);
 
   useEffect(() => {
@@ -461,9 +446,7 @@ export default function Game({ params }: Props) {
             gameCategory3DTO={similarCategory3}
           />
         )}
-        {selectedComponent === 'review' && (
-          <GameReview gameArticleDTOList={gameArticleDTOList} />
-        )}
+        {selectedComponent === 'review' && <GameReview appId={appId} />}
       </div>
     </div>
   ) : null;
