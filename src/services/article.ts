@@ -1,7 +1,6 @@
 import api from '@/config/AxiosConfig';
 
 const ARTICLE_API_URL = process.env.NEXT_PUBLIC_ARTICLE_API_URL;
-const MEMBER_API_URL = process.env.NEXT_PUBLIC_MEMBER_API_URL;
 
 const articleAPI = {
     async getArticleList(page = 0, size = 10) {
@@ -20,8 +19,12 @@ const articleAPI = {
         return (await api.post(`${ARTICLE_API_URL}/${articleId}/like`)).data;
     },
 
-    async articleCreate(header: string, name: string, content: string, appId: number, imagePath: string[]) {
+    async articleCreate(header, name, content, appId, imagePath) {
         return (await api.post(`${ARTICLE_API_URL}`, { header, name, content, appId, imagePath })).data;
+    },
+
+    async articleUpdate(articleId: string, header, name, content, appId, imagePath) {
+        return (await api.patch(`${ARTICLE_API_URL}/${articleId}`, { header, name, content, appId, imagePath })).data;
     },
 
     async articleFileUpload(formData: FormData) {
