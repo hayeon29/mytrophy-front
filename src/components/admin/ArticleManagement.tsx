@@ -18,7 +18,7 @@ import {
   ModalBody,
   useDisclosure,
 } from '@nextui-org/react';
-import articlesAPI from '@/services/articles';
+import articleAPI from '@/services/article';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
@@ -58,7 +58,7 @@ export default function ArticleManagement() {
     const fetchArticles = async () => {
       try {
         setLoading(true);
-        const response = await articlesAPI.getArticleList(currentPage - 1, 10);
+        const response = await articleAPI.getArticleList(currentPage - 1, 10);
         setArticles(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {
@@ -79,7 +79,7 @@ export default function ArticleManagement() {
 
   const handleDelete = async () => {
     try {
-      await articlesAPI.deleteArticle(articleToDelete.id);
+      await articleAPI.deleteArticle(articleToDelete.id);
       setArticles((prevArticles) =>
         prevArticles.filter((article) => article.id !== articleToDelete.id)
       );
@@ -97,7 +97,7 @@ export default function ArticleManagement() {
 
   const handleSave = async () => {
     try {
-      await articlesAPI.updateArticle(editedArticle.id, editedArticle);
+      await articleAPI.updateArticle(editedArticle.id, editedArticle);
       setArticles((prevArticles) =>
         prevArticles.map((article) =>
           article.id === editedArticle.id ? editedArticle : article
