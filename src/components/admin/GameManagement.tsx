@@ -51,7 +51,7 @@ export default function GameManagement() {
         setGames(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {
-        console.error('Error fetching game list:', error);
+        // 에러처리
         setGames([]);
         setTotalPages(1);
       } finally {
@@ -67,7 +67,7 @@ export default function GameManagement() {
       setGames(games.filter((game) => game.id !== gameToDelete.id));
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error('Error deleting game:', error);
+      // 에러처리
     }
   };
 
@@ -77,7 +77,7 @@ export default function GameManagement() {
       // Optionally, you could refresh the game list after saving top 100
       setCurrentPage(1);
     } catch (error) {
-      console.error('Error saving top 100 games:', error);
+      // 에러처리
     }
   };
 
@@ -87,7 +87,7 @@ export default function GameManagement() {
       // Optionally, you could refresh the game list after updating the steam list
       setCurrentPage(1);
     } catch (error) {
-      console.error('Error updating steam list:', error);
+      // 에러처리
     }
   };
 
@@ -97,7 +97,7 @@ export default function GameManagement() {
       // Optionally, you could refresh the game list after updating game details
       setCurrentPage(1);
     } catch (error) {
-      console.error('Error updating game details:', error);
+      // 에러처리
     }
   };
 
@@ -109,7 +109,7 @@ export default function GameManagement() {
       setIsAddGameModalOpen(false);
       setNewGameAppId('');
     } catch (error) {
-      console.error('Error adding game by app ID:', error);
+      // 에러처리
     }
   };
 

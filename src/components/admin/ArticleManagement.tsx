@@ -62,7 +62,7 @@ export default function ArticleManagement() {
         setArticles(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {
-        console.error('게시물 불러오기 실패:', error);
+        // 에러
       } finally {
         setLoading(false);
       }
@@ -84,7 +84,7 @@ export default function ArticleManagement() {
         prevArticles.filter((article) => article.id !== articleToDelete.id)
       );
     } catch (error) {
-      console.error('게시물 삭제 실패:', error);
+      // 에러
     } finally {
       setIsDeleteModalOpen(false);
     }
@@ -105,7 +105,7 @@ export default function ArticleManagement() {
       );
       onClose();
     } catch (error) {
-      console.error('게시물 수정 실패:', error);
+      // 에러
     }
   };
 
