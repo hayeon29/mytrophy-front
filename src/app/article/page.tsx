@@ -29,6 +29,15 @@ export default function Article() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [searchValue, setSearchValue] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedAppId, setSelectedAppId] = useState(null);
+  const [userInfo, setUserInfo] = useState({
+    header: '',
+    name: '',
+    content: '',
+  });
 
 
   useEffect(() => {
@@ -68,6 +77,56 @@ export default function Article() {
     fetchArticles();
   }, [currentPage]);
 
+  const handleSearch = async () => {
+    try {
+      setIsLoading(true);
+      const response = await gameAPI.searchGameByName(searchValue);
+      setSearchResults(response);
+      console.log('검색 결과:', response);
+    } catch (error) {
+        console.error('게임 검색에 실패했습니다:', error);
+    }
+  }
+
+  const handleGameSelect = (appId) => {
+    setSelectedAppId(appId);
+  };
+
+  const handleClickCreateArticle = async (onClose) => {
+    try {
+      let fileUrls: string[] | null = null; // 파일 URL 배열을 초기화
+
+      if (selectedFiles.length > 0) {
+        const formData = new FormData();
+        selectedFiles.forEach((file) => {
+          formData.append('file', file);
+        });
+
+        // 파일 업로드 API를 호출하여 파일 URL 배열을 가져옴
+        const response = await articleAPI.articleFileUpload(formData);
+
+        // 파일이 업로드되었다면 파일 URL 배열을 설정
+        fileUrls = response.length > 0 ? response : null;
+      }
+
+      console.log('imagePaths:', fileUrls); // 파일 URL들을 로그로 출력
+
+      await articleAPI.articleCreate(
+          activeButton,
+          userInfo.name,
+          userInfo.content,
+          570,
+          fileUrls
+      );
+
+      onClose();
+    } catch (error) {
+      console.error('게시글 작성에 실패했습니다:', error);
+    }
+  };
+
+
+
   const handleClick = async (header) => {
     try {
       setLoading(true);
@@ -87,9 +146,6 @@ export default function Article() {
       try {
         // 게시글을 추천하고 결과를 받아옴
         const response = await articleAPI.articleLike(articleId);
-
-        // 성공적으로 처리된 경우
-        console.log(response); // 성공 메시지 또는 응답 데이터 출력
 
         // 추천 후에 게시글 정보를 업데이트하거나 필요한 작업을 수행할 수 있습니다.
       } catch (error) {
@@ -145,6 +201,13 @@ export default function Article() {
       setCheckedFiles([]);
     };
 
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setUserInfo((prevUserInfo) => ({
+      ...prevUserInfo,
+      [name]: value,
+    }));
+  };
 
     return (
         <div className="bg-white h-screen mx-auto">
@@ -250,18 +313,61 @@ export default function Article() {
                           리뷰
                         </Button>
                       </div>
-                      <p>게임 검색</p>
-                      <Input type="text" label="게임을 검색해주세요."/>
-                      <hr style={{border: '1px solid #ddd'}}/>
+
+                      <div>
+                        <div className="flex items-center gap-4">
+                          <Input
+                              type="text"
+                              label="게임을 검색해주세요."
+                              value={searchValue}
+                              onChange={(e) => setSearchValue(e.target.value)}
+                          />
+                          <Button
+                              color="primary"
+                              className="text-white"
+                              onClick={handleSearch}
+                              disabled={isLoading}
+                          >
+                            {isLoading ? '검색 중...' : '게임 검색'}
+                          </Button>
+                        </div>
+                        {searchResults.length > 0 && (
+                            <div className="mt-4">
+                              <ul>
+                                {searchResults.map((game) => (
+                                    <li
+                                        key={game.id}
+                                        className="border-b border-gray-200 py-2 cursor-pointer"
+                                        onClick={() => handleGameSelect(game.appId)}
+                                    >
+                                      {game.name}
+                                    </li>
+                                ))}
+                              </ul>
+                            </div>
+                        )}
+                      </div>
+
+                      <hr style={{ border: '1px solid #ddd' }} />
                       <p>제목</p>
-                      <Textarea placeholder="제목을 입력해주세요." className="mb-4"/>
+                      <Textarea
+                          name="name"
+                          value={userInfo.name}
+                          onChange={handleInput}
+                          placeholder="제목을 입력해주세요."
+                          className="mb-4"
+                      />
                       <p>내용</p>
-                      <Textarea placeholder="내용을 입력해주세요." className="mb-4"/>
-                      <hr style={{border: '1px solid #ddd'}}/>
+                      <Textarea
+                          name="content"
+                          value={userInfo.content}
+                          onChange={handleInput}
+                          placeholder="내용을 입력해주세요."
+                          className="mb-4"
+                      />
+                      <hr style={{ border: '1px solid #ddd' }} />
                       {/*  파일 업로드  */}
-                      <div
-                          style={{display: 'flex', gap: '10px', alignItems: 'center'}}
-                      >
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <label
                             htmlFor="fileUpload"
                             style={{
@@ -274,18 +380,10 @@ export default function Article() {
                         >
                           파일 선택
                         </label>
-                        <Button
-                            color="danger"
-                            variant="light"
-                            onClick={handleDeleteAllFiles}
-                        >
+                        <Button color="danger" variant="light" onClick={handleDeleteAllFiles}>
                           파일 전체 삭제
                         </Button>
-                        <Button
-                            color="danger"
-                            variant="light"
-                            onClick={handleDeleteSelectedFiles}
-                        >
+                        <Button color="danger" variant="light" onClick={handleDeleteSelectedFiles}>
                           선택된 파일 삭제
                         </Button>
                       </div>
@@ -294,16 +392,14 @@ export default function Article() {
                           multiple
                           id="fileUpload"
                           onChange={handleFileChange}
-                          style={{display: 'none'}}
+                          style={{ display: 'none' }}
                       />
-                      {selectedFiles.map((file) => (
+                      {selectedFiles.map((file, index) => (
                           <div key={file.name}>
                             <label>
                               <Checkbox
-                                  checked={!!checkedFiles[selectedFiles.indexOf(file)]}
-                                  onChange={() =>
-                                      handleCheckboxChange(selectedFiles.indexOf(file))
-                                  }
+                                  checked={!!checkedFiles[index]}
+                                  onChange={() => handleCheckboxChange(index)}
                               />
                               <span>{file.name}</span>
                             </label>
@@ -314,7 +410,7 @@ export default function Article() {
                       <Button color="danger" variant="light" onPress={onClose}>
                         취소
                       </Button>
-                      <Button color="primary" onPress={onClose}>
+                      <Button color="primary" onPress={handleClickCreateArticle}>
                         작성
                       </Button>
                     </ModalFooter>
@@ -342,7 +438,6 @@ export default function Article() {
                         </h4>
                         <h5 className="text-small tracking-tight text-default-400">
                           {article.username} {/* 유저 아이디 */}
-                          {article.memberId}
                         </h5>
                       </div>
                     </div>
