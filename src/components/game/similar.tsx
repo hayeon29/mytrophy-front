@@ -25,13 +25,22 @@ export default function GameSimilar({
         <div className="w-[100%] h-[52px] my-[10px] flex items-center font-bold text-[16px]">{`'${gameCategory1DTO.name}' 태그가 들어간 게임`}</div>
         <div className="w-[100%] h-[358px] flex justify-center space-x-[2.5%] bg-none">
           {gameDetail1DTOList[0] && (
-            <GameCard gameDetail={gameDetail1DTOList[0]} />
+            <GameCard
+              gameDetail={gameDetail1DTOList[0]}
+              similarCategory={gameCategory1DTO.name}
+            />
           )}
           {gameDetail1DTOList[1] && (
-            <GameCard gameDetail={gameDetail1DTOList[1]} />
+            <GameCard
+              gameDetail={gameDetail1DTOList[1]}
+              similarCategory={gameCategory1DTO.name}
+            />
           )}
           {gameDetail1DTOList[2] && (
-            <GameCard gameDetail={gameDetail1DTOList[2]} />
+            <GameCard
+              gameDetail={gameDetail1DTOList[2]}
+              similarCategory={gameCategory1DTO.name}
+            />
           )}
         </div>
       </div>
@@ -39,13 +48,22 @@ export default function GameSimilar({
         <div className="w-[100%] h-[52px] my-[10px] flex items-center font-bold text-[16px]">{`'${gameCategory2DTO.name}' 태그가 들어간 게임`}</div>
         <div className="w-[100%] h-[358px] flex justify-center space-x-[2.5%] bg-none">
           {gameDetail2DTOList[0] && (
-            <GameCard gameDetail={gameDetail2DTOList[0]} />
+            <GameCard
+              gameDetail={gameDetail2DTOList[0]}
+              similarCategory={gameCategory2DTO.name}
+            />
           )}
           {gameDetail2DTOList[1] && (
-            <GameCard gameDetail={gameDetail2DTOList[1]} />
+            <GameCard
+              gameDetail={gameDetail2DTOList[1]}
+              similarCategory={gameCategory2DTO.name}
+            />
           )}
           {gameDetail2DTOList[2] && (
-            <GameCard gameDetail={gameDetail2DTOList[2]} />
+            <GameCard
+              gameDetail={gameDetail2DTOList[2]}
+              similarCategory={gameCategory2DTO.name}
+            />
           )}
         </div>
       </div>
@@ -53,13 +71,22 @@ export default function GameSimilar({
         <div className="w-[100%] h-[52px] my-[10px] flex items-center font-bold text-[16px]">{`'${gameCategory3DTO.name}' 태그가 들어간 게임`}</div>
         <div className="w-[100%] h-[358px] flex justify-center space-x-[2.5%] bg-none">
           {gameDetail3DTOList[0] && (
-            <GameCard gameDetail={gameDetail3DTOList[0]} />
+            <GameCard
+              gameDetail={gameDetail3DTOList[0]}
+              similarCategory={gameCategory3DTO.name}
+            />
           )}
           {gameDetail3DTOList[1] && (
-            <GameCard gameDetail={gameDetail3DTOList[1]} />
+            <GameCard
+              gameDetail={gameDetail3DTOList[1]}
+              similarCategory={gameCategory3DTO.name}
+            />
           )}
           {gameDetail3DTOList[2] && (
-            <GameCard gameDetail={gameDetail3DTOList[2]} />
+            <GameCard
+              gameDetail={gameDetail3DTOList[2]}
+              similarCategory={gameCategory3DTO.name}
+            />
           )}
         </div>
       </div>
