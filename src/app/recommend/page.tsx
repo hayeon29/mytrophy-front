@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
-import gamesAPI from '@/services/games';
+import gameAPI from '@/services/game';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -115,7 +115,7 @@ export default function Recommend() {
   useEffect(() => {
     const fetchGameDetailsByRelease = async () => {
       try {
-        const details = await gamesAPI.getGameDetailsByRelease();
+        const details = await gameAPI.getGameDetailsByRelease();
         console.log(details.content);
         setGameDetailsByRelease(details.content);
       } catch (error) {
@@ -128,7 +128,7 @@ export default function Recommend() {
   useEffect(() => {
       const fetchGameDetailsByTop = async () => {
         try {
-          const details = await gamesAPI.getGameDetailsByTop();
+          const details = await gameAPI.getGameDetailsByTop();
           console.log(details.content);
           setGameDetailsByTop(details.content);
         } catch (error) {

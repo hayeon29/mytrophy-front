@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import gamesAPI from '@/services/games';
+import gameAPI from '@/services/games';
 import ReactPaginate from 'react-paginate';
 
 export default function GameList() {
@@ -74,7 +74,7 @@ export default function GameList() {
     };
 
     try {
-      const details = await gamesAPI.getFilteredGames(filterData);
+      const details = await gameAPI.getFilteredGames(filterData);
       setGameDetails(details.content);
       console.log(details.content);
       setTotalPages(details.totalPages);
