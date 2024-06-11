@@ -1,8 +1,8 @@
 import axios, {
-    AxiosError,
-    AxiosInstance,
-    InternalAxiosRequestConfig,
-    isAxiosError,
+  AxiosError,
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+  isAxiosError,
 } from 'axios';
 
 const api: AxiosInstance = axios.create({

@@ -245,7 +245,7 @@ export default function Game({ params }: Props) {
                         type="button"
                         className={`w-auto h-[95px] mr-[10px] flex-none rounded-[5px] border-0 bg-none p-0 ${
                           isSelected
-                            ? 'border-1 border-blue-500 rounded-[10px]'
+                            ? 'border-3 border-blue-500 rounded-[15px]'
                             : 'border-none'
                         }`}
                         key={index}
@@ -279,7 +279,7 @@ export default function Game({ params }: Props) {
           <div className="w-[45%] h-[100%] ml-[32px] block ">
             <div className="w-[100%] h-[7.5%] py-3 flex justify-end items-center">
               <div className="w-[10%] h-[100%]">
-                <Link href="/">
+                <Link href="/gamelist">
                   <span className="w-[100%] h-[100%] border-1 border-gray font-bold text-gray text-[12px] text-center rounded-[10px] flex justify-center items-center">
                     목록으로
                   </span>
@@ -388,7 +388,7 @@ export default function Game({ params }: Props) {
                 </div>
               </div>
               <div className="w-[100%] h-[8%] mb-4">
-                <Link href="/">
+                <Link href="/article">
                   <span className=" w-full h-full bg-[#5779e9] font-bold text-[16px] text-white rounded-[20px] flex justify-center items-center">
                     커뮤니티
                   </span>

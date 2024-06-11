@@ -47,8 +47,9 @@ const gameAPI = {
   async readSteamGameDataOne(id) {
     return (await api.get(`${API_URL}/request/game/${id}`)).data;
   },
-  async getGameDetailsByRelease(page = 1,size = 10) {
-      return (await api.get(`${API_URL}/release`, {
+  async getGameDetailsByRelease(page = 1, size = 10) {
+    return (
+      await api.get(`${API_URL}/release`, {
         params: {
           page,
           size
@@ -63,25 +64,25 @@ const gameAPI = {
         }
       })).data;
   },
-  async getGameDetailsByPositive(page = 1,size = 10) {
-            return (await api.get(`${API_URL}/positive`, {
-              params: {
-                page,
-                size
-              }
-            })).data;
+
+  async getGameDetailsByPositive(page = 1, size = 10) {
+    return (
+      await api.get(`${API_URL}/positive`, {
+        params: {
+          page,
+          size,
+        },
+      })
+    ).data;
   },
   async getFilteredGames(filterData) {
-      return (await api.post(`${API_URL}/search`, filterData)).data;
+    return (await api.post(`${API_URL}/search`, filterData)).data;
   },
   async getTotalItems() {
-            return (await api.get(`${API_URL}/count`)).data;
-   },
-
+    return (await api.get(`${API_URL}/count`)).data;
+  },
   async searchGameByName(keyword: string) {
     return (await api.post(`${API_URL}/search`, { keyword })).data;
-
   },
-
 };
 export default gameAPI;
