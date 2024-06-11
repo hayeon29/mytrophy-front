@@ -49,7 +49,7 @@ export default function GameList() {
 
   const fetchTotalItems = async () => {
     try {
-      const response = await gamesAPI.getTotalItems(); // 총 게임 수를 반환하는 엔드포인트 호출
+      const response = await gameAPI.getTotalItems(); // 총 게임 수를 반환하는 엔드포인트 호출
       setTotalItems(response);
     } catch (error) {
       console.error('Error fetching total items:', error);
