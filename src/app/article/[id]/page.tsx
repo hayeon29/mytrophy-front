@@ -34,6 +34,7 @@ function ArticleDetail({ params }: Props) {
     const [commentAuthors, setCommentAuthors] = useState({});
     const [newComment, setNewComment] = useState("");
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [isCommentEditOpen, setCommentEditOpen] = useState(false);
     const [editContent, setEditContent] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [commentToDelete, setCommentToDelete] = useState(null);
@@ -43,6 +44,16 @@ function ArticleDetail({ params }: Props) {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [checkedFiles, setCheckedFiles] = useState<boolean[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    const [selectedGameId, setSelectedGameId] = useState('');
+    const [selectedGameName, setSelectedGameName] = useState('');
+    const [gameTotalPages, setGameTotalPages] = useState(1);
+
     const [userInfo, setUserInfo] = useState({
         header: '',
         name: '',
@@ -92,9 +103,6 @@ function ArticleDetail({ params }: Props) {
         }
     };
 
-    const getCommentAuthor = (commentId: string) => {
-
-    }
 
     const handleEditSubmit = async (commentId: string) => {
         try {
@@ -160,6 +168,10 @@ function ArticleDetail({ params }: Props) {
         setCheckedFiles([]);
     };
 
+    const handleClosePostModal = () => {
+        setIsPostModalOpen(false);
+    };
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const filesList = e.target.files;
         if (!filesList) return; // 파일이 선택되지 않은 경우
@@ -189,6 +201,62 @@ function ArticleDetail({ params }: Props) {
         setShowDeleteModal(false);
     };
 
+    const handleSearch = async () => {
+        try {
+            setIsLoading(true);
+            const response = await gameAPI.searchGameByName(currentPage - 1, 10, searchValue);
+            setSearchResults(response.content);
+            setIsSearchModalOpen(true);
+            setGameTotalPages(response.totalPages);
+        } catch (error) {
+            console.error('게임 검색에 실패했습니다:', error);
+        }
+    }
+
+    const handleCloseSearchModal = () => {
+        setIsSearchModalOpen(false);
+    };
+
+    const handleGameSelect = (appId, gameName) => {
+        setSelectedGameId(appId);
+        setSelectedGameName(gameName);
+    };
+
+    const handleGameSelectAppId = (appId, gameName, onClose) => {
+        setSelectedGameId(appId);
+        setSelectedGameName(gameName);
+        setIsLoading(false);
+        onClose();
+        setSearchValue(selectedGameName);
+    };
+
+    const handleClickEditArticle = async (onClose) => {
+        try {
+            let fileUrls = null;
+
+            if (selectedFiles.length > 0) {
+                const formData = new FormData();
+                selectedFiles.forEach((file) => {
+                    formData.append('file', file);
+                });
+                const response = await articleAPI.articleFileUpload(formData);
+                fileUrls = response.join(',');
+            }
+            await articleAPI.articleUpdate(
+                articleId,
+                activeButton,
+                userInfo.name,
+                userInfo.content,
+                selectedGameId, // 선택한 게임의 selectedGameId 사용
+                fileUrls
+            );
+
+            onClose();
+        } catch (error) {
+            console.error('게시글 수정에 실패했습니다:', error);
+        }
+    };
+
 
     return (
         <div className="bg-white py-4">
@@ -196,11 +264,13 @@ function ArticleDetail({ params }: Props) {
                 <Button className="py-2 px-4 rounded border-none" color="primary" variant="bordered">
                     <Link href="/article">커뮤니티로 돌아가기</Link>
                 </Button>
-                <Button className="py-2 px-4 rounded" color="primary" variant="bordered" onPress={onOpen}>수정</Button>
+                <Button className="py-2 px-4 rounded" color="primary" variant="bordered" onPress={() => setIsPostModalOpen(true)}>수정</Button>
+
+                {/* 게시글 작성 모달창 */}
                 <Modal
-                    isOpen={isOpen}
+                    isOpen={isPostModalOpen}
                     size="4xl"
-                    onOpenChange={onOpenChange}
+                    onOpenChange={handleClosePostModal}
                     placement={modalPlacement}
                 >
                     <ModalContent>
@@ -239,19 +309,68 @@ function ArticleDetail({ params }: Props) {
                                         >
                                             리뷰
                                         </Button>
-                                    </div>
-                                    <div className="flex items-center gap-4" >
-                                        <Input
-                                            type="text"
-                                            label="게임을 검색해주세요."
-                                        />
                                         <Button
                                             color="primary"
-                                            className="text-white"
+                                            variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
+                                            onClick={() => handleButtonClick('CHATING')}
                                         >
-                                            게임 검색
+                                            채팅
                                         </Button>
                                     </div>
+
+                                    <div>
+                                        <div className="flex items-center gap-4">
+                                            <Input
+                                                type="text"
+                                                label="게임을 검색해주세요."
+                                                value={searchValue}
+                                                onChange={(e) => setSearchValue(e.target.value)}
+                                            />
+
+                                            <Button
+                                                color="primary"
+                                                className="text-white"
+                                                onClick={handleSearch}
+                                                disabled={isLoading}
+                                            >
+                                                {isLoading ? '검색 중...' : '게임 검색'}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <>
+                                        <Modal isOpen={isSearchModalOpen} onOpenChange={handleCloseSearchModal}>
+                                            <ModalContent>
+                                                {(onClose) => (
+                                                    <>
+                                                        <ModalHeader className="flex flex-col gap-1 items-center">게임 검색</ModalHeader>
+                                                        <ModalBody className="flex mx-auto">
+                                                            <div className="flex flex-col items-center gap-4">
+                                                                {searchResults.map((game, index) => (
+                                                                    <div key={index} className="flex items-center gap-2">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            onChange={() => handleGameSelect(game.id, game.name)}
+                                                                            checked={selectedGameId === game.id} // 선택한 게임이 체크되도록 확인
+                                                                        />
+                                                                        <label>{game.name}</label>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </ModalBody>
+                                                        <ModalFooter>
+                                                            <Button color="danger" variant="light" onPress={onClose}>
+                                                                취소
+                                                            </Button>
+                                                            <Button color="primary" onPress={() => handleGameSelectAppId(selectedGameId, selectedGameName, onClose)}>
+                                                                선택
+                                                            </Button>
+                                                        </ModalFooter>
+                                                    </>
+                                                )}
+                                            </ModalContent>
+                                        </Modal>
+                                    </>
+
                                     <hr style={{ border: '1px solid #ddd' }} />
                                     <p>제목</p>
                                     <Textarea
@@ -311,41 +430,14 @@ function ArticleDetail({ params }: Props) {
                                     ))}
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button color="danger" onClick={handleDeleteButtonClick}>
+                                    <Button color="danger" onPress={() => handleArticleDeleteSubmit(articleId)}>
                                         삭제
                                     </Button>
                                     <Button color="danger" variant="light" onPress={onClose}>
                                         취소
                                     </Button>
-                                    <Button color="primary">
+                                    <Button color="primary" onPress={handleClickEditArticle}>
                                         수정
-                                    </Button>
-                                    {/* 삭제 완료 모달 */}
-                                </ModalFooter>
-                            </>
-                        )}
-                    </ModalContent>
-                </Modal>
-
-                <Modal
-                    size="xl"
-                    isOpen={showDeleteModal}
-                    onClose={handleCloseDeleteModal}
-                >
-                    <ModalContent>
-                        {(onClose) => (
-                            <>
-                                <ModalBody>
-                                    <p>
-                                        삭제 하시겠습니까?
-                                    </p>
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button color="danger" variant="light" onPress={onClose}>
-                                        취소
-                                    </Button>
-                                    <Button color="primary" onPress={() => handleArticleDeleteSubmit(articleId)}>
-                                        삭제
                                     </Button>
                                 </ModalFooter>
                             </>
@@ -445,7 +537,7 @@ function ArticleDetail({ params }: Props) {
                                                 좋아요 {comment.likes}
                                             </Button>
                                             <Button
-                                                onPress={onOpen}
+                                                onPress={() => setCommentEditOpen(!isCommentEditOpen)}
                                                 className="py-2 px-4 rounded w-20"
                                                 variant="solid"
                                                 color="danger"
@@ -454,9 +546,9 @@ function ArticleDetail({ params }: Props) {
                                             </Button>
                                         </div>
                                     <Modal
-                                        isOpen={isOpen}
+                                        isOpen={isCommentEditOpen}
                                         size="3xl"
-                                        onOpenChange={onOpenChange}
+                                        onOpenChange={setCommentEditOpen}
                                     >
                                         <ModalContent>
                                             {(onClose) => (
