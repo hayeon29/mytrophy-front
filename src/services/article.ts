@@ -29,7 +29,7 @@ const articleAPI = {
     imagePath: string[]
   ) {
     return (
-      await api.post(`${ARTICLE_API_URL}`, {
+      await api.post(`${API_URL}`, {
         header,
         name,
         content,
@@ -41,15 +41,11 @@ const articleAPI = {
 
   async articleFileUpload(formData: FormData) {
     try {
-      const response = await api.post<string[]>(
-        `${ARTICLE_API_URL}/files`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const response = await api.post<string[]>(`${API_URL}/files`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -58,7 +54,7 @@ const articleAPI = {
   },
 
   async articleDelete(articleId: string) {
-    return (await api.delete(`${ARTICLE_API_URL}/${articleId}`)).data;
+    return (await api.delete(`${API_URL}/${articleId}`)).data;
   },
 
   async getGameArticleList(appId: string, page: number | null) {

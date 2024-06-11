@@ -10,7 +10,6 @@ const membersAPI = {
   async signUp(form: { [key: string]: string }) {
     const { checkPassword: string, ...otherInfo } = form;
     return api.post(`${API_URL}/signup`, otherInfo);
-
   },
 
   async login(form: { [key: string]: string }) {
@@ -36,7 +35,7 @@ const membersAPI = {
 
   async getMemberById(memberId: string) {
     return (await api.get(`${API_URL}/${memberId}`)).data;
-  }
+  },
 };
 
 export default membersAPI;

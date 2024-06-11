@@ -27,22 +27,24 @@ const homeAPI = {
 
   async submitReview(appId: number, reviewStatus: string) {
     const accessToken = localStorage.getItem('access');
-    return api.post(`${GAME_API}/${appId}/reviews`,
+    return api.post(
+      `${GAME_API}/${appId}/reviews`,
       { reviewStatus },
       {
         headers: {
           access: accessToken,
         },
-      });
+      }
+    );
   },
 
   async getMyReview(appId: number) {
     const accessToken = localStorage.getItem('access');
     return api.get(`${GAME_API}/${appId}/myreview`, {
-        headers: {
-          access: accessToken,
-        },
-      });
+      headers: {
+        access: accessToken,
+      },
+    });
   },
 
   async getMyRecommendedGames() {
@@ -52,9 +54,7 @@ const homeAPI = {
         access: accessToken,
       },
     });
-  }
-
-
+  },
 };
 
 export default homeAPI;
