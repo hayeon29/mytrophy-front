@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import articleAPI from '@/services/article';
 import { GameArticleDTO } from '@/types/GameDetail';
-import { Pagination } from '@nextui-org/react';
+import { Pagination, Avatar } from '@nextui-org/react';
 
 export default function GameReview({ appId }) {
   const [gameArticleDTOList, setGameArticleDTOList] = useState<
@@ -23,8 +23,6 @@ export default function GameReview({ appId }) {
         );
         setGameArticleDTOList(response.content);
         setGameArticleTotalPage(response.totalPages);
-        console.log(response.content);
-        console.log(response.totalPages);
       } catch (error) {
         // Error handling
       }
@@ -46,7 +44,13 @@ export default function GameReview({ appId }) {
               key={index}
               className="w-[904px] min-h-[87px] mb-[24px] flex justify-start items-center text-[#2E396C] text-[12px]"
             >
-              <div className="w-[64px] h-[64px] mr-[16px] bg-black" />
+              <Avatar
+                isBordered
+                size="sm"
+                src={article.memberImage || undefined}
+                alt={article.username}
+                className="w-[64px] h-[64px] mr-[16px] "
+              />
               <div className="w-[824px] flex  p-[24px] bg-[#f6f7ff] rounded-[15px] ">
                 <div className="w-[80%] whitespace-pre-wrap overflow-hidden">
                   <span className="text " style={{ wordWrap: 'break-word' }}>
