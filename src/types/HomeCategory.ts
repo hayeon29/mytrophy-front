@@ -1,4 +1,4 @@
 export type HomeCategory = {
-    id: number;
-    name: string;
-}
+  id: number;
+  name: string;
+};

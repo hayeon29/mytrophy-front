@@ -8,8 +8,7 @@ import { HomeCategory } from '@/types/HomeCategory';
 import Category from '@/components/home/Category';
 import { HomeArticle } from '@/types/HomeArticle';
 import ArticleCard from '@/components/home/ArticleCard';
-import { FaCheck, FaTimes, FaTimesCircle } from 'react-icons/fa';
-
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
@@ -30,7 +29,7 @@ export default function Home() {
       }
     };
 
-    const getTopArticles = async() => {
+    const getTopArticles = async () => {
       setLoadingArticles(true);
       try {
         const response = await homeAPI.topArticles();
@@ -61,12 +60,12 @@ export default function Home() {
           className="w-full h-auto"
         />
       </div>
-      
+
       <div className="w-full h-[600px] flex justify-center items-center bg-[#6078EA]">
         <div className="w-full max-w-7xl h-[500px] flex items-center justify-center">
           {/* 데일리랭킹 */}
           <div className="flex-[0.6] h-full bg-white rounded-xl flex-col justify-start">
-            <h2 className="text-[1.6rem] font-bold m-6 ml-8">데일리 랭킹</h2> 
+            <h2 className="text-[1.6rem] font-bold m-6 ml-8">데일리 랭킹</h2>
             <div className="flex">
               <div className="flex-[0.5] max-h-[400px] ml-10">
                 <h2 className="text-[1.4rem] font-bold mb-4">1위</h2>
@@ -79,13 +78,19 @@ export default function Home() {
                         src={topGame.headerImagePath}
                         alt={topGame.name}
                         className="mb-4 rounded-3xl"
-                        style={{ width: 300, height: 'auto'}}
+                        style={{ width: 300, height: 'auto' }}
                       />
                       <h3 className="text-xl font-bold mb-3">{topGame.name}</h3>
-                      <Category categories={topGame.getGameCategoryDTOList as HomeCategory[]} />
+                      <Category
+                        categories={
+                          topGame.getGameCategoryDTOList as HomeCategory[]
+                        }
+                      />
                       <p className="text-base mt-2 mb-2">
                         <span className="font-bold">가격</span>
-                        <span className="font-normal ml-3">{topGame.price === 0 ? '무료' : `${topGame.price}원`}</span>
+                        <span className="font-normal ml-3">
+                          {topGame.price === 0 ? '무료' : `${topGame.price}원`}
+                        </span>
                       </p>
                       <p className="text-base flex items-center">
                         <span className="font-bold">한국어 지원 여부 </span>
@@ -107,22 +112,30 @@ export default function Home() {
                 ) : (
                   <ol className="list-decimal list-inside w-[300px] h-full flex flex-col justify-between">
                     {remainingGames.map((game, index) => (
-                      <li key={game.id} className="text-lg mb-3 flex justify-between items-center">
-                          <span className="font-bold w-[20px] text-right">{index + 2}</span>
-                          <span className="w-[100px] ml-4 flex-grow whitespace-nowrap overflow-hidden text-ellipsis">
-                            {game.name}
-                          </span>
-                          <span className="ml-4 flex">
-                          {Array.isArray(game.getGameCategoryDTOList) && game.getGameCategoryDTOList.length > 0 && (
-                            <Category categories={[game.getGameCategoryDTOList[1]]} />
-                          )}
-                          </span>
+                      <li
+                        key={game.id}
+                        className="text-lg mb-3 flex justify-between items-center"
+                      >
+                        <span className="font-bold w-[20px] text-right">
+                          {index + 2}
+                        </span>
+                        <span className="w-[100px] ml-4 flex-grow whitespace-nowrap overflow-hidden text-ellipsis">
+                          {game.name}
+                        </span>
+                        <span className="ml-4 flex">
+                          {Array.isArray(game.getGameCategoryDTOList) &&
+                            game.getGameCategoryDTOList.length > 0 && (
+                              <Category
+                                categories={[game.getGameCategoryDTOList[1]]}
+                              />
+                            )}
+                        </span>
                       </li>
                     ))}
                   </ol>
                 )}
-              </div> 
-            </div>       
+              </div>
+            </div>
           </div>
 
           <div className="h-full flex flex-col justify-between flex-[0.4] ml-8">
@@ -149,30 +162,30 @@ export default function Home() {
             {/* 게임메이트모집 */}
             <div className="h-[230px] bg-white rounded-xl p-6 flex flex-col">
               <div className="flex justify-between">
-                  <div className="flex-[0.6] flex flex-col">
-                    <h2 className="text-2xl font-bold mb-6">게임 메이트 모집</h2>
-                    <div className="text-base leading-6">
-                      <p>같이 게임할 사람을 구하시나요?</p>
-                      <p>모집 글을 올리고 함께 게임을 즐겨보세요!</p>
-                    </div>
-                  </div>
-                  <div className="flex-[0.4] flex justify-center items-center h-full">
-                    <Image
-                      src="/svgs/telescope.svg"
-                      alt="Target"
-                      width={200}
-                      height={200}
-                    />
+                <div className="flex-[0.6] flex flex-col">
+                  <h2 className="text-2xl font-bold mb-6">게임 메이트 모집</h2>
+                  <div className="text-base leading-6">
+                    <p>같이 게임할 사람을 구하시나요?</p>
+                    <p>모집 글을 올리고 함께 게임을 즐겨보세요!</p>
                   </div>
                 </div>
+                <div className="flex-[0.4] flex justify-center items-center h-full">
+                  <Image
+                    src="/svgs/telescope.svg"
+                    alt="Target"
+                    width={200}
+                    height={200}
+                  />
+                </div>
+              </div>
             </div>
-          </div>         
+          </div>
         </div>
       </div>
 
       <div className="w-full h-[550px] flex justify-center items-center bg-[#D2DAF8]">
         <div className="w-full max-w-7xl h-[450px] flex items-start justify-start">
-            <h2 className="text-2xl font-bold">게임 추천</h2>
+          <h2 className="text-2xl font-bold">게임 추천</h2>
         </div>
       </div>
       {/* 인기게시글 */}
@@ -180,14 +193,14 @@ export default function Home() {
         <div className="w-full max-w-7xl h-[350px] flex flex-col items-start justify-start">
           <h2 className="text-2xl font-bold mb-6">인기 게시글</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {loadingArticles ? (
-            <p>로딩중...</p>
-          ) : (
-            topArticles.map(article => (
-              <ArticleCard key={article.id} article={article} />
-            ))
-          )}
-        </div>
+            {loadingArticles ? (
+              <p>로딩중...</p>
+            ) : (
+              topArticles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))
+            )}
+          </div>
         </div>
       </div>
     </main>
