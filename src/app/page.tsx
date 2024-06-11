@@ -8,7 +8,7 @@ import { HomeCategory } from '@/types/HomeCategory';
 import Category from '@/components/home/Category';
 import { HomeArticle } from '@/types/HomeArticle';
 import ArticleCard from '@/components/home/ArticleCard';
-import { FaCheck, FaTimes, FaTimesCircle } from 'react-icons/fa';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);

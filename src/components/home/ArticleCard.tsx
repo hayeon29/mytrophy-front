@@ -8,6 +8,7 @@ interface ArticleCardProps {
   article: HomeArticle;
 }
 
+// eslint-disable-next-line react/function-component-definition
 const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
   return (
     <div className="flex flex-col p-4 bg-[#F6F7FF] rounded-lg shadow-sm w-full max-w-[400px]">

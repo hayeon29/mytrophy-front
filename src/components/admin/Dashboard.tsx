@@ -6,7 +6,9 @@ import {
   Divider,
   Spinner,
 } from '@nextui-org/react';
-import adminAPI from '@/services/admin';
+import gameAPI from '@/services/game';
+import membersAPI from '@/services/members';
+import articlesAPI from '@/services/articles';
 
 export default function Dashboard() {
   const [memberCount, setMemberCount] = useState(0);
@@ -16,9 +18,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      adminAPI.getMemberCount(),
-      adminAPI.getArticleCount(),
-      adminAPI.getGameCount(),
+      membersAPI.getMemberCount(),
+      articlesAPI.getArticleCount(),
+      gameAPI.getGameCount(),
     ])
       .then(([memberData, articleData, gameData]) => {
         setMemberCount(memberData);
@@ -39,10 +41,10 @@ export default function Dashboard() {
         <p className="text-2xl">Dashboard</p>
       </div>
       <div className="flex flex-wrap gap-4 justify-between">
-        <Card className="w-[200px] m-1">
+        <Card className="w-[260px] m-1">
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">
-              <p className="text-small text-danger">방문자 수</p>
+              <p className="text-small text-danger">회원 수</p>
             </div>
           </CardHeader>
           <Divider />
@@ -50,26 +52,11 @@ export default function Dashboard() {
             {loading ? (
               <Spinner color="danger" />
             ) : (
-              <p className="text-2xl text-danger">3</p>
+              <p className="text-2xl text-danger">{memberCount}</p>
             )}
           </CardBody>
         </Card>
-        <Card className="w-[200px] m-1">
-          <CardHeader className="flex gap-3">
-            <div className="flex flex-col">
-              <p className="text-small text-warning">회원 수</p>
-            </div>
-          </CardHeader>
-          <Divider />
-          <CardBody>
-            {loading ? (
-              <Spinner color="warning" />
-            ) : (
-              <p className="text-2xl text-warning">{memberCount}</p>
-            )}
-          </CardBody>
-        </Card>
-        <Card className="w-[200px] m-1">
+        <Card className="w-[260px] m-1">
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">
               <p className="text-small text-success">게시물 수</p>
@@ -84,7 +71,7 @@ export default function Dashboard() {
             )}
           </CardBody>
         </Card>
-        <Card className="w-[200px] m-1">
+        <Card className="w-[260px] m-1">
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">
               <p className="text-small text-primary">게임 수</p>

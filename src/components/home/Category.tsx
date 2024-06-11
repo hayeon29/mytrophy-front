@@ -8,6 +8,7 @@ interface CategoryProps {
   categories: HomeCategory[];
 }
 
+// eslint-disable-next-line react/function-component-definition
 const Category: React.FC<CategoryProps> = ({ categories }) => {
   return (
     <div className="flex flex-wrap">
