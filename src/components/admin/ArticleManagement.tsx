@@ -19,6 +19,7 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import articleAPI from '@/services/article';
+import Link from 'next/link';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
@@ -152,15 +153,12 @@ export default function ArticleManagement() {
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip content="게시물 조회">
-              <span
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                role="button"
-                tabIndex={0}
-                onKeyPress={() => {}}
-              >
-                <span className="sr-only">게시물 조회</span>
-                <EyeIcon />
-              </span>
+              <Link href={`/article/${String(article.id)}`}>
+                <div className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                  <span className="sr-only">게임 조회</span>
+                </div>
+              </Link>
             </Tooltip>
             <Tooltip content="게시물 수정">
               <span
