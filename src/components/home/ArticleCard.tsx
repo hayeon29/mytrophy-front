@@ -74,7 +74,7 @@ function ArticleCard({ article }: ArticleCardProps) {
             {new Date(article.createdAt).toLocaleDateString()}
           </div>
         </div>
-        <p className="mb-2 line-clamp-3 leading-5 overflow-hidden text-ellipsis break-all text-black">
+        <p className="mb-2 line-clamp-3 leading-5 overflow-hidden text-ellipsis break-all text-black ">
           {article.content}
         </p>
       </CardBody>
