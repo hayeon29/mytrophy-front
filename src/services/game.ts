@@ -77,5 +77,11 @@ const gameAPI = {
       async getTotalItems() {
                 return (await api.get(`${API_URL}/count`)).data;
        }
+
+  async searchGameByName(keyword: string) {
+    return (await api.post(`${API_URL}/search`, { keyword })).data;
+
+  },
+
 };
 export default gameAPI;

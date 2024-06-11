@@ -1,7 +1,8 @@
 import axios, {
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-  isAxiosError,
+    AxiosError,
+    AxiosInstance,
+    InternalAxiosRequestConfig,
+    isAxiosError,
 } from 'axios';
 
 const api: AxiosInstance = axios.create({
@@ -10,7 +11,7 @@ const api: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true,
-  baseURL: process.env.NEXT_PUBLIC_BACK_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 api.interceptors.request.use(
