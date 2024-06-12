@@ -36,7 +36,23 @@ const membersAPI = {
 
   async getMemberById(memberId: string) {
     return (await api.get(`${API_URL}/${memberId}`)).data;
-  }
+  },
+
+  async getMemberByToken() {
+    const accessToken = localStorage.getItem('access');
+    if (!accessToken) {
+      throw new Error('No access token found in local storage.');
+    }
+    const response = await api.get(`${API_URL}/get-userinfo`,
+        {
+        headers: {
+            access: accessToken,
+          },
+        }
+      );
+      return response.data;
+    },
+
 };
 
 export default membersAPI;

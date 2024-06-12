@@ -16,15 +16,51 @@ const articleAPI = {
     },
 
     async articleLike(articleId: string) {
-        return (await api.post(`${ARTICLE_API_URL}/${articleId}/like`)).data;
+        const accessToken = localStorage.getItem('access');
+        if (!accessToken) {
+            throw new Error('No access token found in local storage.');
+        }
+        const response = await api.post(`${ARTICLE_API_URL}/${articleId}/like`, {},
+            {
+                headers: {
+                    'access': accessToken
+                }
+            }
+        );
+        return response.data;
     },
 
-    async articleCreate(header, name, content, appId, imagePath) {
-        return (await api.post(`${ARTICLE_API_URL}`, { header, name, content, appId, imagePath })).data;
+    articleCreate: async (header, name, content, appId, imagePath) => {
+        const accessToken = localStorage.getItem('access');
+        if (!accessToken) {
+            throw new Error('No access token found in local storage.');
+        }
+        const response = await api.post(`${ARTICLE_API_URL}`,
+            { header, name, content, appId, imagePath },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'access': accessToken
+                }
+            }
+        );
+        return response.data;
     },
 
     async articleUpdate(articleId: string, header, name, content, appId, imagePath) {
-        return (await api.patch(`${ARTICLE_API_URL}/${articleId}`, { header, name, content, appId, imagePath })).data;
+        const accessToken = localStorage.getItem('access');
+        if (!accessToken) {
+            throw new Error('No access token found in local storage.');
+        }
+        const response = await api.patch(`${ARTICLE_API_URL}/${articleId}`,
+            { header, name, content, appId, imagePath },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'access': accessToken
+                }
+            })
+        return response.data;
     },
 
     async articleFileUpload(formData: FormData) {
