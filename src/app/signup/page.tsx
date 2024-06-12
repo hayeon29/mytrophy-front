@@ -7,15 +7,18 @@ import { FormEvent, useMemo, useState } from 'react';
 import { UserSignUpInfo, UserAdditionalSignUpInfo } from '@/types/SignUpInfo';
 import membersAPI from '@/services/members';
 import { useModal } from '@/hooks/useModal';
+import { useRouter } from 'next/navigation';
 import OkModal from '@/components/modals/OkModal';
 
 export default function SignUp() {
+  const router = useRouter();
+
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isCheckPasswordVisible, setIsCheckPasswordVisible] =
     useState<boolean>(false);
   const [isUsernameExistChecked, setIsUsernameExistChecked] =
     useState<boolean>(false);
-  const { openModal, modals } = useModal();
+  const { openModal, modals, closeModal } = useModal();
 
   const [userInfo, setUserInfo] = useState<UserAdditionalSignUpInfo>({
     username: '',
@@ -49,10 +52,14 @@ export default function SignUp() {
         .isMemberExist(userInfo.username)
         .then((response) => response.data);
       if (isMemberExist) {
-        openModal(<OkModal message="중복된 아이디입니다." />);
+        openModal(
+          <OkModal message="중복된 아이디입니다." onClick={closeModal} />
+        );
         setCheckMessage({ ...checkMessage, username: '아이디가 중복됩니다.' });
       } else {
-        openModal(<OkModal message="사용 가능한 아이디입니다." />);
+        openModal(
+          <OkModal message="사용 가능한 아이디입니다." onClick={closeModal} />
+        );
         setIsUsernameExistChecked(true);
       }
     } catch (error) {
@@ -62,7 +69,17 @@ export default function SignUp() {
 
   const handleSignUpClick = async () => {
     try {
-      await membersAPI.signUp(userInfo);
+      const response = await membersAPI.signUp(userInfo);
+      if (response.status === 201) {
+        openModal(
+          <OkModal message="회원가입이 성공하였습니다." onClick={closeModal} />
+        );
+        router.push('/select-category');
+      } else {
+        openModal(
+          <OkModal message="회원가입이 실패하였습니다." onClick={closeModal} />
+        );
+      }
     } catch (error) {
       // 에러 메시지 모달창 출력
     }
@@ -110,7 +127,7 @@ export default function SignUp() {
       <div className="w-screen min-h-dvh bg-gradient-to-br from-primary to-second flex items-center justify-center">
         <div className="bg-white rounded-3xl py-6 px-32 z-10 flex flex-col items-center max-w-[535px] ">
           <Image
-            src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
+            src="/svgs/logo.svg"
             alt="my trophy logo"
             width={64}
             height={64}
@@ -165,8 +182,8 @@ export default function SignUp() {
               <Image
                 src={
                   isPasswordVisible
-                    ? `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_off_24dp.svg`
-                    : `${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`
+                    ? `/svgs/visibility_off_24dp.svg`
+                    : `/svgs/visibility_24dp.svg`
                 }
                 alt="password visibility icon"
                 width={28}
@@ -196,7 +213,7 @@ export default function SignUp() {
                 onInput={handleInput}
               />
               <Image
-                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/visibility_24dp.svg`}
+                src="/svgs/visibility_24dp.svg"
                 alt="password check visibility icon"
                 width={28}
                 height={24}
