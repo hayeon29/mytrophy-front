@@ -8,22 +8,28 @@ import { HomeCategory } from '@/types/HomeCategory';
 import Category from '@/components/home/Category';
 import { HomeArticle } from '@/types/HomeArticle';
 import ArticleCard from '@/components/home/ArticleCard';
-import { FaCheck, FaTimes, FaCrown } from 'react-icons/fa';
-import { Spinner } from '@nextui-org/react';
+import { FaCheck, FaTimes } from 'react-icons/fa';
+import { GoArrowUpRight } from 'react-icons/go';
+import { TbRosetteNumber1 } from 'react-icons/tb';
+import { Spinner, Card, CardHeader, CardBody } from '@nextui-org/react';
 import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
-import { GoArrowUpRight } from 'react-icons/go';
+import gameAPI from '@/services/game';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
   const [topArticles, setTopArticles] = useState<HomeArticle[]>([]);
   const [myRecommendedGames, setMyRecommendedGames] = useState<HomeGame[]>([]);
   const [recommendedGames, setRecommendedGames] = useState<HomeGame[]>([]);
+  const [newGames, setNewGames] = useState<HomeGame[]>([]); // 최근 출시 게임
+  const [positiveGames, setPositiveGames] = useState<HomeGame[]>([]); // 압도적으로 긍정적인 게임
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingArticles, setLoadingArticles] = useState(true);
   const [loadingMyRecommendedGames, setLoadingMyRecommendedGames] =
     useState(true);
   const [loadingRecommendedGames, setLoadingRecommendedGames] = useState(true); // 게임추천섹션
+  const [loadingNewGames, setLoadingNewGames] = useState(true);
+  const [loadingPositiveGames, setLoadingPositiveGames] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -78,8 +84,35 @@ export default function Home() {
       }
     };
 
+    // 신규출시게임
+    const getNewGames = async () => {
+      setLoadingNewGames(true);
+      try {
+        const response = await gameAPI.getGameDetailsByRelease();
+        setNewGames(response.content);
+      } catch (error) {
+        // 에러처리
+      } finally {
+        setLoadingNewGames(false);
+      }
+    };
+
+    const getPositiveGames = async () => {
+      setLoadingPositiveGames(true);
+      try {
+        const response = await gameAPI.getGameDetailsByPositive();
+        setPositiveGames(response.content);
+      } catch (error) {
+        // 에러처리
+      } finally {
+        setLoadingPositiveGames(false);
+      }
+    };
+
     getTopGames();
     getTopArticles();
+    getNewGames();
+    getPositiveGames();
 
     const token = localStorage.getItem('access');
     if (token) {
@@ -177,23 +210,22 @@ export default function Home() {
             ) : (
               <div className="flex">
                 <div className="flex-[0.5] max-h-[400px] ml-10">
-                  <div className="flex flex-row items-center mb-4 text-[1.4rem]">
-                    <FaCrown className="text-yellow-500" />
-                    <span className="font-bold ml-2">1위</span>
-                  </div>
                   {topGame && (
                     <div className="flex flex-col items-start w-[300px]">
                       <Link
                         href={`/game/${String(topGame.id)}`}
                         className="flex flex-col items-start w-[300px]"
                       >
-                        <Image
-                          src={topGame.headerImagePath}
-                          alt={topGame.name}
-                          width={300}
-                          height={200}
-                          className="mb-4 rounded-3xl transition-transform duration-300 hover:shadow-xl"
-                        />
+                        <div className="relative w-[300px]">
+                          <Image
+                            src={topGame.headerImagePath}
+                            alt={topGame.name}
+                            width={300}
+                            height={200}
+                            className="mt-4 mb-4 rounded-3xl transition-transform duration-300 hover:shadow-xl"
+                          />
+                          <TbRosetteNumber1 className="absolute top-4 left-1 text-yellow-500 text-6xl" />
+                        </div>
                         <span className="text-xl font-bold mb-3 text-gray-900 transition-colors duration-300 hover:text-[#2E396C]">
                           {topGame.name}
                         </span>
@@ -207,6 +239,12 @@ export default function Home() {
                         <span className="font-bold">가격</span>
                         <span className="font-normal ml-3">
                           {topGame.price === 0 ? '무료' : `${topGame.price}원`}
+                        </span>
+                      </p>
+                      <p className="text-base mb-2">
+                        <span className="font-bold">평가</span>
+                        <span className="font-normal ml-3">
+                          {topGame.positive}
                         </span>
                       </p>
                       <p className="text-base flex items-center">
@@ -254,56 +292,62 @@ export default function Home() {
             )}
           </div>
 
-          <div className="h-full flex flex-col justify-between flex-[0.4] ml-8">
+          <div className="h-full flex flex-col justify-between flex-[0.4] ml-8 space-y-4">
             {/* 공략 */}
-            <div className="h-[230px] bg-white rounded-xl p-6 flex flex-col">
-              <div className="flex justify-between">
-                <div className="flex-[0.6] flex flex-col">
-                  <h2 className="text-2xl font-bold mb-6">공략</h2>
-                  <div className="text-base leading-6">
-                    <p>유저들이 작성한 공략을 확인하고</p>
-                    <p>게임을 더 재밌게 즐겨보세요!</p>
+            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col">
+              <Link href="/article">
+                <CardHeader className="text-2xl font-bold text-black p-8 pb-0 cursor-pointer">
+                  <h2>공략</h2>
+                </CardHeader>
+                <CardBody className="flex p-0 cursor-pointer">
+                  <div className="flex justify-between items-center">
+                    <div className="flex-[0.6] flex flex-col pl-8">
+                      <div className="text-black text-base leading-6">
+                        <p>유저들이 작성한 공략을 확인하고</p>
+                        <p>게임을 더 재밌게 즐겨보세요!</p>
+                      </div>
+                    </div>
+                    <div className="flex-[0.4] flex justify-center items-center h-full">
+                      <Image
+                        src="/svgs/target.svg"
+                        alt="Target"
+                        width={150}
+                        height={150}
+                        className="object-contain"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="flex-[0.4] flex justify-center items-center h-full">
-                  <Image
-                    src="/svgs/target.svg"
-                    alt="Target"
-                    width={200}
-                    height={200}
-                  />
-                </div>
-              </div>
-            </div>
-            {/* 게임메이트모집 */}
-            <div className="h-[230px] bg-white rounded-xl p-6 flex flex-col">
-              <div className="flex justify-between">
-                <div className="flex-[0.6] flex flex-col">
-                  <h2 className="text-2xl font-bold mb-6">게임 메이트 모집</h2>
-                  <div className="text-base leading-6">
-                    <p>같이 게임할 사람을 구하시나요?</p>
-                    <p>모집 글을 올리고 함께 게임을 즐겨보세요!</p>
-                  </div>
-                </div>
-                <div className="flex-[0.4] flex justify-center items-center h-full">
-                  <Image
-                    src="/svgs/telescope.svg"
-                    alt="Target"
-                    width={200}
-                    height={200}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                </CardBody>
+              </Link>
+            </Card>
 
-      {/* 게임추천 */}
-      <div className="w-full h-[600px] flex justify-center items-center bg-[#D2DAF8]">
-        <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
-          <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
-          {renderGameRecommendation()}
+            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col">
+              <Link href="/article">
+                <CardHeader className="text-2xl font-bold text-black p-8 pb-0 cursor-pointer">
+                  <h2>게임 메이트 모집</h2>
+                </CardHeader>
+                <CardBody className="flex p-0 cursor-pointer">
+                  <div className="flex justify-between items-center">
+                    <div className="flex-[0.6] flex flex-col pl-8">
+                      <div className="text-black text-base leading-6">
+                        <p>같이 게임할 사람을 구하시나요?</p>
+                        <p>모집 글을 올리고 함께 게임을 즐겨보세요!</p>
+                      </div>
+                    </div>
+                    <div className="flex-[0.4] flex justify-center items-center h-full">
+                      <Image
+                        src="/svgs/telescope.svg"
+                        alt="Telescope"
+                        width={150}
+                        height={150}
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                </CardBody>
+              </Link>
+            </Card>
+          </div>
         </div>
       </div>
 
@@ -327,15 +371,57 @@ export default function Home() {
         </div>
       </div>
 
+      {/* 게임추천 */}
+      <div className="w-full h-[600px] flex justify-center items-center bg-[#D2DAF8]">
+        <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
+          <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
+          {renderGameRecommendation()}
+        </div>
+      </div>
+
       {/* 좋은평가를남긴게임 */}
       {isLoggedIn && (
-        <div className="w-full h-[600px] flex justify-center items-center bg-[#E6E8FA]">
+        <div className="w-full h-[600px] flex justify-center items-center bg-[#F3F4FD]">
           <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
             <h2 className="text-2xl font-bold mb-6">좋은 평가를 남긴 게임</h2>
             {renderMyRecommendedGames()}
           </div>
         </div>
       )}
+
+      {/* 신규출시게임 */}
+      <div className="w-full h-[600px] flex justify-center items-center bg-white">
+        <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
+          <h2 className="text-2xl font-bold mb-6">신규 출시</h2>
+          {loadingNewGames ? (
+            <div className="flex justify-center items-center w-full h-full">
+              <Spinner color="primary" size="lg" />
+            </div>
+          ) : (
+            <GameCardSlider
+              games={newGames.filter((game) => game.id !== null)}
+              idKey="id"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* 압도적으로 긍정적인 게임 */}
+      <div className="w-full h-[600px] flex justify-center items-center bg-[#E6E8FA]">
+        <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
+          <h2 className="text-2xl font-bold mb-6">압도적으로 긍정적</h2>
+          {loadingPositiveGames ? (
+            <div className="flex justify-center items-center w-full h-full">
+              <Spinner color="primary" size="lg" />
+            </div>
+          ) : (
+            <GameCardSlider
+              games={positiveGames.filter((game) => game.id !== null)}
+              idKey="id"
+            />
+          )}
+        </div>
+      </div>
     </main>
   );
 }
