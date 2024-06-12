@@ -6,6 +6,7 @@ import gameAPI from '@/services/game';
 import membersAPI from '@/services/members';
 import commentAPI from '@/services/comment';
 import Link from 'next/link';
+import { VscIndent } from "react-icons/vsc";
 import {
     Image,
     User,
@@ -33,11 +34,10 @@ function ArticleDetail({ params }: Props) {
     const [gameDetail, setGameDetail] = useState(null); // 게임의 상세 정보 상태 추가
     const [commentAuthors, setCommentAuthors] = useState({});
     const [newComment, setNewComment] = useState("");
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const [isCommentEditOpen, setCommentEditOpen] = useState(false);
     const [editContent, setEditContent] = useState('');
     const [isEditing, setIsEditing] = useState(false);
-    const [commentToDelete, setCommentToDelete] = useState(null);
+    const [selectedComment, setSelectedComment] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const modalPlacement = 'center';
     const [activeButton, setActiveButton] = useState('');
@@ -53,12 +53,27 @@ function ArticleDetail({ params }: Props) {
     const [selectedGameId, setSelectedGameId] = useState('');
     const [selectedGameName, setSelectedGameName] = useState('');
     const [gameTotalPages, setGameTotalPages] = useState(1);
-
+    const [memberInfo, setMemberInfo] = useState('');
+    const [isLiked, setIsLiked] = useState(false);
+    const [selectedCommentId, setSelectedCommentId] = useState('');
+    const [selectedCommentNickname, setSelectedCommentNickname] = useState('');
+    const [selectedDeleteComment, setSelectedDeleteComment] = useState('');
+    const [reCommentOpen, setReCommentOpen] = useState(false);
     const [userInfo, setUserInfo] = useState({
         header: '',
         name: '',
         content: '',
     });
+
+    const getMemberByToken = async () => {
+        try {
+            const memberInfo = await membersAPI.getMemberByToken();
+            setMemberInfo(memberInfo);
+            console.log('멤버 정보:', memberInfo);
+        } catch (error) {
+            console.error('토큰으로 멤버 정보를 가져오는 데 실패했습니다:', error);
+        }
+    };
 
     useEffect(() => {
         const fetchArticleDetail = async () => {
@@ -83,6 +98,7 @@ function ArticleDetail({ params }: Props) {
                     return acc;
                 }, {});
 
+                console.log(articleDetail);
                 setCommentAuthors(authorsMap);
             } catch (error) {
                 console.error('Error fetching article detail:', error);
@@ -92,23 +108,29 @@ function ArticleDetail({ params }: Props) {
         };
 
         fetchArticleDetail();
+        getMemberByToken();
     }, [articleId]);
 
-    const handleCommentSubmit = async () => {
+
+
+    const handleCommentSubmit = async (articleId, newComment, selectedCommentId) => {
         try {
-            await commentAPI.createComment(articleId, newComment);
+            await commentAPI.createComment(articleId, newComment, selectedCommentId);
             setNewComment('');
+            window.location.reload();
         } catch (error) {
             console.error('Error creating comment:', error);
         }
     };
 
 
-    const handleEditSubmit = async (commentId: string) => {
+    const handleEditSubmit = async (commentId: string, onClose) => {
         try {
             await commentAPI.updateComment(commentId, editContent);
             setIsEditing(false);
             setEditContent('');
+            window.location.reload();
+            onClose();
         } catch (error) {
             console.error('Error updating comment:', error);
         }
@@ -117,6 +139,8 @@ function ArticleDetail({ params }: Props) {
     const handleDeleteSubmit = async (commentId: string) => {
         try {
             await commentAPI.deleteComment(commentId);
+            setIsDeleteModalOpen(false);
+            window.location.reload();
         } catch (error) {
             console.error('Error deleting comment:', error);
         }
@@ -193,14 +217,6 @@ function ArticleDetail({ params }: Props) {
         }
     };
 
-    const handleDeleteButtonClick = () => {
-        setShowDeleteModal(true);
-    };
-
-    const handleCloseDeleteModal = () => {
-        setShowDeleteModal(false);
-    };
-
     const handleSearch = async () => {
         try {
             setIsLoading(true);
@@ -257,13 +273,45 @@ function ArticleDetail({ params }: Props) {
         }
     };
 
+    const handleDeleteCommentId = (commentId) => {
+        setSelectedDeleteComment(commentId);
+        setIsDeleteModalOpen(true);
+    }
+
+    const handleSelectedCommentId = (commentId) => {
+        setSelectedComment(commentId);
+    }
+
+    const handleLike = async (commentId) => {
+        try {
+            // 게시글을 추천하고 결과를 받아옴
+            const response = await commentAPI.commentLike(commentId);
+            window.location.reload();
+            setIsLiked(true);
+        } catch (error) {
+            // 오류 발생 시
+            console.error('댓글 추천에 실패했습니다:', error);
+        }
+    };
+
+    const handleReply = (commentId, commentNickname) => {
+        setSelectedCommentId(commentId);
+        setSelectedCommentNickname(commentNickname);
+        setReCommentOpen(true);
+    };
+
+    const handleCancelReply = () => {
+        setReCommentOpen(false);
+    };
 
     return (
         <div className="bg-white py-4">
             <div className="py-4 mx-auto max-w-7xl flex justify-between items-center">
+                <Link href="/article">
                 <Button className="py-2 px-4 rounded border-none" color="primary" variant="bordered">
-                    <Link href="/article">커뮤니티로 돌아가기</Link>
+                    커뮤니티로 돌아가기
                 </Button>
+                </Link>
                 <Button className="py-2 px-4 rounded" color="primary" variant="bordered" onPress={() => setIsPostModalOpen(true)}>수정</Button>
 
                 {/* 게시글 작성 모달창 */}
@@ -436,7 +484,7 @@ function ArticleDetail({ params }: Props) {
                                     <Button color="danger" variant="light" onPress={onClose}>
                                         취소
                                     </Button>
-                                    <Button color="primary" onPress={handleClickEditArticle}>
+                                    <Button color="primary" onPress={() => handleClickEditArticle(onClose)}>
                                         수정
                                     </Button>
                                 </ModalFooter>
@@ -504,137 +552,216 @@ function ArticleDetail({ params }: Props) {
                 </div>
                 <hr style={{border: '1px solid #ddd'}} className="mt-20"/>
                 <div className="flex justify-center items-center mt-5">
-                    <p className="mr-60 text-lg text-primary">좋아요</p>
-                    <p className="text-lg text-primary">공유하기</p>
+                    <p className="text-lg text-primary">댓글</p>
                 </div>
                 <hr style={{border: '1px solid #ddd'}} className="mt-5"/>
-
                 <div className="mt-10">
-                    {article.comments.map((comment) => (
-                        <div key={comment.id} className="flex border-b border-gray-300 py-2 items-center justify-between max-w-5xl mx-auto mb-8">
-                            <Image
-                                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/logo.svg`}
-                                alt="프로필 사진"
-                                width={50}
-                                height={50}
-                                className="rounded-full mx-5"
-                            />
-                            <div className="mx-10">
-                                <p style={{ fontSize: '1.2rem' }}>{comment.memberId}</p>
-                                <p>{comment.content}</p>
-                            </div>
-                            <div className="ml-auto flex items-center">
-                                <div className="flex flex-col ml-2">
-                                        <p className="mr-4">
-                                            {new Date(comment.createdAt).toLocaleString()}
-                                        </p>
+                    {article.comments.map((comment, index) => (
+                        <div key={comment.id} className={`flex flex-col py-2 max-w-${comment.parentCommentId !== null ? '3' : '6'}xl mx-auto mb-8 ${comment.parentCommentId === null ? 'border-b border-gray-300' : 'hidden'}`}>
+                            {/* 부모 댓글 내용 */}
+                            <div className="flex items-center justify-between">
+                                {/* 부모 댓글 정보 출력 */}
+                                <User
+                                    name={<span style={{ fontSize: '1.1rem' }}>{comment.nickname}</span>}
+                                    avatarProps={{
+                                        src: comment.imagePath,
+                                        style: { border: '1px solid black' }
+                                    }}
+                                />
+                                <div className="mx-10">
+                                    <p>{comment.content}</p>
+                                    <p className="mr-4 text-sm text-gray">
+                                        {new Date(comment.createdAt).toLocaleString()}
+                                    </p>
+                                    <button className="border-none text-sm" onClick={() => handleReply(comment.id, comment.nickname)}>
+                                        답글달기
+                                    </button>
+                                </div>
+                                <div className="ml-auto flex items-center">
+                                    <div className="flex flex-col ml-2">
                                         <div className="ml-auto flex flex-col items-end">
                                             <Button
                                                 className="py-2 px-4 rounded mb-2 w-20"
                                                 variant="ghost"
                                                 color="primary"
+                                                onClick={() => handleLike(comment.id)} // API 호출 연결
                                             >
-                                                좋아요 {comment.likes}
+                                                {isLiked ? '좋아요 취소' : '좋아요'} {comment.likes}
                                             </Button>
                                             <Button
-                                                onPress={() => setCommentEditOpen(!isCommentEditOpen)}
+                                                onPress={() => {
+                                                    setCommentEditOpen(!isCommentEditOpen); // 수정 모달 열기/닫기 토글
+                                                    handleSelectedCommentId(comment.id); // 선택된 댓글의 ID 설정
+                                                }}
                                                 className="py-2 px-4 rounded w-20"
                                                 variant="solid"
                                                 color="danger"
+                                                style={{ display: comment.memberId === memberInfo.id ? 'block' : 'none' }}
                                             >
                                                 수정
                                             </Button>
-                                        </div>
-                                    <Modal
-                                        isOpen={isCommentEditOpen}
-                                        size="3xl"
-                                        onOpenChange={setCommentEditOpen}
-                                    >
-                                        <ModalContent>
-                                            {(onClose) => (
-                                                <>
-                                                    <ModalHeader className="flex flex-col gap-1">댓글 수정</ModalHeader>
-                                                    <ModalBody style={{ wordWrap: 'break-word' }}>
-                                                        <Textarea
-                                                            placeholder="내용을 입력해주세요."
-                                                            className="mb-4 flex-1"
-                                                            label="댓글 수정하기"
-                                                            value={editContent}
-                                                            onChange={(e) => setEditContent(e.target.value)}
-                                                        />
-                                                    </ModalBody>
-                                                    <ModalFooter>
-                                                        <Button
-                                                            color="danger"
-                                                            variant="solid"
-                                                            onClick={() => {
-                                                                setCommentToDelete(comment);
-                                                                setIsDeleteModalOpen(true);
-                                                            }}
-                                                        >
-                                                            삭제
-                                                        </Button>
-                                                        <Button color="danger" variant="light" onPress={onClose}>
-                                                            취소
-                                                        </Button>
-                                                        <Button color="primary" onClick={() => handleEditSubmit(comment.id)}>
-                                                            수정
-                                                        </Button>
-                                                    </ModalFooter>
-                                                </>
-                                            )}
-                                        </ModalContent>
-                                    </Modal>
 
-                                    {isDeleteModalOpen && (
-                                        <Modal isOpen={isDeleteModalOpen} onOpenChange={() => setIsDeleteModalOpen(false)}>
-                                            <ModalContent>
-                                                <ModalHeader>댓글 삭제</ModalHeader>
-                                                <ModalBody>정말로 삭제하시겠습니까?</ModalBody>
-                                                <ModalFooter>
-                                                    <Button
-                                                        color="danger"
-                                                        variant="solid"
-                                                        onClick={() => {
-                                                            handleDeleteSubmit(commentToDelete.id);
-                                                            setIsDeleteModalOpen(false);
-                                                        }}
-                                                    >
-                                                        삭제
-                                                    </Button>
-                                                    <Button color="primary" onClick={() => setIsDeleteModalOpen(false)}>
-                                                        취소
-                                                    </Button>
-                                                </ModalFooter>
-                                            </ModalContent>
-                                        </Modal>
-                                    )}
+                                            <Modal
+                                                isOpen={isCommentEditOpen}
+                                                size="3xl"
+                                                onOpenChange={setCommentEditOpen}
+                                            >
+                                                <ModalContent>
+                                                    {(onClose) => (
+                                                        <>
+                                                            <ModalHeader className="flex flex-col gap-1">댓글 수정</ModalHeader>
+                                                            <ModalBody style={{ wordWrap: 'break-word' }}>
+                                                                <Input
+                                                                    placeholder="내용을 입력해주세요."
+                                                                    className="mb-4 flex-1"
+                                                                    label="댓글 수정하기"
+                                                                    value={editContent}
+                                                                    onChange={(e) => setEditContent(e.target.value)} // 댓글 내용만을 사용하도록 수정
+                                                                />
+                                                            </ModalBody>
+                                                            <ModalFooter>
+                                                                <Button
+                                                                    color="danger"
+                                                                    variant="solid"
+                                                                    onClick={() => {
+                                                                        handleDeleteCommentId(selectedComment);
+                                                                    }}
+                                                                >
+                                                                    삭제
+                                                                </Button>
+                                                                <Button color="danger" variant="light" onPress={onClose}>
+                                                                    취소
+                                                                </Button>
+                                                                <Button color="primary" onClick={() => handleEditSubmit(selectedComment, onClose)}>
+                                                                    수정
+                                                                </Button>
+                                                            </ModalFooter>
+                                                        </>
+                                                    )}
+                                                </ModalContent>
+                                            </Modal>
+                                            {isDeleteModalOpen && (
+                                                <Modal isOpen={isDeleteModalOpen} onOpenChange={() => setIsDeleteModalOpen(false)}>
+                                                    <ModalContent>
+                                                        <ModalHeader>댓글 삭제</ModalHeader>
+                                                        <ModalBody>정말로 삭제하시겠습니까?</ModalBody>
+                                                        <ModalFooter>
+                                                            <Button
+                                                                color="danger"
+                                                                variant="solid"
+                                                                onClick={() => {
+                                                                    handleDeleteSubmit(selectedDeleteComment);
+                                                                }}
+                                                            >
+                                                                삭제
+                                                            </Button>
+                                                            <Button color="primary" onClick={() => setIsDeleteModalOpen(false)}>
+                                                                취소
+                                                            </Button>
+                                                        </ModalFooter>
+                                                    </ModalContent>
+                                                </Modal>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            {/* 대댓글 출력 */}
+                            {article.comments.slice(index + 1).map((childComment) => (
+                                childComment.parentCommentId === comment.id && (
+                                    <div key={childComment.id} className={`ml-8 py-2 flex justify-between`}>
+                                        <div className="flex items-center">
+                                            {/* 대댓글 아이콘 */}
+                                            <VscIndent className="mr-2" style={{ fontSize: '1.5rem' }} />
+                                            {/* 대댓글 정보 */}
+                                            <User
+                                                name={<span style={{ fontSize: '1.1rem' }}>{childComment.nickname}</span>}
+                                                avatarProps={{
+                                                    src: childComment.imagePath,
+                                                    style: { border: '1px solid black' }
+                                                }}
+                                            />
+                                            <div className="mx-10">
+                                                <p>{childComment.content}</p>
+                                                <p className="mr-4 text-sm text-gray">
+                                                    {new Date(childComment.createdAt).toLocaleString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col ml-2">
+                                            <div className="flex flex-col items-end">
+                                                <Button
+                                                    className="py-2 px-4 rounded mb-2 w-20"
+                                                    variant="ghost"
+                                                    color="primary"
+                                                    onClick={() => handleLike(childComment.id)} // API 호출 연결
+                                                >
+                                                    {isLiked ? '좋아요 취소' : '좋아요'} {childComment.likes}
+                                                </Button>
+                                                <Button
+                                                    onPress={() => {
+                                                        setCommentEditOpen(!isCommentEditOpen);
+                                                        handleSelectedCommentId(childComment.id);
+                                                    }}
+                                                    className="py-2 px-4 rounded w-20"
+                                                    variant="solid"
+                                                    color="danger"
+                                                    style={{ display: childComment.memberId === memberInfo.id ? 'block' : 'none' }}
+                                                >
+                                                    수정
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            ))}
                         </div>
                     ))}
+
+
                 </div>
+                {/* 선택한 댓글의 닉네임이 표시되는 창 */}
+                {reCommentOpen && selectedCommentNickname && (
+                    <div className="max-w-5xl mx-auto">
+                        <div className="flex flex-row items-center rounded-lg bg-gray p-2 max-w-max flex-grow justify-between">
+                            {selectedCommentNickname} 님에게 답글을 남깁니다.
+                        </div>
+                        <button onClick={handleCancelReply}>취소</button>
+                    </div>
+                )}
+
                 <div className="max-w-5xl mx-auto">
                     <div className="flex items-center gap-4">
                         <User
-                            name={<span style={{ fontSize: '1.1rem' }}>로그인 한 유저 닉네임</span>}
+                            name={<span style={{ fontSize: '1.1rem' }}>{memberInfo.nickname}</span>}
                             avatarProps={{
-                                src: "",
+                                src: memberInfo.imagePath,
                                 style: { border: '1px solid black' }
                             }}
                         />
-                        <Input type="text" label="댓글 작성하기" className="flex-1" value={newComment} onChange={(e) => setNewComment(e.target.value)} />
+                        <Input
+                            type="text"
+                            label="댓글 작성하기"
+                            className="flex-1"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                        />
                         <Button
                             className="py-2 px-4 rounded"
                             variant="ghost"
                             color="primary"
-                            onClick={handleCommentSubmit}
+                            onClick={() => {
+                                if (reCommentOpen == true) {
+                                    handleCommentSubmit(articleId, newComment, selectedCommentId);
+                                } else {
+                                    handleCommentSubmit(articleId, newComment, null);
+                                }
+                            }}
                         >
                             댓글 작성
                         </Button>
                     </div>
                 </div>
-
             </div>
         </div>
 
