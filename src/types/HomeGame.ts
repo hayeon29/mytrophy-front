@@ -5,6 +5,6 @@ export type HomeGame = {
   headerImagePath: string;
   getGameCategoryDTOList: { id: number; name: string }[];
   price: number;
-  koIsPossible: boolean;
+  koIsPosible: boolean;
   positive: string;
 };

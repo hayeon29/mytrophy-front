@@ -11,7 +11,7 @@ interface CategoryProps {
 function Category({ categories = [] }: CategoryProps) {
   return (
     <div className="flex flex-wrap">
-      {categories.slice(0, 5).map((category) => (
+      {categories.slice(0, 4).map((category) => (
         <Button
           key={category.id}
           size="sm"
@@ -49,6 +49,6 @@ function Category({ categories = [] }: CategoryProps) {
       )}
     </div>
   );
-};
+}
 
 export default Category;
