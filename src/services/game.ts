@@ -67,6 +67,7 @@ const gameAPI = {
       })
     ).data;
   },
+
   async getGameDetailsByPositive(page = 1, size = 10) {
     return (
       await api.get(`${API_URL}/positive`, {

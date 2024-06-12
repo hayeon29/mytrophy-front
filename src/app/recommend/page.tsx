@@ -116,7 +116,6 @@ export default function Recommend() {
     const fetchGameDetailsByRelease = async () => {
       try {
         const details = await gameAPI.getGameDetailsByRelease();
-        console.log(details.content);
         setGameDetailsByRelease(details.content);
       } catch (error) {
         console.error('Error fetching game details:', error);
@@ -129,7 +128,6 @@ export default function Recommend() {
       const fetchGameDetailsByTop = async () => {
         try {
           const details = await gameAPI.getGameDetailsByTop();
-          console.log(details.content);
           setGameDetailsByTop(details.content);
         } catch (error) {
           console.error('Error fetching game details:', error);
@@ -141,9 +139,7 @@ export default function Recommend() {
     useEffect(() => {
           const fetchGameDetailsByPositive = async () => {
             try {
-              const details = await gamesAPI.getGameDetailsByPositive();
-              console.log(details.content);
-              console.log(details.content[0].getGameCategoryDTOList[1].name);
+              const details = await gameAPI.getGameDetailsByPositive();
               setGameDetailsByPositive(details.content);
             } catch (error) {
               console.error('Error fetching game details:', error);
@@ -151,7 +147,7 @@ export default function Recommend() {
           };
 
           fetchGameDetailsByPositive();
-        }, []);
+    }, []);
     const truncateString = (str, num) => {
         if (str.length <= num) {
           return str;
