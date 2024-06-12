@@ -80,6 +80,18 @@ export default function GameCard({ game, idKey }) {
     }
   };
 
+  const positiveMappings = {
+    OVERWHELMING_POSITIVE: '압도적으로 긍정적',
+    VERY_POSITIVE: '매우 긍정적',
+    MOSTLY_POSITIVE: '대체로 긍정적',
+    MIXED: '중립적',
+    MOSTLY_NEGATIVE: '대체로 부정적',
+    VERY_NEGATIVE: '매우 부정적',
+    UNKNOWN: '알 수 없음',
+  };
+
+  const positiveText = (positive) => positiveMappings[positive] || positive;
+
   return (
     <div className="flex h-[400px]">
       <Card
@@ -131,7 +143,7 @@ export default function GameCard({ game, idKey }) {
               </div>
               <div className="mt-1">
                 <span className="font-bold mr-2">평가</span>
-                <span>{game.positive}</span>
+                <span>{positiveText(game.positive)}</span>
               </div>
               <div className="flex items-center mt-1">
                 <span className="font-bold mr-2">한국어 지원 여부</span>

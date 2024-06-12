@@ -50,6 +50,16 @@ const homeAPI = {
       },
     });
   },
+
+  async getRecommendedGames(page: number = 0, size: number = 10) {
+    const accessToken = localStorage.getItem('access');
+    return api.get(`${GAME_API}/recommendations`, {
+      headers: {
+        access: accessToken,
+      },
+      params: { page, size },
+    });
+  },
 };
 
 export default homeAPI;

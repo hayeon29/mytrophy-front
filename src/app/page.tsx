@@ -12,14 +12,18 @@ import { FaCheck, FaTimes, FaCrown } from 'react-icons/fa';
 import { Spinner } from '@nextui-org/react';
 import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
+import { GoArrowUpRight } from 'react-icons/go';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
   const [topArticles, setTopArticles] = useState<HomeArticle[]>([]);
+  const [myRecommendedGames, setMyRecommendedGames] = useState<HomeGame[]>([]);
   const [recommendedGames, setRecommendedGames] = useState<HomeGame[]>([]);
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingArticles, setLoadingArticles] = useState(true);
-  const [loadingRecommended, setLoadingRecommended] = useState(true);
+  const [loadingMyRecommendedGames, setLoadingMyRecommendedGames] =
+    useState(true);
+  const [loadingRecommendedGames, setLoadingRecommendedGames] = useState(true); // 게임추천섹션
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -47,15 +51,30 @@ export default function Home() {
       }
     };
 
-    const getRecommendedGames = async () => {
-      setLoadingRecommended(true);
+    const getMyRecommendedGames = async () => {
+      setLoadingMyRecommendedGames(true);
       try {
         const response = await homeAPI.getMyRecommendedGames();
-        setRecommendedGames(response.data.filter((game) => game.id !== null));
+        setMyRecommendedGames(response.data.filter((game) => game.id !== null));
       } catch (error) {
         // 에러처리
       } finally {
-        setLoadingRecommended(false);
+        setLoadingMyRecommendedGames(false);
+      }
+    };
+
+    // 마이트로피에서 추천하는게임
+    const getRecommendedGames = async () => {
+      setLoadingRecommendedGames(true);
+      try {
+        const response = await homeAPI.getRecommendedGames(0, 10);
+        setRecommendedGames(
+          response.data.content.filter((game) => game.id !== null)
+        );
+      } catch (error) {
+        // 에러처리
+      } finally {
+        setLoadingRecommendedGames(false);
       }
     };
 
@@ -65,6 +84,7 @@ export default function Home() {
     const token = localStorage.getItem('access');
     if (token) {
       setIsLoggedIn(true);
+      getMyRecommendedGames();
       getRecommendedGames();
     } else {
       setIsLoggedIn(false);
@@ -73,6 +93,64 @@ export default function Home() {
 
   const topGame = topGames[0];
   const remainingGames = topGames.slice(1);
+
+  const renderGameRecommendation = () => {
+    if (loadingRecommendedGames) {
+      return (
+        <div className="flex justify-center items-center w-full h-full">
+          <Spinner color="primary" size="lg" />
+        </div>
+      );
+    }
+
+    if (isLoggedIn) {
+      return (
+        <GameCardSlider
+          games={recommendedGames.filter((game) => game.id !== null)}
+          idKey="appId"
+        />
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <p className="text-lg font-semibold text-center mb-4">
+          MyTrophy에 가입하고 추천 게임을 확인하세요
+        </p>
+        <Link href="/signup">
+          <button
+            type="button"
+            className="flex flex-row items-center px-4 py-2 bg-[#FF8289] text-white rounded-xl hover:bg-[#FB5A91] transition duration-200"
+          >
+            회원가입
+            <GoArrowUpRight className="ml-2" />
+          </button>
+        </Link>
+      </div>
+    );
+  };
+
+  const renderMyRecommendedGames = () => {
+    if (loadingMyRecommendedGames) {
+      return (
+        <div className="flex justify-center items-center h-full w-full">
+          <Spinner color="primary" size="lg" />
+        </div>
+      );
+    }
+
+    if (myRecommendedGames && myRecommendedGames.length > 0) {
+      return <GameCardSlider games={myRecommendedGames} idKey="appId" />;
+    }
+
+    return (
+      <div className="flex justify-center items-center h-full w-full">
+        <p className="text-lg font-semibold text-center text-gray-700">
+          평가를 남겨보세요
+        </p>
+      </div>
+    );
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start">
@@ -225,63 +303,36 @@ export default function Home() {
       <div className="w-full h-[600px] flex justify-center items-center bg-[#D2DAF8]">
         <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
           <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
-          {isLoggedIn ? (
-            <GameCardSlider
-              games={topGames.filter((game) => game.id !== null)}
-              idKey="id"
-            />
+          {renderGameRecommendation()}
+        </div>
+      </div>
+
+      {/* 인기게시글 */}
+      <div className="w-full flex justify-center items-center bg-white pt-6 pb-6">
+        <div className="w-full max-w-7xl p-6">
+          <h2 className="text-2xl font-bold mb-6">인기 게시글</h2>
+          {loadingArticles ? (
+            <div className="flex justify-center items-center h-[350px] w-full">
+              <Spinner color="primary" size="lg" />
+            </div>
           ) : (
-            <div className="flex flex-col items-center justify-center w-full h-full">
-              <p className="text-lg font-semibold text-center mb-4">
-                MyTrophy에 가입하고 추천 게임을 확인하세요
-              </p>
-              <Link href="/signup">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-[#FF8289] text-white rounded-lg hover:bg-[#FB5A91] transition duration-200"
-                >
-                  회원가입
-                </button>
-              </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+              {topArticles.map((article) => (
+                <div key={article.id} className="flex justify-center w-full">
+                  <ArticleCard article={article} />
+                </div>
+              ))}
             </div>
           )}
         </div>
       </div>
 
-      {/* 인기게시글 */}
-      <div className="w-full h-[450px] flex justify-center items-center bg-white">
-        <div className="w-full max-w-7xl h-[350px] flex flex-col items-start justify-start">
-          <h2 className="text-2xl font-bold mb-6">인기 게시글</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-            {loadingArticles ? (
-              <div className="flex justify-center items-center h-full w-full">
-                <Spinner color="primary" size="lg" />
-              </div>
-            ) : (
-              topArticles.map((article) => (
-                <div key={article.id} className="flex justify-center w-full">
-                  <ArticleCard article={article} />
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-
+      {/* 좋은평가를남긴게임 */}
       {isLoggedIn && (
         <div className="w-full h-[600px] flex justify-center items-center bg-[#E6E8FA]">
           <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
             <h2 className="text-2xl font-bold mb-6">좋은 평가를 남긴 게임</h2>
-            {loadingRecommended ? (
-              <div className="flex justify-center items-center h-full w-full">
-                <Spinner color="primary" size="lg" />
-              </div>
-            ) : (
-              <GameCardSlider
-                games={recommendedGames.filter((game) => game.id !== null)}
-                idKey="appId"
-              />
-            )}
+            {renderMyRecommendedGames()}
           </div>
         </div>
       )}
