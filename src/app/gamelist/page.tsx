@@ -3,7 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import gameAPI from '@/services/game';
+import ReactPaginate from 'react-paginate';
+import { FaCheck, FaTimes } from "react-icons/fa";
+import Link from 'next/link';
 import { Pagination, Spinner } from '@nextui-org/react';
+
 
 export default function GameList() {
   const [gameDetails, setGameDetails] = useState([]);
@@ -19,23 +23,24 @@ export default function GameList() {
   const itemsPerPage = 10;
 
   const categories = [
-    { id: 1, name: '액션' },
-    { id: 2, name: '1인칭 슈팅' },
-    { id: 3, name: '3인칭 슈팅' },
-    { id: 4, name: '격투 및 무술' },
-    { id: 5, name: '슈팅업' },
-    { id: 6, name: '아케이드 및 리듬' },
-    { id: 7, name: '플랫폼 게임 및 러너' },
-    { id: 8, name: '액션 슬래시' },
-    { id: 9, name: 'RPG' },
-    { id: 10, name: 'JRPG' },
-    { id: 11, name: '로그라이크 및 로그라이트' },
-    { id: 12, name: '액션 RPG' },
-    { id: 13, name: '어드벤처 RPG' },
-    { id: 14, name: '전략 및 전술 RPG' },
-    { id: 15, name: '턴제 RPG' },
-    { id: 16, name: '파티 기반 RPG' },
-    { id: 17, name: '전략' },
+    { id: 101, name: '액션' },
+    { id: 102, name: '전략' },
+    { id: 103, name: 'RPG' },
+    { id: 104, name: '캐주얼' },
+    { id: 109, name: '레이싱' },
+    { id: 118, name: '스포츠' },
+    { id: 123, name: '인디' },
+    { id: 125, name: '어드벤처' },
+    { id: 128, name: '시뮬레이션' },
+    { id: 154, name: '교육' },
+    { id: 31, name: 'VR 지원' },
+    { id: 49, name: 'PvP' },
+    { id: 9, name: '협동' },
+    { id: 1, name: '멀티 플레이어' },
+    { id: 2, name: '싱글 플레이어' },
+    { id: 62, name: '가족' },
+    { id: 170, name: '앞서 해보기' },
+    { id: 157, name: '유틸리티' },
   ];
 
   const positivityMapping = {
@@ -151,6 +156,7 @@ export default function GameList() {
         </div>
         <div className="flex">
           <div className="w-3/4">
+
             {/* Game List Section */}
             {loading ? (
               <div className="flex justify-center items-center h-full">
@@ -160,9 +166,10 @@ export default function GameList() {
               <div>
                 <div className="grid grid-cols-1 gap-6">
                   {gameDetails.map((post) => (
+                  <Link href={`/game/${String(post.id)}`}>
                     <div
                       key={post.id}
-                      className="flex items-start p-4 rounded-lg bg-white shadow-md"
+                      className="flex items-start p-4 rounded-lg bg-white shadow-md hover:shadow-xl"
                     >
                       <Image
                         className="object-cover rounded-lg"
@@ -174,7 +181,7 @@ export default function GameList() {
                       <div className="ml-4 flex flex-col justify-between flex-grow">
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                            {truncateString(post.name, 15)}
+                            {truncateString(post.name,40)}
                           </h3>
                           <div className="flex flex-wrap mb-1">
                             {post.getGameCategoryDTOList
@@ -187,7 +194,8 @@ export default function GameList() {
                                 return (
                                   <span
                                     key={category.name}
-                                    className="text-gray-600 rounded bg-blue-100 ring-1 sm:px-0.5 py-1 mx-1"
+                                    className="text-gray-600 rounded bg-blue-100  sm:px-0.5 py-1 mx-1"
+                                    style ={{backgroundColor: '#D2DAF8'}}
                                   >
                                     {shortenedName}
                                   </span>
@@ -199,29 +207,19 @@ export default function GameList() {
                             {positivityMapping[post.positive]}
                           </p>
                           <div className="flex justify-between items-center mt-1">
-                            <p className="text-gray-600 flex items-center">
-                              <strong>한국어 지원:</strong>
-                              {post.koIsPosible ? (
-                                <img
-                                  className="w-6 h-6 ml-2"
-                                  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-checkmark-8832119.png?alt=media&token=c1d8aa90-2ea5-487d-b2da-dc253ab2af75"
-                                  alt="지원"
-                                />
-                              ) : (
-                                <img
-                                  className="w-6 h-6 ml-2"
-                                  src="https://firebasestorage.googleapis.com/v0/b/nomo-62b92.appspot.com/o/free-icon-letter-x-9972749.png?alt=media&token=9c5cf909-d02f-486b-8233-dfee3ee16a7e"
-                                  alt="미지원"
-                                />
-                              )}
-                            </p>
-                            <p className="text-gray-600">
-                              <strong>가격:</strong> {post.price}원
-                            </p>
+                            <div className="flex items-center">
+                                 <span className="font-bold mr-2">한국어 지원 여부</span>
+                                 {post.koIsPosible ? (
+                                     <FaCheck className="text-green-500" />
+                                 ) : (
+                                     <FaTimes className="text-red-500" />
+                                 )}
+                            </div>
+                            <p className="text-gray-600"><strong>가격</strong>&nbsp; {post.price==0 ? "무료": `${post.price}원` }</p>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div></Link>
                   ))}
                 </div>
                 <div className="flex justify-center mt-4">
@@ -237,8 +235,8 @@ export default function GameList() {
           </div>
           {/* Filter Section */}
           <div className="w-1/4 pl-6">
-            <div className="mb-4">
-              <h4 className="font-bold mb-2">카테고리</h4>
+            <div className="mb-4   ">
+              <h4 className="font-bold mb-2 ">카테고리</h4>
               <div className="grid grid-cols-2 gap-2 bg-gray-100 shadow-md p-4 rounded-lg">
                 {categories.map((category) => (
                   // eslint-disable-next-line react/button-has-type
@@ -254,7 +252,7 @@ export default function GameList() {
             </div>
             <div className="mb-4">
               <h4 className="font-bold mb-2">가격</h4>
-              <div className="bg-gray-100 shadow-md p-4 rounded-lg">
+              <div className="bg-gray-100 shadow-md p-4 rounded-lg ">
                 <div className="mb-2">
                   <label className="mr-2">
                     <input
@@ -300,13 +298,6 @@ export default function GameList() {
                 </div>
               </div>
             </div>
-            {/* eslint-disable-next-line react/button-has-type */}
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-md"
-              onClick={handleApplyFilters}
-            >
-              설정
-            </button>
           </div>
         </div>
       </div>

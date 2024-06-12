@@ -10,6 +10,7 @@ import {
 import GAME_CATEGORY from '@/constants/gameCategory';
 import SelectButton from '@/components/button/SelectButton';
 import { ReactElement, useState } from 'react';
+import Link from 'next/link';
 import { GameCategory } from '@/types/GameCategory';
 
 export default function SelectCategory(): ReactElement {
@@ -54,7 +55,10 @@ export default function SelectCategory(): ReactElement {
             })}
           </div>
         </CardBody>
-        <CardFooter className="flex justify-end">
+        <CardFooter className="flex justify-between items-center">
+          <Link href="/" className="text-blackGray text-sm">
+            지금은 넘어가기
+          </Link>
           <Button
             isDisabled={
               selectedCategories === null || selectedCategories.length === 0

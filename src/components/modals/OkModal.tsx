@@ -13,15 +13,20 @@ import { useEffect } from 'react';
 export default function OkModal({
   title = '',
   message,
+  onClick,
 }: {
   title?: string;
   message: string;
+  onClick: (...args: unknown[]) => void;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     onOpen();
-  }, [onOpen]);
+    return () => {
+      onClose();
+    };
+  }, [onOpen, onClose]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xs">
@@ -29,7 +34,7 @@ export default function OkModal({
         <ModalHeader>{title}</ModalHeader>
         <ModalBody>{message}</ModalBody>
         <ModalFooter>
-          <Button color="primary" className="text-white" onPress={onClose}>
+          <Button color="primary" className="text-white" onPress={onClick}>
             닫기
           </Button>
         </ModalFooter>
