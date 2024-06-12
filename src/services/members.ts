@@ -43,7 +43,7 @@ const membersAPI = {
 
   async getUserInfo() {
     const token = LocalStorage.getItem('access');
-    return Get(`${API_URL}/get-userinfo`, {
+    return await api.get(`${API_URL}/get-userinfo`, {
       headers: { access: `${token}` },
     });
   },

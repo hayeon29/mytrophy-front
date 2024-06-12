@@ -47,30 +47,13 @@ const articleAPI = {
         return response.data;
     },
 
-  async articleCreate(
-    header: string,
-    name: string,
-    content: string,
-    appId: number,
-    imagePath: string[]
-  ) {
-    return (
-      await api.post(`${API_URL}`, {
-        header,
-        name,
-        content,
-        appId,
-        imagePath,
-      })
-    ).data;
-  },
 
     async articleUpdate(articleId: string, header, name, content, appId, imagePath) {
         const accessToken = localStorage.getItem('access');
         if (!accessToken) {
             throw new Error('No access token found in local storage.');
         }
-        const response = await api.patch(`${ARTICLE_API_URL}/${articleId}`,
+        const response = await api.patch(`${API_URL}/${articleId}`,
             { header, name, content, appId, imagePath },
             {
                 headers: {
