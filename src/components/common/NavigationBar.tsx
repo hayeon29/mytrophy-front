@@ -1,15 +1,15 @@
 'use client';
 
-import React, { FormEvent, useMemo, useState } from 'react';
+import React, { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  Link,
   Button,
-  // Avatar,
+  Avatar,
   Input,
+  Link,
   Modal,
   useDisclosure,
   ModalContent,
@@ -23,6 +23,10 @@ import { UserLoginInfo } from '@/types/LoginInfo';
 import membersAPI from '@/services/members';
 import { useModal } from '@/hooks/useModal';
 import OkModal from '@/components/modals/OkModal';
+import LocalStorage from '@/constants/LocalStorage';
+import { AxiosError } from 'axios';
+import { useSSR } from '@/recoils/userAtom';
+import { UserInfo } from '@/types/UserInfo';
 
 export default function NavigationBar() {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -37,10 +41,14 @@ export default function NavigationBar() {
     password: '',
   });
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [userState, setUserState] = useSSR();
+
   const path = usePathname();
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const { modals, openModal } = useModal();
+  const { modals, openModal, closeModal } = useModal();
 
   const handlePasswordCheck = () => {
     setIsPasswordVisible((prev) => !prev);
@@ -64,20 +72,41 @@ export default function NavigationBar() {
   }, [checkMessage, userInfo]);
 
   const handleLogin = async () => {
-    const response = await membersAPI.login(userInfo);
-    if (response.status === 200) {
-      localStorage.setItem('access', response.headers.access);
-      openModal(
-        <OkModal title="로그인 결과" message="로그인에 성공했습니다." />
-      );
-      onClose();
-      router.refresh();
-    } else {
-      openModal(
-        <OkModal title="로그인 결과" message="로그인에 실패했습니다." />
-      );
+    try {
+      const response = await membersAPI.login(userInfo);
+      if (response.status === 200) {
+        LocalStorage.setItem('access', response.headers.access);
+        openModal(
+          <OkModal
+            title="로그인 결과"
+            message="로그인에 성공했습니다."
+            onClick={closeModal}
+          />
+        );
+        const memberInfo = await membersAPI.getUserInfo();
+        const { username, id, nickname, steamId, imagePath } =
+          memberInfo.data as UserInfo;
+        setIsLoggedIn(true);
+        setUserState({ username, id, nickname, steamId, imagePath });
+        onClose();
+        router.refresh();
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        openModal(
+          <OkModal
+            title="로그인 결과"
+            message="로그인에 실패했습니다."
+            onClick={closeModal}
+          />
+        );
+      }
     }
   };
+
+  useEffect(() => {
+    setIsLoggedIn(LocalStorage.getItem('access') !== null);
+  }, []);
 
   const handleSteamLogin = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -104,11 +133,21 @@ export default function NavigationBar() {
     steamLoginForm.submit();
   };
 
+  const handleLogout = async () => {
+    const response = await membersAPI.logout();
+    if (response.status === 200) {
+      LocalStorage.removeItem('access');
+      setIsLoggedIn(false);
+      router.refresh();
+    }
+  };
+
   return (
     <>
-      {modals.map(({ component, id }) => {
-        return <div key={id}>{component}</div>;
-      })}
+      {modals.length > 0 &&
+        modals.map(({ component, id }) => {
+          return <div key={id}>{component}</div>;
+        })}
       <form
         id="steamLoginForm"
         action="https://steamcommunity.com/openid/login"
@@ -153,31 +192,70 @@ export default function NavigationBar() {
               />
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4" justify="start">
-              <NavbarItem isActive>
-                <Link href="/" color="secondary" className="text-sm">
-                  홈
-                </Link>
-              </NavbarItem>
-              <NavbarItem>
-                <Link href="/" color="foreground" className="text-sm">
-                  커뮤니티
-                </Link>
-              </NavbarItem>
-              <NavbarItem>
-                <Link href="/" color="foreground" className="text-sm">
-                  게임 추천
-                </Link>
-              </NavbarItem>
-              <NavbarItem>
-                <Link href="/" color="foreground" className="text-sm">
-                  게임 목록
-                </Link>
-              </NavbarItem>
-              <NavbarItem>
-                <Link href="/" color="foreground" className="text-sm">
-                  게임 평가
-                </Link>
-              </NavbarItem>
+              {path === '/' ? (
+                <NavbarItem isActive>
+                  <Link href="/" color="secondary" className="text-sm">
+                    홈
+                  </Link>
+                </NavbarItem>
+              ) : (
+                <NavbarItem>
+                  <Link href="/" color="foreground" className="text-sm">
+                    홈
+                  </Link>
+                </NavbarItem>
+              )}
+              {path === '/article' ? (
+                <NavbarItem isActive>
+                  <Link href="/article" color="secondary" className="text-sm">
+                    커뮤니티
+                  </Link>
+                </NavbarItem>
+              ) : (
+                <NavbarItem>
+                  <Link href="/article" color="foreground" className="text-sm">
+                    커뮤니티
+                  </Link>
+                </NavbarItem>
+              )}
+              {path === '/recommend' ? (
+                <NavbarItem isActive>
+                  <Link href="/recommend" color="secondary" className="text-sm">
+                    게임 추천
+                  </Link>
+                </NavbarItem>
+              ) : (
+                <NavbarItem>
+                  <Link
+                    href="/recommend"
+                    color="foreground"
+                    className="text-sm"
+                  >
+                    게임 추천
+                  </Link>
+                </NavbarItem>
+              )}
+              {path === '/gamelist' ? (
+                <NavbarItem isActive>
+                  <Link
+                    href="/gamelist?page=1"
+                    color="secondary"
+                    className="text-sm"
+                  >
+                    게임 목록
+                  </Link>
+                </NavbarItem>
+              ) : (
+                <NavbarItem>
+                  <Link
+                    href="/gamelist?page=1"
+                    color="foreground"
+                    className="text-sm"
+                  >
+                    게임 목록
+                  </Link>
+                </NavbarItem>
+              )}
             </NavbarContent>
           </div>
           <div className="flex items-center gap-8">
@@ -200,42 +278,53 @@ export default function NavigationBar() {
               }
               type="search"
             />
+            {isLoggedIn && (
+              <NavbarContent className="text-sm">
+                <NavbarItem>
+                  <button
+                    type="button"
+                    className="text-white text-sm"
+                    onClick={handleLogout}
+                  >
+                    로그아웃
+                  </button>
+                </NavbarItem>
+                <NavbarItem>
+                  <Link
+                    href={`/member/${userState?.id}`}
+                    className="text-white text-sm"
+                  >
+                    마이페이지
+                  </Link>
+                </NavbarItem>
+                <div className="flex items-center gap-4">
+                  <span className="text-white">
+                    {userState?.nickname || userState?.username}
+                  </span>
+                  <Avatar src="/image/sample_icon.jpg" size="sm" />
+                </div>
+              </NavbarContent>
+            )}
             {/* 로그인 유저 */}
-            {/* 
-  <NavbarContent>
-    <NavbarItem>
-      <Link href="#" className="text-white">
-        로그아웃
-      </Link>
-    </NavbarItem>
-    <NavbarItem>
-      <Link href="#" className="text-white">
-        마이페이지
-      </Link>
-    </NavbarItem>
-    <div className="flex items-center gap-4">
-      <span className="text-white">유저</span>
-      <Avatar
-        src={`/image/sample_icon.jpg`}
-        size="sm"
-      />
-    </div>
-  </NavbarContent>
-  */}
             {/* 비로그인 유저 */}
-            <div className="flex gap-2">
-              <Button
-                className="bg-white text-primary border-primary border-0 rounded-full"
-                onPress={onOpen}
-              >
-                로그인
-              </Button>
-              <Button className="bg-white text-primary border-primary border-0 rounded-full">
-                <Link href="/signup" className="w-full h-full text-sm">
-                  회원가입
-                </Link>
-              </Button>
-            </div>
+            {!isLoggedIn && (
+              <div className="flex gap-2">
+                <Button
+                  className="bg-white text-primary border-primary border-0 rounded-full"
+                  onPress={onOpen}
+                >
+                  로그인
+                </Button>
+                <Button className="bg-white text-primary border-primary border-0 rounded-full">
+                  <Link
+                    href="/signup"
+                    className="w-full h-full text-sm flex justify-center items-center"
+                  >
+                    회원가입
+                  </Link>
+                </Button>
+              </div>
+            )}
             <Modal
               size="2xl"
               isOpen={isOpen}
@@ -357,20 +446,6 @@ export default function NavigationBar() {
                             구글로 로그인하기
                           </Button>
                         </Link>
-                        <Button
-                          className="bg-kakao text-kakaoText rounded-xl w-full py-4 text-sm font-bold"
-                          size="lg"
-                          startContent={
-                            <Image
-                              src="/image/kakaotalk_icon.png"
-                              alt="kakaotalk"
-                              width={24}
-                              height={24}
-                            />
-                          }
-                        >
-                          카카오로 로그인하기
-                        </Button>
                         <Button
                           className="bg-gradient-to-br from-steamGradientFrom via-steamGradientVia to-steamGradientTo rounded-xl w-full py-4 text-white text-sm font-bold"
                           size="lg"

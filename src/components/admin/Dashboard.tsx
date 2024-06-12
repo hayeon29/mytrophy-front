@@ -8,7 +8,7 @@ import {
 } from '@nextui-org/react';
 import gameAPI from '@/services/game';
 import membersAPI from '@/services/members';
-import articlesAPI from '@/services/articles';
+import articleAPI from '@/services/article';
 
 export default function Dashboard() {
   const [memberCount, setMemberCount] = useState(0);
@@ -19,7 +19,7 @@ export default function Dashboard() {
   useEffect(() => {
     Promise.all([
       membersAPI.getMemberCount(),
-      articlesAPI.getArticleCount(),
+      articleAPI.getArticleCount(),
       gameAPI.getGameCount(),
     ])
       .then(([memberData, articleData, gameData]) => {
@@ -27,7 +27,7 @@ export default function Dashboard() {
         setArticleCount(articleData);
         setGameCount(gameData);
       })
-      .catch((error) => {
+      .catch(() => {
         // 에러처리
       })
       .finally(() => {

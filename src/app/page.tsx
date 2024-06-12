@@ -95,6 +95,25 @@ export default function Home() {
   const remainingGames = topGames.slice(1);
 
   const renderGameRecommendation = () => {
+    if (!isLoggedIn) {
+      return (
+        <div className="flex flex-col items-center justify-center w-full h-full">
+          <p className="text-lg font-semibold text-center mb-4">
+            MyTrophy에 가입하고 추천 게임을 확인하세요
+          </p>
+          <Link href="/signup">
+            <button
+              type="button"
+              className="flex flex-row items-center px-4 py-2 bg-[#FF8289] text-white rounded-xl hover:bg-[#FB5A91] transition duration-200"
+            >
+              회원가입
+              <GoArrowUpRight className="ml-2" />
+            </button>
+          </Link>
+        </div>
+      );
+    }
+
     if (loadingRecommendedGames) {
       return (
         <div className="flex justify-center items-center w-full h-full">
@@ -103,30 +122,11 @@ export default function Home() {
       );
     }
 
-    if (isLoggedIn) {
-      return (
-        <GameCardSlider
-          games={recommendedGames.filter((game) => game.id !== null)}
-          idKey="appId"
-        />
-      );
-    }
-
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full">
-        <p className="text-lg font-semibold text-center mb-4">
-          MyTrophy에 가입하고 추천 게임을 확인하세요
-        </p>
-        <Link href="/signup">
-          <button
-            type="button"
-            className="flex flex-row items-center px-4 py-2 bg-[#FF8289] text-white rounded-xl hover:bg-[#FB5A91] transition duration-200"
-          >
-            회원가입
-            <GoArrowUpRight className="ml-2" />
-          </button>
-        </Link>
-      </div>
+      <GameCardSlider
+        games={recommendedGames.filter((game) => game.id !== null)}
+        idKey="appId"
+      />
     );
   };
 
