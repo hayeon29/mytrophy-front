@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import { GetGameCategoryDTO } from '@/types/GameDetail';
 
 export default function GameCard({ gameDetail, similarCategory }) {
@@ -77,19 +78,16 @@ export default function GameCard({ gameDetail, similarCategory }) {
                 </span>
               </div>
               <div className="w-full h-[15%] flex items-center mt-1">
-                <span className="text-[14px] font-bold mr-2">
+                <span className="text-[14px] font-bold mr-1">
                   한국어 지원 여부
                 </span>
-                {gameDetail.koIsPosible && (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/check.svg`}
-                    alt="한국어 지원"
-                    width={6}
-                    height={6}
-                    priority
-                    className="w-6 h-6"
-                  />
-                )}
+                <span className="font-normal ml-0.5 pt-[1px]">
+                  {gameDetail.koIsPosible ? (
+                    <FaCheck className="text-green-500" />
+                  ) : (
+                    <FaTimes className="text-red-500 " />
+                  )}
+                </span>
               </div>
             </div>
           </div>

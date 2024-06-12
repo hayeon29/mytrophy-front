@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
 export default function GameDetail({ gameDetail }) {
   const getPositiveString = (positive) => {
@@ -30,14 +30,16 @@ export default function GameDetail({ gameDetail }) {
   };
 
   return (
-    <div className="w-full h-[800px] py-8 m-0 block">
-      <div className="w-full h-[750px] px-6 py-7 block bg-[#F6F7FF] rounded-[20px]">
-        <div className="w-full h-[30%] text-lg flex items-start bg-none">
-          <span className="">{gameDetail.description}</span>
+    <div className="w-full min-h-[550px] py-8 m-0 block">
+      <div className="w-full min-h-[500px] px-6 py-7 block bg-[#F6F7FF] rounded-[20px]">
+        <div className="w-full min-h-[10%] mb-4 text-lg flex items-start bg-none">
+          <span className="text" style={{ wordWrap: 'break-word' }}>
+            {gameDetail.description}
+          </span>
         </div>
         <div className="w-full h-[25%] block bg-none">
           <div className="w-full h-[33%] flex justify-start items-start">
-            <span className="text-base font-bold mr-2">가격</span>
+            <span className="text-base font-bold mr-2 mb-2">가격</span>
             <span className="text-base">
               {gameDetail.price === 0
                 ? '무료'
@@ -47,26 +49,26 @@ export default function GameDetail({ gameDetail }) {
             </span>
           </div>
           <div className="w-full h-[33%] flex justify-start items-start">
-            <span className="text-base font-bold mr-2">평가</span>
+            <span className="text-base font-bold mr-2 mb-2">평가</span>
             <span className="text-base">
               {getPositiveString(gameDetail.positive)}
             </span>
           </div>
           <div className="w-full h-[33%] flex justify-start items-start">
-            <span className="text-base font-bold mr-2">한국어 지원 여부</span>
-            {gameDetail.koIsPosible && (
-              <Image
-                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/check.svg`}
-                alt="한국어 지원"
-                width={24}
-                height={24}
-                priority
-              />
-            )}
+            <span className="text-base font-bold mr-1 mb-2">
+              한국어 지원 여부
+            </span>
+            <span className="font-normal ml-0.5 pt-[4px]">
+              {gameDetail.koIsPosible ? (
+                <FaCheck className="text-green-500" />
+              ) : (
+                <FaTimes className="text-red-500 " />
+              )}
+            </span>
           </div>
         </div>
         <div className="w-full h-[55%] block">
-          <span className="text-lg font-bold">시스템 요구사항</span>
+          <span className="text-lg font-bold mb-2">시스템 요구사항</span>
           <div
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
