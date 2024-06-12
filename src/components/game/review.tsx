@@ -53,7 +53,7 @@ export default function GameReview({ appId }) {
               />
               <div className="w-[824px] flex  p-[24px] bg-[#f6f7ff] rounded-[15px] ">
                 <div className="w-[80%] whitespace-pre-wrap overflow-hidden">
-                  <span className="text " style={{ wordWrap: 'break-word' }}>
+                  <span className="text" style={{ wordWrap: 'break-word' }}>
                     {article.content}
                   </span>
                 </div>
