@@ -1,6 +1,9 @@
 import api from '@/config/AxiosConfig';
+import LocalStorage from '@/constants/LocalStorage';
+import { UserGameAchievementList } from '@/types/UserInfo';
+import { Get } from '@/utils/axiosMethod';
 
-const API_URL = process.env.NEXT_PUBLIC_MEMBER_API_URL;
+const API_URL = '/api/members';
 
 const membersAPI = {
   async isMemberExist(userId: string) {
@@ -35,6 +38,31 @@ const membersAPI = {
 
   async getMemberById(memberId: string) {
     return (await api.get(`${API_URL}/${memberId}`)).data;
+  },
+
+  async getUserInfo() {
+    const token = LocalStorage.getItem('access');
+    return Get(`${API_URL}/get-userinfo`, {
+      headers: { access: `${token}` },
+    });
+  },
+
+  async getUserGame(id: string) {
+    const token = LocalStorage.getItem('access');
+    return Get(`${API_URL}/${id}/mygames`, {
+      headers: { access: `${token}` },
+    });
+  },
+
+  async getUserGameAchievement(id: string, appId: string) {
+    return Get<UserGameAchievementList>(`${API_URL}/${id}/mygames/${appId}`);
+  },
+
+  async logout() {
+    const token = LocalStorage.getItem('access');
+    return api.post(`/logout`, {
+      headers: { access: `${token}` },
+    });
   },
 };
 
