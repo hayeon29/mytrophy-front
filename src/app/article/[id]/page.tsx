@@ -53,12 +53,12 @@ function ArticleDetail({ params }: Props) {
     const [selectedGameId, setSelectedGameId] = useState('');
     const [selectedGameName, setSelectedGameName] = useState('');
     const [gameTotalPages, setGameTotalPages] = useState(1);
-    const [memberInfo, setMemberInfo] = useState('');
     const [isLiked, setIsLiked] = useState(false);
     const [selectedCommentId, setSelectedCommentId] = useState('');
     const [selectedCommentNickname, setSelectedCommentNickname] = useState('');
     const [selectedDeleteComment, setSelectedDeleteComment] = useState('');
     const [reCommentOpen, setReCommentOpen] = useState(false);
+    const [memberInfo, setMemberInfo] = useState('');
     const [userInfo, setUserInfo] = useState({
         header: '',
         name: '',
@@ -67,9 +67,8 @@ function ArticleDetail({ params }: Props) {
 
     const getMemberByToken = async () => {
         try {
-            const memberInfo = await membersAPI.getMemberByToken();
-            setMemberInfo(memberInfo);
-            console.log('멤버 정보:', memberInfo);
+            const response = await membersAPI.getUserInfo();
+            setMemberInfo(response.data);
         } catch (error) {
             console.error('토큰으로 멤버 정보를 가져오는 데 실패했습니다:', error);
         }
@@ -109,6 +108,8 @@ function ArticleDetail({ params }: Props) {
 
         fetchArticleDetail();
         getMemberByToken();
+        const isLiked = localStorage.getItem('isLiked') === 'true';
+        setIsLiked(isLiked);
     }, [articleId]);
 
 
@@ -231,6 +232,7 @@ function ArticleDetail({ params }: Props) {
 
     const handleCloseSearchModal = () => {
         setIsSearchModalOpen(false);
+        setIsLoading(false);
     };
 
     const handleGameSelect = (appId, gameName) => {
@@ -286,6 +288,7 @@ function ArticleDetail({ params }: Props) {
         try {
             // 게시글을 추천하고 결과를 받아옴
             const response = await commentAPI.commentLike(commentId);
+            localStorage.setItem('isLiked', 'true');
             window.location.reload();
             setIsLiked(true);
         } catch (error) {
@@ -304,6 +307,23 @@ function ArticleDetail({ params }: Props) {
         setReCommentOpen(false);
     };
 
+    const getBackgroundColor = (header) => {
+        switch (header) {
+            case 'FREE_BOARD':
+                return 'bg-blue-500';
+            case 'INFORMATION':
+                return 'bg-green-500';
+            case 'GUIDE':
+                return 'bg-yellow-500';
+            case 'REVIEW':
+                return 'bg-red-500';
+            case 'CHATING':
+                return 'bg-black';
+            default:
+                return 'bg-gray-500';
+        }
+    };
+
     return (
         <div className="bg-white py-4">
             <div className="py-4 mx-auto max-w-7xl flex justify-between items-center">
@@ -313,8 +333,7 @@ function ArticleDetail({ params }: Props) {
                 </Button>
                 </Link>
                 <Button className="py-2 px-4 rounded" color="primary" variant="bordered" onPress={() => setIsPostModalOpen(true)}>수정</Button>
-
-                {/* 게시글 작성 모달창 */}
+                {/* 게시글 수정 모달창 */}
                 <Modal
                     isOpen={isPostModalOpen}
                     size="4xl"
@@ -374,7 +393,6 @@ function ArticleDetail({ params }: Props) {
                                                 value={searchValue}
                                                 onChange={(e) => setSearchValue(e.target.value)}
                                             />
-
                                             <Button
                                                 color="primary"
                                                 className="text-white"
@@ -398,7 +416,7 @@ function ArticleDetail({ params }: Props) {
                                                                         <input
                                                                             type="checkbox"
                                                                             onChange={() => handleGameSelect(game.id, game.name)}
-                                                                            checked={selectedGameId === game.id} // 선택한 게임이 체크되도록 확인
+                                                                            checked={selectedGameId === game.id}
                                                                         />
                                                                         <label>{game.name}</label>
                                                                     </div>
@@ -492,11 +510,11 @@ function ArticleDetail({ params }: Props) {
                         )}
                     </ModalContent>
                 </Modal>
-
-
             </div>
-
             <div className="max-w-7xl border border-gray p-4 rounded-lg shadow-md text-left mx-auto">
+                <span className={`${getBackgroundColor(article.header)} rounded-sm text-white px-2 py-0.5 text-sm mr-2`}>
+                    {article.header}
+                </span>
                 <div className="flex items-center justify-between">
                     <div className="mr-4">
                         <User
@@ -516,14 +534,17 @@ function ArticleDetail({ params }: Props) {
                         )}
                     </div>
                 </div>
-                <div className="flex justify-center mt-6">
-                    <Image
-                        src={article?.imagePath}
-                        alt="게시글 사진"
-                        width={400}
-                        height={400}
-                        className="rounded-lg"
-                    />
+                <div className="flex flex-col items-center mt-6">
+                    {article && article.imagePath && article.imagePath.split(',').map((imagePath, index) => (
+                        <Image
+                            key={index}
+                            src={imagePath.trim()} // 이미지 경로의 앞뒤 공백을 제거합니다.
+                            alt={`게시글 이미지 ${index + 1}`}
+                            width={500}
+                            height={500}
+                            className="rounded-lg mb-4" // 이미지 아래에 간격을 줍니다.
+                        />
+                    ))}
                 </div>
                 <div className="mt-8 max-w-4xl mx-auto">
                     <p style={{ wordWrap: 'break-word' }}>{article?.content}</p>
@@ -586,7 +607,7 @@ function ArticleDetail({ params }: Props) {
                                                 color="primary"
                                                 onClick={() => handleLike(comment.id)} // API 호출 연결
                                             >
-                                                {isLiked ? '좋아요 취소' : '좋아요'} {comment.likes}
+                                                좋아요 {comment.likes}
                                             </Button>
                                             <Button
                                                 onPress={() => {
@@ -696,7 +717,7 @@ function ArticleDetail({ params }: Props) {
                                                     color="primary"
                                                     onClick={() => handleLike(childComment.id)} // API 호출 연결
                                                 >
-                                                    {isLiked ? '좋아요 취소' : '좋아요'} {childComment.likes}
+                                                    좋아요 {childComment.likes}
                                                 </Button>
                                                 <Button
                                                     onPress={() => {
