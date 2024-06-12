@@ -19,6 +19,7 @@ import {
   Input,
 } from '@nextui-org/react';
 import gameAPI from '@/services/game';
+import Link from 'next/link';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
@@ -147,16 +148,12 @@ export default function GameManagement() {
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip content="게임 조회">
-              <button
-                type="button"
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                onClick={() => {
-                  /* Add your click handler function */
-                }}
-              >
-                <EyeIcon />
-                <span className="sr-only">게임 조회</span>
-              </button>
+              <Link href={`/game/${String(game.id)}`}>
+                <div className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                  <span className="sr-only">게임 조회</span>
+                </div>
+              </Link>
             </Tooltip>
             <Tooltip content="게임 수정">
               <button
