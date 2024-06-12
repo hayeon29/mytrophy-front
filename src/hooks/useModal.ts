@@ -12,11 +12,8 @@ export function useModal() {
     [setModals]
   );
 
-  const closeModal = (id: string) => {
-    const newModal = modals.filter((eachInfo: ModalInfo) => {
-      return eachInfo.id === id;
-    });
-
+  const closeModal = () => {
+    const newModal = modals.splice(modals.length - 1);
     setModals(newModal);
   };
 
