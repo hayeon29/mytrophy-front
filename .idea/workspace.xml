@@ -5,45 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5720629-f8b1-44a4-b862-2c2ca3474566" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/member/[memberId]/queries.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/member/[memberId]/queryOptions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/constants/LocalStorage.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/constants/modal.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/providers/ReactQueryProviders.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/recoils/userAtom.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/auth.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/types/AxiosResponse.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/types/UserInfo.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/axiosMethod.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/handleAxiosError.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/public/favicon.ico" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/gamelist/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/gamelist/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/member/[memberId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/member/[memberId]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/recommend/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/recommend/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/select-category/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/select-category/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/signup/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/signup/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/admin/ArticleManagement.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/ArticleManagement.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/admin/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/Dashboard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/admin/GameManagement.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/GameManagement.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/common/NavigationBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common/NavigationBar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/common/PageSelectButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common/PageSelectButton.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/modals/OkModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/OkModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/mypage/UserGameRating.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/mypage/UserGameRating.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config/AxiosConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/AxiosConfig.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useModal.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useModal.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/article.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/article.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/articles.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/comment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/comment.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/game.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/game.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/home.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/home.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/members.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/members.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/HomeGame.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/HomeGame.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +31,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging moon",
+    "git-widget-placeholder": "moon",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/user/IdeaProjects/team4-front"
   }
