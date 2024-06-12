@@ -21,6 +21,7 @@ import {
 } from '@nextui-org/react';
 import articleAPI from "@/services/article";
 import gameAPI from "@/services/game";
+import membersAPI from "@/services/members";
 
 export default function Article() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -39,12 +40,25 @@ export default function Article() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [selectedGameName, setSelectedGameName] = useState('');
+  const [memberInfo, setMemberInfo] = useState(null);
+  const [isLikeModalOpen, setIsLikeModalOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
   const [userInfo, setUserInfo] = useState({
     header: '',
     name: '',
     content: '',
   });
 
+  const getMemberByToken = async () => {
+    try {
+      const memberInfo = await membersAPI.getMemberByToken();
+      setMemberInfo(memberInfo);
+      console.log('멤버 정보:', memberInfo);
+    } catch (error) {
+      console.error('토큰으로 멤버 정보를 가져오는 데 실패했습니다:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -81,6 +95,7 @@ export default function Article() {
     };
 
     fetchArticles();
+    getMemberByToken();
   }, [currentPage]);
 
   const handleSearch = async () => {
@@ -132,6 +147,7 @@ export default function Article() {
       );
 
       onClose();
+      window.location.reload();
     } catch (error) {
       console.error('게시글 작성에 실패했습니다:', error);
     }
@@ -156,15 +172,13 @@ export default function Article() {
       try {
         // 게시글을 추천하고 결과를 받아옴
         const response = await articleAPI.articleLike(articleId);
-
+        setIsLiked(true);
+        setIsLikeModalOpen(false);
+        window.location.reload();
       } catch (error) {
         // 오류 발생 시
         console.error('게시글 추천에 실패했습니다:', error);
       }
-    };
-
-    const handleLikeClick = (article) => {
-      handleLike(article.id); // 게시글 추천 함수 호출
     };
 
     const handlePageChange = (page) => {
@@ -246,6 +260,10 @@ export default function Article() {
           return 'bg-gray-500';
       }
     };
+
+  const handleCloseModal = () => {
+    setIsLikeModalOpen(false);
+  };
 
     return (
         <div className="bg-white h-screen mx-auto">
@@ -350,7 +368,7 @@ export default function Article() {
                             variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
                             onClick={() => handleButtonClick('CHATING')}
                         >
-                          리뷰
+                          채팅
                         </Button>
                       </div>
 
@@ -469,7 +487,7 @@ export default function Article() {
                       <Button color="danger" variant="light" onPress={onClose}>
                         취소
                       </Button>
-                      <Button color="primary" onPress={handleClickCreateArticle}>
+                      <Button color="primary" onPress={() => handleClickCreateArticle(onClose)}>
                         작성
                       </Button>
                     </ModalFooter>
@@ -506,8 +524,32 @@ export default function Article() {
                     </div>
                     {/* Counts */}
                     <div className="flex gap-3 items-center">
-                      <button onClick={handleLikeClick}>
-                        <Image key={article.id} width={16} alt="vector" src="/svgs/likeIcon.svg"/>
+                      <button onClick={() => {
+                        setIsLikeModalOpen(true);
+                        setSelectedArticle(article.id);
+                      }}>
+                        <Image width={16} alt="vector" src="/svgs/likeIcon.svg"/>
+
+                        {isLikeModalOpen && (
+                            <Modal isOpen={isLikeModalOpen} onOpenChange={() => setIsLikeModalOpen(false)}>
+                              <ModalContent>
+                                <ModalHeader>좋아요</ModalHeader>
+                                <ModalBody>{isLiked ? "취소하겠습니까?" : "좋아요를 누르시겠습니까?"}</ModalBody>
+                                <ModalFooter>
+                                  <Button
+                                      color="danger"
+                                      variant="solid"
+                                        onPress={() => setIsLikeModalOpen(false)}
+                                  >
+                                    취소
+                                  </Button>
+                                  <Button color="primary" onPress={() => handleLike(selectedArticle)}>
+                                    {isLiked ? "좋아요 취소" : "좋아요"}
+                                  </Button>
+                                </ModalFooter>
+                              </ModalContent>
+                            </Modal>
+                        )}
                       </button>
                       <span className="text-sm text-gray-500 text-default-400">
             {article.cntUp}
