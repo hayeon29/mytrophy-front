@@ -30,23 +30,6 @@ function Category({ categories = [] }: CategoryProps) {
           {category.name}
         </Button>
       ))}
-      {categories.length > 5 && (
-        <Button
-          size="sm"
-          variant="flat"
-          className="text-sm mr-2 mb-1"
-          style={{
-            backgroundColor: '#D2DAF8',
-            color: '#2E396C',
-            borderRadius: '5px',
-            fontSize: '0.8rem',
-            minWidth: 'auto',
-            height: '24px',
-          }}
-        >
-          ...
-        </Button>
-      )}
     </div>
   );
 }

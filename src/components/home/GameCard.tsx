@@ -96,10 +96,10 @@ export default function GameCard({ game, idKey }) {
     <div className="flex h-[400px]">
       <Card
         isHoverable
-        className="shadow-lg rounded-2xl w-[350px] h-full flex flex-col m-0 p-0 transition-shadow duration-300 ease-in-out hover:shadow-2xl"
+        className="shadow-lg rounded-2xl w-[360px] h-full flex flex-col m-0 p-0 transition-shadow duration-300 ease-in-out hover:shadow-2xl"
       >
-        <CardBody className="p-0 flex-grow overflow-hidden">
-          <Link href={`/game/${String(game.id)}`} className="block">
+        <CardBody className="p-0 overflow-hidden">
+          <Link href={`/game/${String(game[idKey])}`} className="block">
             <Image
               src={game.headerImagePath}
               alt={game.name}
@@ -114,11 +114,18 @@ export default function GameCard({ game, idKey }) {
           </Link>
         </CardBody>
         <CardFooter className="p-5 bg-white flex flex-col">
-          <div className="space-y-2 text-left">
-            <div className="flex items-center justify-between">
+          <div className="space-y-2 text-left w-full">
+            <div className="flex items-center justify-between ">
               <Link
-                href={`/game/${String(game.id)}`}
+                href={`/game/${String(game[idKey])}`}
                 className="text-xl font-bold text-black block transition-colors duration-300 ease-in-out hover:text-[#2E396C]"
+                style={{
+                  display: 'inline-block',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  maxWidth: 'calc(100% - 40px)',
+                }}
               >
                 {game.name}
               </Link>
