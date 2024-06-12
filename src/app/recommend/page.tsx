@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import gameAPI from '@/services/game';
+import homeAPI from '@/services/home';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -65,9 +66,11 @@ export default function Recommend() {
   const [gameDetailsByRelease, setGameDetailsByRelease] = useState([]);
   const [gameDetailsByTop, setGameDetailsByTop] = useState([]);
   const [gameDetailsByPositive, setGameDetailsByPositive] = useState([]);
+  const  [recommendedGames, setRecommendedGames] = useState<HomeGame[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loadingTopGames, setLoadingTopGames] = useState(true);
   const [loadingDateGames, setLoadingDateGames] = useState(true);
+  const [loadingRecommended, setLoadingRecommended] = useState(true);
 
   useEffect(() => {
     const fetchGameDetailsByRelease = async () => {
@@ -120,6 +123,24 @@ export default function Recommend() {
 
           fetchGameDetailsByPositive();
     }, []);
+    useEffect(() => {
+          const getRecommendedGames = async () => {
+                setLoadingRecommended(true);
+                try{
+                  const response = await homeAPI.getMyRecommendedGames();
+                  setRecommendedGames(response.data);
+                  console.log(response);
+                } catch (error) {
+                  //에러처리
+                } finally {
+                  setLoadingRecommended(false);
+                }
+
+          };
+
+          getRecommendedGames();
+    }, []);
+
     const truncateString = (str, num) => {
         if (str.length <= num) {
           return str;
@@ -248,7 +269,7 @@ export default function Recommend() {
                  </div>
                  {isLoggedIn ? (
                  <Slider {...settings}>
-                   {gameDetailsByPositive.map((post) => (
+                   {recommendedGames.map((post) => (
                      <div key={post.id} className="p-4">
                      <Link href={`/game/${String(post.id)}`}>
                        <div className="overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg hover:shadow-xl">
