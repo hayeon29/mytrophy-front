@@ -45,16 +45,25 @@
       <change beforePath="$PROJECT_DIR$/src/services/members.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/members.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/types/HomeGame.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/HomeGame.ts" afterDir="false" />
     </list>
+    <list default="true" id="f5720629-f8b1-44a4-b862-2c2ca3474566" name="Changes" comment="Refactor: 코드 리팩토링" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -74,6 +83,17 @@
     &quot;last_opened_file_path&quot;: &quot;C:/Users/user/IdeaProjects/team4-front&quot;
   }
 }</component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "feature/11-article",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/user/IdeaProjects/team4-front",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "ts.external.directory.path": "C:\\Users\\Soonduck\\Desktop\\file\\coding\\codefiles\\team4-front\\node_modules\\typescript\\lib"
+  }
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
