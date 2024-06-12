@@ -25,11 +25,14 @@ import { useModal } from '@/hooks/useModal';
 import OkModal from '@/components/modals/OkModal';
 import LocalStorage from '@/constants/LocalStorage';
 import { AxiosError } from 'axios';
-import { useSSR } from '@/recoils/userAtom';
+import { userState } from '@/recoils/userAtom';
 import { UserInfo } from '@/types/UserInfo';
+import { useRecoilState } from 'recoil';
+import { loginState } from '@/recoils/loginAtom';
 
 export default function NavigationBar() {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [userInfo, setUserInfo] = useState<UserLoginInfo>({
     username: '',
@@ -41,9 +44,8 @@ export default function NavigationBar() {
     password: '',
   });
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const [userState, setUserState] = useSSR();
+  const [loginUserState, setLoginUserState] = useRecoilState(userState);
+  const [isLoggedInState, setIsLoggedInState] = useRecoilState(loginState);
 
   const path = usePathname();
   const router = useRouter();
@@ -86,8 +88,8 @@ export default function NavigationBar() {
         const memberInfo = await membersAPI.getUserInfo();
         const { username, id, nickname, steamId, imagePath } =
           memberInfo.data as UserInfo;
-        setIsLoggedIn(true);
-        setUserState({ username, id, nickname, steamId, imagePath });
+        setLoginUserState({ username, id, nickname, steamId, imagePath });
+        setIsLoggedInState(true);
         onClose();
         router.refresh();
       }
@@ -104,10 +106,6 @@ export default function NavigationBar() {
     }
   };
 
-  useEffect(() => {
-    setIsLoggedIn(LocalStorage.getItem('access') !== null);
-  }, []);
-
   const handleSteamLogin = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -118,13 +116,13 @@ export default function NavigationBar() {
 
     const realm = document.createElement('input');
     realm.setAttribute('name', 'openid.realm');
-    realm.setAttribute('value', process.env.NEXT_PUBLIC_BACK_URL);
+    realm.setAttribute('value', process.env.NEXT_PUBLIC_API_URL);
 
     const returnTo = document.createElement('input');
     returnTo.setAttribute('name', 'openid.return_to');
     returnTo.setAttribute(
       'value',
-      `${process.env.NEXT_PUBLIC_BACK_URL}/api/members/steam/login/redirect?access=${encodeURIComponent(localStorage.getItem('access'))}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/members/steam/login/redirect?access=${encodeURIComponent(LocalStorage.getItem('access'))}`
     );
 
     steamLoginForm.appendChild(realm);
@@ -137,10 +135,15 @@ export default function NavigationBar() {
     const response = await membersAPI.logout();
     if (response.status === 200) {
       LocalStorage.removeItem('access');
-      setIsLoggedIn(false);
+      setIsLoggedInState(false);
+      setLoginUserState(null);
       router.refresh();
     }
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <>
@@ -278,7 +281,7 @@ export default function NavigationBar() {
               }
               type="search"
             />
-            {isLoggedIn && (
+            {isMounted && isLoggedInState && (
               <NavbarContent className="text-sm">
                 <NavbarItem>
                   <button
@@ -291,7 +294,7 @@ export default function NavigationBar() {
                 </NavbarItem>
                 <NavbarItem>
                   <Link
-                    href={`/member/${userState?.id}`}
+                    href={`/member/${loginUserState?.id}`}
                     className="text-white text-sm"
                   >
                     마이페이지
@@ -299,15 +302,21 @@ export default function NavigationBar() {
                 </NavbarItem>
                 <div className="flex items-center gap-4">
                   <span className="text-white">
-                    {userState?.nickname || userState?.username}
+                    {loginUserState?.nickname || loginUserState?.username}
                   </span>
-                  <Avatar src="/image/sample_icon.jpg" size="sm" />
+                  {loginUserState?.imagePath !== null && isMounted ? (
+                    <Avatar src={loginUserState.imagePath} size="sm" />
+                  ) : (
+                    <Avatar
+                      src="/svgs/person.svg"
+                      size="sm"
+                      className="bg-lightGray"
+                    />
+                  )}
                 </div>
               </NavbarContent>
             )}
-            {/* 로그인 유저 */}
-            {/* 비로그인 유저 */}
-            {!isLoggedIn && (
+            {isMounted && !isLoggedInState && (
               <div className="flex gap-2">
                 <Button
                   className="bg-white text-primary border-primary border-0 rounded-full"
@@ -428,7 +437,7 @@ export default function NavigationBar() {
                           로그인
                         </Button>
                         <Link
-                          href={`${process.env.NEXT_PUBLIC_BACK_URL}/oauth2/authorization/google`}
+                          href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`}
                           className="w-full h-full text-white text-center"
                         >
                           <Button
@@ -463,7 +472,7 @@ export default function NavigationBar() {
                         </Button>
 
                         <Link
-                          href={`${process.env.NEXT_PUBLIC_BACK_URL}/oauth2/authorization/naver`}
+                          href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/naver`}
                           className="w-full h-full text-white text-center"
                         >
                           <Button

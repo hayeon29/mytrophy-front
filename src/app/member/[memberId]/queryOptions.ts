@@ -1,5 +1,6 @@
 import gameAPI from '@/services/game';
 import membersAPI from '@/services/members';
+import { UserAllGameInfo } from '@/types/UserInfo';
 
 const queryKeys = {
   game: (id: string) => ['member_games', id] as const,
@@ -17,7 +18,8 @@ const queryOptions = {
       }
       return membersAPI.getUserGame(id);
     },
-    select: (data) => data.data.response,
+    select: (data) => data.data.response as UserAllGameInfo,
+    enabled: id !== null && id !== undefined,
   }),
   achievement: (id: string, appId?: string) => ({
     queryKey: queryKeys.achievement(id, appId),
@@ -27,7 +29,8 @@ const queryOptions = {
       }
       return membersAPI.getUserGameAchievement(id, appId);
     },
-    enabled: appId !== undefined,
+    enabled:
+      id !== null && id !== undefined && appId !== null && appId !== undefined,
   }),
   gameDetail: (appId?: string) => ({
     queryKey: queryKeys.gameDetail(appId),
@@ -37,7 +40,7 @@ const queryOptions = {
       }
       return gameAPI.getGameDetail(appId);
     },
-    enabled: appId !== undefined,
+    enabled: appId !== null && appId !== undefined,
   }),
 };
 

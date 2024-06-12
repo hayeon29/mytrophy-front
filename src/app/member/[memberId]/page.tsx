@@ -9,17 +9,29 @@ import { userState } from '@/recoils/userAtom';
 import membersAPI from '@/services/members';
 import { Button, Card, CardBody, CardHeader } from '@nextui-org/react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { UserInfo } from '@/types/UserInfo';
-import { AxiosResponse } from '@/types/AxiosResponse';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  AchievementInfo,
+  UserGameAchievementDataInfo,
+  UserGameAchievementDataList,
+  UserGameAchievementList,
+  UserInfo,
+} from '@/types/UserInfo';
 import { AxiosError } from 'axios';
 import { handleAxiosError } from '@/utils/handleAxiosError';
 import { useRecoilState } from 'recoil';
-import { useGameDetail, useMemberGameQuery } from './queries';
+import { GetGameDetailDTO } from '@/types/GameDetail';
+import dayjs from 'dayjs';
+import {
+  useGameDetail,
+  useMemberGameAchievementQueries,
+  useMemberGameQuery,
+} from './queries';
 
 export default function MyPage() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [userInfo, setUserInfo] = useRecoilState(userState);
+  const [isMounted, setIsMounted] = useState(false);
   const handleClickTab = (event: React.MouseEvent<HTMLDivElement>) => {
     const eventTarget = event.target;
     if (eventTarget instanceof HTMLSpanElement) {
@@ -27,31 +39,72 @@ export default function MyPage() {
     }
   };
   const { data: memberGame, isLoading: memberGameLoading } = useMemberGameQuery(
-    userInfo.id
+    userInfo?.id
   );
-
-  // const memberGameAchievement = useMemberGameAchievementQueries(
-  //   userInfo.id,
-  //   memberGame?.games
-  // )?.map(({ data }) => {
-  //   if (data !== undefined) {
-  //     const achievementData = data as UserGameAchievementList;
-  //     return achievementData.data.playerstats.achievements;
-  //   }
-  //   return data;
-  // });
 
   const gameDetailInfo = useGameDetail(memberGame?.games)?.map(({ data }) => {
     return data;
-  });
+  }) as GetGameDetailDTO[];
+
+  const memberGameAchievementData = useMemberGameAchievementQueries(
+    userInfo?.id,
+    memberGame?.games
+  )?.map(({ data }) => {
+    if (data !== undefined) {
+      const achievementData = data as UserGameAchievementDataList;
+      return achievementData.data.playerstats.achievements;
+    }
+    return data;
+  }) as UserGameAchievementDataInfo[][];
+
+  const memberGameAchievement = gameDetailInfo
+    .map((eachDetail, index) => {
+      if (
+        eachDetail !== undefined &&
+        memberGameAchievementData[index] !== undefined
+      ) {
+        return {
+          name: eachDetail.name,
+          imagePath: eachDetail.headerImagePath,
+          achievements: gameDetailInfo[index].getGameAchievementDTOList.map(
+            (eachAchievement, eachAchievementIndex) => {
+              const { name, description, imagePath } = eachAchievement;
+              return {
+                name,
+                description,
+                imagePath,
+                achieved:
+                  memberGameAchievementData[index][eachAchievementIndex]
+                    .achieved === 1,
+                unlockTime: dayjs(
+                  memberGameAchievementData[index][eachAchievementIndex]
+                    .unlocktime * 1000
+                ).format('YYYY년 MM월 DD일'),
+              };
+            }
+          ) as AchievementInfo[],
+        } as UserGameAchievementList;
+      }
+      return undefined;
+    })
+    .filter((value) => {
+      return value !== undefined;
+    });
+
+  const totalGameCount = useMemo(() => {
+    return memberGameAchievement.reduce(
+      (prev, cur) => prev + cur.achievements.length,
+      0
+    );
+  }, [memberGameAchievement]);
 
   useEffect(() => {
     async function handleUserInfo() {
       try {
-        const newUserInfo = (
-          (await membersAPI.getUserInfo()) as AxiosResponse<UserInfo>
-        ).data;
-        setUserInfo(newUserInfo);
+        const memberInfo = await membersAPI.getUserInfo();
+        const { username, id, nickname, steamId, imagePath } =
+          memberInfo.data as UserInfo;
+        setUserInfo({ username, id, nickname, steamId, imagePath });
       } catch (error) {
         if (error instanceof AxiosError) {
           handleAxiosError(error);
@@ -63,21 +116,8 @@ export default function MyPage() {
   }, [setUserInfo]);
 
   useEffect(() => {
-    async function handleUserInfo() {
-      try {
-        const newUserInfo = (
-          (await membersAPI.getUserInfo()) as AxiosResponse<UserInfo>
-        ).data;
-        setUserInfo(newUserInfo);
-      } catch (error) {
-        if (error instanceof AxiosError) {
-          handleAxiosError(error);
-        }
-      }
-    }
-
-    handleUserInfo();
-  }, [setUserInfo]);
+    setIsMounted(true);
+  }, []);
 
   const handleSteamLogin = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -89,13 +129,13 @@ export default function MyPage() {
 
     const realm = document.createElement('input');
     realm.setAttribute('name', 'openid.realm');
-    realm.setAttribute('value', process.env.NEXT_PUBLIC_BACK_URL);
+    realm.setAttribute('value', process.env.NEXT_PUBLIC_API_URL);
 
     const returnTo = document.createElement('input');
     returnTo.setAttribute('name', 'openid.return_to');
     returnTo.setAttribute(
       'value',
-      `${process.env.NEXT_PUBLIC_BACK_URL}/api/members/steam/login/redirect?access=${encodeURIComponent(localStorage.getItem('access'))}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/members/steam/login/redirect?access=${encodeURIComponent(localStorage.getItem('access'))}`
     );
 
     steamLoginForm.appendChild(realm);
@@ -138,12 +178,24 @@ export default function MyPage() {
       <Card className="p-6 shadow-none border-1 border-primary flex flex-row">
         <CardHeader className="flex flex-col w-fit border-primary border-r-1 rounded-none pr-16 pl-8">
           <Image
-            src="/image/sample_icon.jpg"
+            src={
+              userInfo?.imagePath !== null && userInfo?.imagePath !== undefined
+                ? userInfo?.imagePath
+                : '/svgs/person.svg'
+            }
             alt="mypage user profile"
             width={128}
             height={128}
+            className="bg-lightGray rounded-full"
           />
-          <span className="text-black font-black mt-3 mb-8">이름</span>
+          <span className="text-black font-black mt-3 mb-8">
+            {userInfo !== null &&
+            userInfo !== undefined &&
+            userInfo?.nickname.length > 0 &&
+            isMounted
+              ? userInfo?.nickname
+              : '유저'}
+          </span>
           <Button color="primary" className="text-white">
             프로필 수정
           </Button>
@@ -179,9 +231,12 @@ export default function MyPage() {
                 className={`flex flex-col items-center cursor-pointer  ${selectedTab === 0 ? '!text-secondary' : ''}`}
               >
                 <span className="text-5xl font-bold mb-2 " aria-valuetext="0">
-                  {memberGame === undefined || memberGameLoading
-                    ? ''
-                    : memberGame.game_count}
+                  {memberGame &&
+                  !memberGameLoading &&
+                  isMounted &&
+                  memberGame.game_count !== undefined
+                    ? memberGame.game_count
+                    : 0}
                 </span>
                 <span
                   className={selectedTab !== 0 ? 'text-black' : ''}
@@ -194,7 +249,9 @@ export default function MyPage() {
                 className={`flex flex-col items-center cursor-pointer ${selectedTab === 1 ? '!text-secondary' : ''}`}
               >
                 <span className="text-5xl font-bold mb-2" aria-valuetext="1">
-                  1031
+                  {memberGame && !memberGameLoading && isMounted
+                    ? totalGameCount
+                    : 0}
                 </span>
                 <span
                   className={selectedTab !== 1 ? 'text-black' : ''}
@@ -234,14 +291,19 @@ export default function MyPage() {
           </div>
         </CardBody>
       </Card>
-      {selectedTab === 0 && (
+      {selectedTab === 0 && userInfo?.steamId !== null && isMounted && (
         <UserGameRating
           gameInfo={gameDetailInfo}
           userGameInfo={memberGame}
           isLoading={memberGameLoading}
         />
       )}
-      {selectedTab === 1 && <UserGameAchievement />}
+      {selectedTab === 1 && userInfo?.steamId !== null && isMounted && (
+        <UserGameAchievement
+          achievement={memberGameAchievement}
+          totalCount={totalGameCount !== undefined ? totalGameCount : 0}
+        />
+      )}
       {selectedTab === 2 && <UserArticle />}
       {selectedTab === 3 && <UserRecommend />}
       {selectedTab !== 0 && <PageSelectButton currentPage={1} />}
