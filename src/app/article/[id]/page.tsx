@@ -308,9 +308,9 @@ function ArticleDetail({ params }: Props) {
         <div className="bg-white py-4">
             <div className="py-4 mx-auto max-w-7xl flex justify-between items-center">
                 <Link href="/article">
-                <Button className="py-2 px-4 rounded border-none" color="primary" variant="bordered">
-                    커뮤니티로 돌아가기
-                </Button>
+                    <Button className="py-2 px-4 rounded border-none" color="primary" variant="bordered">
+                        커뮤니티로 돌아가기
+                    </Button>
                 </Link>
                 <Button className="py-2 px-4 rounded" color="primary" variant="bordered" onPress={() => setIsPostModalOpen(true)}>수정</Button>
 
