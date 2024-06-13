@@ -14,7 +14,6 @@ import {
   UserGameAchievementDataList,
   UserGameAchievementList,
 } from '@/types/UserInfo';
-import { handleAxiosError } from '@/utils/handleAxiosError';
 import { GetGameDetailDTO } from '@/types/GameDetail';
 import dayjs from 'dayjs';
 import { useModal } from '@/hooks/useModal';
@@ -33,7 +32,7 @@ function MyPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { modals, openModal, closeModal } = useModal();
   const [totalArticles, setTotalArticles] = useState(0);
-  // const [totalMyArticles, setTotalMyArticles] = useState(0);
+  const [totalMyArticles, setTotalMyArticles] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: userInfo, isLoading: userInfoLoading } = useUserInfo();
@@ -110,21 +109,25 @@ function MyPage() {
   }, []);
 
   useEffect(() => {
-    const fetchLikedArticles = async () => {
-      try {
-        const response = await articleAPI.getLikedArticlesByMemberId(
-          userInfo?.id,
-          currentPage - 1,
-          10
-        );
-        const { content } = response;
-        const totalCount = content.length;
-        setTotalArticles(totalCount);
-      } catch (error) {
-        handleAxiosError(error);
-      }
+    const fetchData = async () => {
+      const likedResponse = await articleAPI.getLikedArticlesByMemberId(
+        userInfo?.id,
+        currentPage - 1,
+        10
+      );
+      const likedCount = likedResponse.content.length;
+      setTotalArticles(likedCount);
+
+      const myArticlesResponse = await articleAPI.getArticleList(
+        currentPage - 1,
+        10,
+        userInfo?.id
+      );
+      const myArticlesCount = myArticlesResponse.content.length;
+      console.log(myArticlesCount);
+      setTotalMyArticles(myArticlesCount);
     };
-    fetchLikedArticles();
+    fetchData();
   }, [currentPage, userInfo?.id]);
 
   const handleProfileEdit = () => {
@@ -301,7 +304,7 @@ function MyPage() {
                 className={`flex flex-col items-center cursor-pointer ${selectedTab === 2 ? '!text-secondary' : ''}`}
               >
                 <span className="text-5xl font-bold mb-2" aria-valuetext="2">
-                  {userInfo ? 0 : 0}
+                  {userInfo ? totalMyArticles : 0}
                 </span>
                 <span
                   className={selectedTab !== 2 ? 'text-black' : ''}
