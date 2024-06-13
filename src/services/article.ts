@@ -101,6 +101,23 @@ const articleAPI = {
   async deleteArticle(id) {
     return api.delete(`${API_URL}/${id}`);
   },
+
+    async getLikedArticlesByMemberId(memberId: string, page = 1, size = 10) {
+        const accessToken = localStorage.getItem('access');
+        if (!accessToken) {
+            throw new Error('No access token found in local storage.');
+        }
+        const response = await api.get(`${API_URL}/liked/${memberId}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'access': accessToken
+                }
+            }
+        );
+        return response.data;
+    }
+
 };
 
 export default articleAPI;

@@ -9,8 +9,6 @@ export default function UserRecommend() {
       <span className="text-blackGray">총 OO개</span>
       <div className="flex flex-col gap-6">
         <ArticleThumbnail />
-        <ArticleThumbnail />
-        <ArticleThumbnail />
       </div>
     </div>
   );
