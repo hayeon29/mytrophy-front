@@ -138,8 +138,6 @@ export default function Article() {
         fileUrls = response.join(',');
       }
 
-      console.log('imagePaths:', fileUrls); // 파일 URL 문자열을 로그로 출력
-
       await articleAPI.articleCreate(
           activeButton,
           userInfo.name,
