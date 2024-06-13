@@ -84,6 +84,7 @@ export default function NavigationBar() {
             onClick={closeModal}
           />
         );
+
         try {
           const memberInfo = await membersAPI.getUserInfo();
           const {
@@ -250,23 +251,7 @@ export default function NavigationBar() {
                   </Link>
                 </NavbarItem>
               )}
-              {path === '/recommend' ? (
-                <NavbarItem isActive>
-                  <Link href="/recommend" color="secondary" className="text-sm">
-                    게임 추천
-                  </Link>
-                </NavbarItem>
-              ) : (
-                <NavbarItem>
-                  <Link
-                    href="/recommend"
-                    color="foreground"
-                    className="text-sm"
-                  >
-                    게임 추천
-                  </Link>
-                </NavbarItem>
-              )}
+
               {path === '/gamelist' ? (
                 <NavbarItem isActive>
                   <Link

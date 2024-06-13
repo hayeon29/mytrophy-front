@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 
 export async function handleAxiosError(error: AxiosError | Error) {
   if (error instanceof AxiosError) {
+
     const { status, data } = error.response;
     switch (status) {
       case 401: {

@@ -16,7 +16,7 @@ export default function GameList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState();
   // const [totalItems, setTotalItems] = useState(0); // 총 아이템 수
 
   const itemsPerPage = 10;
@@ -131,14 +131,12 @@ export default function GameList() {
     await loadMoreData(1);
   };
 
-  useEffect(() => {
-    fetchTotalItems();
-    handleApplyFilters();
-  }, [selectedCategoryIds, priceRange, keyword]);
+
 
   useEffect(() => {
+    if(keyword != null)
     loadMoreData(currentPage);
-  }, [currentPage, sortOption, loadMoreData]);
+  }, [currentPage, sortOption, loadMoreData,keyword]);
 
   return (
     <div className="bg-white py-5 sm:py-10">
