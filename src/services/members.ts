@@ -32,6 +32,10 @@ const membersAPI = {
     return response.data;
   },
 
+  async updateMemberProfilePic(fileData: FormData) {
+    return api.post(`${API_URL}/files`, fileData);
+  },
+
   async deleteMemberById(id) {
     return api.delete(`${API_URL}/${id}`);
   },

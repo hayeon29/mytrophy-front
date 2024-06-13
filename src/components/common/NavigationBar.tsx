@@ -86,9 +86,17 @@ export default function NavigationBar() {
           />
         );
         const memberInfo = await membersAPI.getUserInfo();
-        const { username, id, nickname, steamId, imagePath } =
+        const { username, id, nickname, steamId, name, email, imagePath } =
           memberInfo.data as UserInfo;
-        setLoginUserState({ username, id, nickname, steamId, imagePath });
+        setLoginUserState({
+          username,
+          id,
+          nickname,
+          steamId,
+          name,
+          email,
+          imagePath,
+        });
         setIsLoggedInState(true);
         onClose();
         router.refresh();

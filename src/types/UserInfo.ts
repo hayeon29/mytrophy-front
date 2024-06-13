@@ -2,9 +2,19 @@ type UserInfo = {
   [index: string]: string;
   username: string;
   id: string;
-  nickname: null | string;
-  steamId: null | string;
-  imagePath: null | string;
+  nickname?: null | string;
+  name?: null | string;
+  email?: null | string;
+  steamId?: null | string;
+  imagePath?: null | string;
+};
+
+type UserEditInfo = {
+  username: string;
+  nickname?: null | string;
+  name?: null | string;
+  email?: null | string;
+  imagePath?: null | string;
 };
 
 type UserGameInfo = {
@@ -53,6 +63,7 @@ type UserGameAchievementList = {
 
 export type {
   UserInfo,
+  UserEditInfo,
   UserGameInfo,
   UserAllGameInfo,
   UserGameAchievementDataInfo,
