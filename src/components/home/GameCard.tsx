@@ -25,9 +25,12 @@ export default function GameCard({ game, idKey }) {
   const [reviewIcon, setReviewIcon] = useState(
     <FaRegFaceGrin className="text-gray-400" />
   );
-  const isLoggedIn = useRecoilValue(userState); // 로그인 여부 가져오기
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem('access');
+    setIsLoggedIn(!!token);
+
     async function fetchReviewStatus() {
       try {
         const response = await homeAPI.getMyReview(game[idKey]);
