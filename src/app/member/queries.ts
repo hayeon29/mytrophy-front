@@ -1,5 +1,5 @@
-import { useQueries, useQuery } from '@tanstack/react-query';
-import { UserGameInfo } from '@/types/UserInfo';
+import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
+import { UserGameInfo, UserInfo } from '@/types/UserInfo';
 import queryOptions from './queryOptions';
 
 export function useMemberGameQuery(id: string) {
@@ -28,4 +28,8 @@ export function useGameDetail(arrayOfAppId: UserGameInfo[]) {
         })
       : [queryOptions.gameDetail()];
   return useQueries({ queries });
+}
+
+export function useUserInfo(): UseQueryResult<UserInfo, Error> {
+  return useQuery(queryOptions.userInfo());
 }

@@ -3,79 +3,92 @@ import api from '@/config/AxiosConfig';
 const API_URL = process.env.NEXT_PUBLIC_ARTICLE_API_URL;
 
 const articleAPI = {
-    async getArticleList(page = 1, size = 10, memberId?: number) {
-        let url = `${API_URL}?page=${page}&size=${size}`;
-        if (memberId) {
-            url += `&memberId=${memberId}`;
-        }
-        return (await api.get(url)).data;
-    },
+  async getArticleList(page = 1, size = 10, memberId?: number) {
+    let url = `${API_URL}?page=${page}&size=${size}`;
+    if (memberId) {
+      url += `&memberId=${memberId}`;
+    }
+    return (await api.get(url)).data;
+  },
 
-    async getArticlesByHeader(header: string, page = 1, size = 10) {
-        return (await api.get(`${API_URL}/headers/${header}?page=${page}&size=${size}`)).data;
-    },
+  async getArticlesByHeader(header: string, page = 1, size = 10) {
+    return (
+      await api.get(`${API_URL}/headers/${header}?page=${page}&size=${size}`)
+    ).data;
+  },
 
-    async getArticleDetail(articleId: string) {
-        return (await api.get(`${API_URL}/${articleId}`)).data;
-    },
+  async getArticleDetail(articleId: string) {
+    return (await api.get(`${API_URL}/${articleId}`)).data;
+  },
 
-    async articleLike(articleId: string) {
-        const accessToken = localStorage.getItem('access');
-        if (!accessToken) {
-            throw new Error('No access token found in local storage.');
-        }
-        const response = await api.post(`${API_URL}/${articleId}/like`, {},
-            {
-                headers: {
-                    'access': accessToken
-                }
-            }
-        );
-        return response.data;
-    },
+  async articleLike(articleId: string) {
+    const accessToken = localStorage.getItem('access');
+    if (!accessToken) {
+      throw new Error('No access token found in local storage.');
+    }
+    const response = await api.post(
+      `${API_URL}/${articleId}/like`,
+      {},
+      {
+        headers: {
+          access: accessToken,
+        },
+      }
+    );
+    return response.data;
+  },
 
-    articleCreate: async (header, name, content, appId, imagePath) => {
-        const accessToken = localStorage.getItem('access');
-        if (!accessToken) {
-            throw new Error('No access token found in local storage.');
-        }
-        const response = await api.post(`${API_URL}`,
-            { header, name, content, appId, imagePath },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'access': accessToken
-                }
-            }
-        );
-        return response.data;
-    },
+  articleCreate: async (header, name, content, appId, imagePath) => {
+    const accessToken = localStorage.getItem('access');
+    if (!accessToken) {
+      throw new Error('No access token found in local storage.');
+    }
+    const response = await api.post(
+      `${API_URL}`,
+      { header, name, content, appId, imagePath },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'access': accessToken,
+        },
+      }
+    );
+    return response.data;
+  },
 
+  async articleUpdate(
+    articleId: string,
+    header,
+    name,
+    content,
+    appId,
+    imagePath
+  ) {
+    const accessToken = localStorage.getItem('access');
+    if (!accessToken) {
+      throw new Error('No access token found in local storage.');
+    }
+    const response = await api.patch(
+      `${API_URL}/${articleId}`,
+      { header, name, content, appId, imagePath },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'access': accessToken,
+        },
+      }
+    );
+    return response.data;
+  },
 
-    async articleUpdate(articleId: string, header, name, content, appId, imagePath) {
-        const accessToken = localStorage.getItem('access');
-        if (!accessToken) {
-            throw new Error('No access token found in local storage.');
-        }
-        const response = await api.patch(`${API_URL}/${articleId}`,
-            { header, name, content, appId, imagePath },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'access': accessToken
-                }
-            })
-        return response.data;
-    },
-
-    async articleFileUpload(formData: FormData) {
-            const response = await api.post<string[]>(`${API_URL}/files`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            return response.data;
-    },
+  async articleFileUpload(formData: FormData) {
+    const response = await api.post<string[]>(`${API_URL}/files`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 
   async articleDelete(articleId: string) {
     return (await api.delete(`${API_URL}/${articleId}`)).data;
@@ -101,22 +114,22 @@ const articleAPI = {
     return api.delete(`${API_URL}/${id}`);
   },
 
-    async getLikedArticlesByMemberId(memberId: string, page = 1, size = 10) {
-        const accessToken = localStorage.getItem('access');
-        if (!accessToken) {
-            throw new Error('No access token found in local storage.');
-        }
-        const response = await api.get(`${API_URL}/liked/${memberId}?page=${page}&size=${size}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'access': accessToken
-                }
-            }
-        );
-        return response.data;
+  async getLikedArticlesByMemberId(memberId: string, page = 1, size = 10) {
+    const accessToken = localStorage.getItem('access');
+    if (!accessToken) {
+      throw new Error('No access token found in local storage.');
     }
-
+    const response = await api.get(
+      `${API_URL}/liked/${memberId}?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'access': accessToken,
+        },
+      }
+    );
+    return response.data;
+  },
 };
 
 export default articleAPI;

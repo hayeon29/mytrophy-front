@@ -1,6 +1,6 @@
 import api from '@/config/AxiosConfig';
 import LocalStorage from '@/constants/LocalStorage';
-import { UserGameAchievementList } from '@/types/UserInfo';
+import { UserGameAchievementList, UserInfo } from '@/types/UserInfo';
 import { Get } from '@/utils/axiosMethod';
 
 const API_URL = '/api/members';
@@ -46,7 +46,7 @@ const membersAPI = {
 
   async getUserInfo() {
     const token = LocalStorage.getItem('access');
-    return api.get(`${API_URL}/get-userinfo`, {
+    return Get<UserInfo>(`${API_URL}/get-userinfo`, {
       headers: { access: `${token}` },
     });
   },
