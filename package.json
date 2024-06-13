@@ -16,7 +16,7 @@
     "@mui/material": "^5.15.19",
     "@nextui-org/divider": "^2.0.28",
     "@nextui-org/react": "^2.3.6",
-    "@tanstack/react-query": "^5.44.0",
+    "@tanstack/react-query": "^5.45.0",
     "@tanstack/react-query-devtools": "^5.40.1",
     "axios": "^1.7.2",
     "clsx": "^2.1.1",

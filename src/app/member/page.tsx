@@ -1,6 +1,5 @@
 'use client';
 
-import PageSelectButton from '@/components/common/PageSelectButton';
 import UserArticle from '@/components/mypage/UserArticle';
 import UserGameAchievement from '@/components/mypage/UserGameAchievement';
 import UserGameRating from '@/components/mypage/UserGameRating';
@@ -37,6 +36,7 @@ export default function MyPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { modals, openModal, closeModal } = useModal();
   const [totalArticles, setTotalArticles] = useState(0);
+  const [totalMyArticles, setTotalMyArticles] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const handleClickTab = (event: React.MouseEvent<HTMLDivElement>) => {
     const eventTarget = event.target;
@@ -143,18 +143,27 @@ export default function MyPage() {
   }, []);
 
   useEffect(() => {
-    const fetchLikedArticles = async () => {
-      const response = await articleAPI.getLikedArticlesByMemberId(
-        userInfo.id,
-        currentPage - 1,
-        10
+    const fetchData = async () => {
+      const likedResponse = await articleAPI.getLikedArticlesByMemberId(
+          userInfo.id,
+          currentPage - 1,
+          10
       );
-      const { content } = response;
-      const totalCount = content.length;
-      setTotalArticles(totalCount);
+      const likedCount = likedResponse.content.length;
+      setTotalArticles(likedCount);
+
+      const myArticlesResponse = await articleAPI.getArticleList(
+          currentPage - 1,
+          10,
+          userInfo.id
+      );
+      const myArticlesCount = myArticlesResponse.content.length;
+      setTotalMyArticles(myArticlesCount);
     };
-    fetchLikedArticles();
-  }, [currentPage, userInfo.id]);
+    fetchData();
+  }, [currentPage]);
+
+
 
   const handleProfileEdit = () => {
     openModal(<ProfileEdit onClick={closeModal} />);
@@ -323,7 +332,7 @@ export default function MyPage() {
               className={`flex flex-col items-center cursor-pointer ${selectedTab === 2 ? '!text-secondary' : ''}`}
             >
               <span className="text-5xl font-bold mb-2" aria-valuetext="2">
-                12
+                {userInfo ? totalMyArticles : 0}
               </span>
               <span
                 className={selectedTab !== 2 ? 'text-black' : ''}
@@ -336,7 +345,7 @@ export default function MyPage() {
               className={`flex flex-col items-center cursor-pointer ${selectedTab === 3 ? '!text-secondary' : ''}`}
             >
               <span className="text-5xl font-bold mb-2" aria-valuetext="3">
-                {totalArticles}
+                {userInfo ? totalArticles : 0}
               </span>
               <span
                 className={selectedTab !== 3 ? 'text-black' : ''}
@@ -365,12 +374,7 @@ export default function MyPage() {
         )}
         {selectedTab === 2 && <UserArticle />}
         {selectedTab === 3 && <UserRecommend />}
-        {selectedTab !== 0 && (
-          <PageSelectButton
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        )}
+
       </div>
     </>
   );
