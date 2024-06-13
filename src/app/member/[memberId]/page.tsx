@@ -7,6 +7,7 @@ import UserGameRating from '@/components/mypage/UserGameRating';
 import UserRecommend from '@/components/mypage/UserRecommend';
 import { userState } from '@/recoils/userAtom';
 import membersAPI from '@/services/members';
+import articleAPI from '@/services/article';
 import { Button, Card, CardBody, CardHeader } from '@nextui-org/react';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
@@ -35,6 +36,8 @@ export default function MyPage() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [isMounted, setIsMounted] = useState(false);
   const { modals, openModal, closeModal } = useModal();
+  const [totalArticles, setTotalArticles] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
   const handleClickTab = (event: React.MouseEvent<HTMLDivElement>) => {
     const eventTarget = event.target;
     if (eventTarget instanceof HTMLSpanElement) {
@@ -121,6 +124,17 @@ export default function MyPage() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    const fetchLikedArticles = async () => {
+      const response = await articleAPI.getLikedArticlesByMemberId(userInfo.id, currentPage - 1, 10);
+    const { content } = response;
+    const totalCount = content.length;
+    setTotalArticles(totalCount);
+      }
+    fetchLikedArticles();
+    }, [currentPage, userInfo.id]);
+
 
   const handleProfileEdit = () => {
     openModal(<ProfileEdit onClick={closeModal} />);
@@ -299,7 +313,7 @@ export default function MyPage() {
               className={`flex flex-col items-center cursor-pointer ${selectedTab === 3 ? '!text-secondary' : ''}`}
             >
               <span className="text-5xl font-bold mb-2" aria-valuetext="3">
-                40
+                {totalArticles}
               </span>
               <span
                 className={selectedTab !== 3 ? 'text-black' : ''}
