@@ -111,16 +111,25 @@ export default function ProfileEdit({
 
     if (response === '회원 수정 성공') {
       const memberInfo = await membersAPI.getUserInfo();
-      const { username, id, nickname, steamId, name, email, imagePath } =
-        memberInfo.data as UserInfo;
-      setUserEditInfo({
+      const {
         username,
-        id,
         nickname,
+        id,
+        steamId,
         name,
         email,
-        steamId,
         imagePath,
+        loginType,
+      } = memberInfo.data as UserInfo;
+      setUserEditInfo({
+        username,
+        nickname,
+        id,
+        steamId,
+        name,
+        email,
+        imagePath,
+        loginType,
       });
       openModal(
         <OkModal
@@ -196,6 +205,7 @@ export default function ProfileEdit({
                         ? userInfo.imagePath
                         : '/svgs/person.svg'
                     }
+                    style={{ width: 64, height: 64 }}
                     className="bg-lightGray rounded-full w-16 h-16"
                   />
                   <label
@@ -252,16 +262,18 @@ export default function ProfileEdit({
                   </Button>
                 </div>
               </div>
-              <div className="w-full">
-                <span className="font-bold block mb-3">비밀번호 변경</span>
-                <Button
-                  color="primary"
-                  className="text-white"
-                  onClick={handleChangePasswordClick}
-                >
-                  비밀번호 변경
-                </Button>
-              </div>
+              {userEditInfo.loginType === 'mytrophy' && (
+                <div className="w-full">
+                  <span className="font-bold block mb-3">비밀번호 변경</span>
+                  <Button
+                    color="primary"
+                    className="text-white"
+                    onClick={handleChangePasswordClick}
+                  >
+                    비밀번호 변경
+                  </Button>
+                </div>
+              )}
               <div className="w-full">
                 <label className="font-bold block mb-3" htmlFor="email">
                   이메일

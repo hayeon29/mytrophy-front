@@ -37,7 +37,7 @@ export default function MyPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { modals, openModal, closeModal } = useModal();
   const [totalArticles, setTotalArticles] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const handleClickTab = (event: React.MouseEvent<HTMLDivElement>) => {
     const eventTarget = event.target;
     if (eventTarget instanceof HTMLSpanElement) {
@@ -108,9 +108,26 @@ export default function MyPage() {
     async function handleUserInfo() {
       try {
         const memberInfo = await membersAPI.getUserInfo();
-        const { username, id, nickname, steamId, imagePath } =
-          memberInfo.data as UserInfo;
-        setUserInfo({ username, id, nickname, steamId, imagePath });
+        const {
+          username,
+          nickname,
+          id,
+          steamId,
+          name,
+          email,
+          imagePath,
+          loginType,
+        } = memberInfo.data as UserInfo;
+        setUserInfo({
+          username,
+          nickname,
+          id,
+          steamId,
+          name,
+          email,
+          imagePath,
+          loginType,
+        });
       } catch (error) {
         if (error instanceof AxiosError) {
           handleAxiosError(error);
@@ -127,14 +144,17 @@ export default function MyPage() {
 
   useEffect(() => {
     const fetchLikedArticles = async () => {
-      const response = await articleAPI.getLikedArticlesByMemberId(userInfo.id, currentPage - 1, 10);
-    const { content } = response;
-    const totalCount = content.length;
-    setTotalArticles(totalCount);
-      }
+      const response = await articleAPI.getLikedArticlesByMemberId(
+        userInfo.id,
+        currentPage - 1,
+        10
+      );
+      const { content } = response;
+      const totalCount = content.length;
+      setTotalArticles(totalCount);
+    };
     fetchLikedArticles();
-    }, [currentPage, userInfo.id]);
-
+  }, [currentPage, userInfo.id]);
 
   const handleProfileEdit = () => {
     openModal(<ProfileEdit onClick={closeModal} />);
@@ -214,12 +234,15 @@ export default function MyPage() {
                 alt="mypage user profile"
                 width={128}
                 height={128}
+                style={{ width: 128, height: 128 }}
+                priority
                 className="bg-lightGray rounded-full"
               />
             )}
             <span className="text-black font-black mt-3 mb-8">
               {userInfo !== null &&
               userInfo !== undefined &&
+              userInfo?.nickname?.length > 0 &&
               isMounted
                 ? userInfo?.nickname
                 : '유저'}
@@ -254,7 +277,7 @@ export default function MyPage() {
                     />
                   }
                 >
-                  스팀으로 로그인하기
+                  스팀 계정 연동하기
                 </Button>
               </div>
             )}
@@ -342,7 +365,12 @@ export default function MyPage() {
         )}
         {selectedTab === 2 && <UserArticle />}
         {selectedTab === 3 && <UserRecommend />}
-        {selectedTab !== 0 && <PageSelectButton currentPage={1} />}
+        {selectedTab !== 0 && (
+          <PageSelectButton
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
       </div>
     </>
   );

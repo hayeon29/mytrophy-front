@@ -16,16 +16,18 @@ export default function UserGameAchievement({
       <Divider className="bg-primary" />
       <span className="text-blackGray">총 {totalCount}개</span>
       {achievement.map((eachAchievementList) => {
-        return eachAchievementList.achievements.map((eachAchievement) => {
-          return (
-            <AchievementCard
-              key={`${eachAchievementList.name}-${eachAchievement.name}`}
-              eachAchievement={eachAchievement}
-              gameImagePath={eachAchievementList.imagePath}
-              gameName={eachAchievementList.name}
-            />
-          );
-        });
+        return eachAchievementList.achievements.map(
+          (eachAchievement, index) => {
+            return (
+              <AchievementCard
+                key={`${eachAchievementList.name}-${eachAchievement.unlockTime}-${index}`}
+                eachAchievement={eachAchievement}
+                gameImagePath={eachAchievementList.imagePath}
+                gameName={eachAchievementList.name}
+              />
+            );
+          }
+        );
       })}
     </div>
   );

@@ -1,17 +1,17 @@
 import Image from 'next/image';
-import { useState } from 'react';
 
 export default function PageSelectButton({
   currentPage,
+  setCurrentPage,
 }: {
   currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const [curClickedPage, setCurClickedPage] = useState(currentPage);
-  const firstPage = Math.floor((curClickedPage - 1) / 10) + 1;
+  const firstPage = Math.floor((currentPage - 1) / 10) + 1;
   const handlePageClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const eventTarget = event.target;
     if (eventTarget instanceof HTMLSpanElement) {
-      setCurClickedPage(Number(eventTarget.ariaValueText));
+      setCurrentPage(Number(eventTarget.ariaValueText));
     }
   };
   return (
@@ -35,7 +35,7 @@ export default function PageSelectButton({
       {[...Array(10)].map((_, index) => {
         return (
           <span
-            className={`w-8 h-8 flex items-center justify-center relative ${firstPage + index === curClickedPage ? 'after:absolute after:bg-primary after:w-full after:h-full after:rounded-full after:-z-10 text-white' : ''}`}
+            className={`w-8 h-8 flex items-center justify-center relative ${firstPage + index === currentPage ? 'after:absolute after:bg-primary after:w-full after:h-full after:rounded-full after:-z-10 text-white' : ''}`}
             aria-valuetext={`${firstPage + index}`}
             key={`page-${index + firstPage}`}
           >

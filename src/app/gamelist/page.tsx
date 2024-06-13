@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import gameAPI from '@/services/game';
-import ReactPaginate from 'react-paginate';
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
 import { Pagination, Spinner } from '@nextui-org/react';
 import { useSearchParams } from 'next/navigation';
@@ -18,7 +17,7 @@ export default function GameList() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState('');
-  const [totalItems, setTotalItems] = useState(0); // 총 아이템 수
+  // const [totalItems, setTotalItems] = useState(0); // 총 아이템 수
 
   const itemsPerPage = 10;
 
@@ -66,15 +65,6 @@ export default function GameList() {
     setKeyword(keywordFromURL);
   }, [searchParams]);
 
-  useEffect(() => {
-    fetchTotalItems();
-    handleApplyFilters();
-  }, [selectedCategoryIds, priceRange, keyword]);
-
-  useEffect(() => {
-    loadMoreData(currentPage);
-  }, [currentPage, sortOption]);
-
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
   };
@@ -95,48 +85,60 @@ export default function GameList() {
     setCurrentPage(page);
   };
 
+  const fetchTotalItems = async () => {
+    try {
+      // const response = await gameAPI.getTotalItems();
+      // setTotalItems(response);
+    } catch (error) {
+      // console.error('Error fetching total items:', error);
+    }
+  };
+
+  const loadMoreData = useCallback(
+    async (page) => {
+      const filterData = {
+        page,
+        size: itemsPerPage,
+        keyword,
+        categoryIds: selectedCategoryIds,
+        minPrice: priceRange.min,
+        maxPrice: priceRange.max,
+        isFree: priceRange.min === '0' && priceRange.max === '0',
+        startDate: null,
+        endDate: null,
+        nameSortDirection: sortOption === '이름순' ? 'ASC' : null,
+        priceSortDirection: sortOption === '가격순' ? 'ASC' : null,
+        recommendationSortDirection: null,
+        dateSortDirection: sortOption === '최신순' ? 'DESC' : null,
+      };
+
+      try {
+        setLoading(true);
+        const details = await gameAPI.getFilteredGames(filterData);
+        setGameDetails(details.content);
+        setTotalPages(details.totalPages);
+      } catch (error) {
+        // console.error('Error applying filters:', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [keyword, priceRange.max, priceRange.min, selectedCategoryIds, sortOption]
+  );
+
   const handleApplyFilters = async () => {
     setCurrentPage(1);
     await loadMoreData(1);
   };
 
-  const fetchTotalItems = async () => {
-    try {
-      const response = await gameAPI.getTotalItems();
-      setTotalItems(response);
-    } catch (error) {
-      console.error('Error fetching total items:', error);
-    }
-  };
+  useEffect(() => {
+    fetchTotalItems();
+    handleApplyFilters();
+  }, [selectedCategoryIds, priceRange, keyword]);
 
-  const loadMoreData = async (page) => {
-    const filterData = {
-      page,
-      size: itemsPerPage,
-      keyword,
-      categoryIds: selectedCategoryIds,
-      minPrice: priceRange.min,
-      maxPrice: priceRange.max,
-      isFree: priceRange.min === '0' && priceRange.max === '0',
-      startDate: null,
-      endDate: null,
-      nameSortDirection: sortOption === '이름순' ? 'ASC' : null,
-      priceSortDirection: sortOption === '가격순' ? 'ASC' : null,
-      recommendationSortDirection: null,
-      dateSortDirection: sortOption === '최신순' ? 'DESC' : null,
-    };
-
-    try {
-      setLoading(true);
-      const details = await gameAPI.getFilteredGames(filterData);
-      setGameDetails(details.content);
-      setTotalPages(details.totalPages);
-    } catch (error) {
-      console.error('Error applying filters:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    loadMoreData(currentPage);
+  }, [currentPage, sortOption, loadMoreData]);
 
   return (
     <div className="bg-white py-5 sm:py-10">
@@ -156,6 +158,7 @@ export default function GameList() {
               className="border border-gray-300 rounded-md p-2"
             />
             <button
+              type="button"
               onClick={handleApplyFilters}
               className="bg-blue-500 text-white rounded-md p-2"
             >
@@ -182,7 +185,7 @@ export default function GameList() {
               <div>
                 <div className="grid grid-cols-1 gap-6">
                   {gameDetails.map((post) => (
-                    <Link href={`/game/${String(post.id)}`}>
+                    <Link href={`/game/${String(post.id)}`} key={post.id}>
                       <div
                         key={post.id}
                         className="flex items-start p-4 rounded-lg bg-white shadow-md hover:shadow-xl"
@@ -200,21 +203,23 @@ export default function GameList() {
                               {truncateString(post.name, 40)}
                             </h3>
                             <div className="flex flex-wrap mb-1">
-                              {post.getGameCategoryDTOList.slice(0, 5).map((category) => {
-                                const shortenedName =
-                                  category.name.length > 10
-                                    ? `${category.name.slice(0, 10)}..`
-                                    : category.name;
-                                return (
-                                  <span
-                                    key={category.name}
-                                    className="text-gray-600 rounded bg-blue-100  sm:px-0.5 py-1 mx-1"
-                                    style={{ backgroundColor: '#D2DAF8' }}
-                                  >
-                                    {shortenedName}
-                                  </span>
-                                );
-                              })}
+                              {post.getGameCategoryDTOList
+                                .slice(0, 5)
+                                .map((category) => {
+                                  const shortenedName =
+                                    category.name.length > 10
+                                      ? `${category.name.slice(0, 10)}..`
+                                      : category.name;
+                                  return (
+                                    <span
+                                      key={category.name}
+                                      className="text-gray-600 rounded bg-blue-100  sm:px-0.5 py-1 mx-1"
+                                      style={{ backgroundColor: '#D2DAF8' }}
+                                    >
+                                      {shortenedName}
+                                    </span>
+                                  );
+                                })}
                             </div>
                             <p className="text-gray-600">
                               {' '}
@@ -222,7 +227,9 @@ export default function GameList() {
                             </p>
                             <div className="flex justify-between items-center mt-1">
                               <div className="flex items-center">
-                                <span className="font-bold mr-2">한국어 지원 여부</span>
+                                <span className="font-bold mr-2">
+                                  한국어 지원 여부
+                                </span>
                                 {post.koIsPosible ? (
                                   <FaCheck className="text-green-500" />
                                 ) : (
@@ -230,7 +237,8 @@ export default function GameList() {
                                 )}
                               </div>
                               <p className="text-gray-600">
-                                <strong>가격</strong>&nbsp; {post.price == 0 ? '무료' : `${post.price}원`}{' '}
+                                <strong>가격</strong>&nbsp;{' '}
+                                {post.price === 0 ? '무료' : `${post.price}원`}{' '}
                               </p>
                             </div>
                           </div>
@@ -256,9 +264,13 @@ export default function GameList() {
               <div className="grid grid-cols-2 gap-2 bg-gray-100 shadow-md p-4 rounded-lg">
                 {categories.map((category) => (
                   <button
+                    type="button"
                     key={category.id}
-                    className={`px-2 py-1 rounded-full text-sm ${selectedCategoryIds.includes(category.id) ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                      }`}
+                    className={`px-2 py-1 rounded-full text-sm ${
+                      selectedCategoryIds.includes(category.id)
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200'
+                    }`}
                     onClick={() => handleCategoryChange(category.id)}
                   >
                     {category.name}

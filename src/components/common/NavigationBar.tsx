@@ -86,16 +86,25 @@ export default function NavigationBar() {
           />
         );
         const memberInfo = await membersAPI.getUserInfo();
-        const { username, id, nickname, steamId, name, email, imagePath } =
-          memberInfo.data as UserInfo;
-        setLoginUserState({
+        const {
           username,
-          id,
           nickname,
+          id,
           steamId,
           name,
           email,
           imagePath,
+          loginType,
+        } = memberInfo.data as UserInfo;
+        setLoginUserState({
+          username,
+          nickname,
+          id,
+          steamId,
+          name,
+          email,
+          imagePath,
+          loginType,
         });
         setIsLoggedInState(true);
         onClose();
@@ -155,11 +164,13 @@ export default function NavigationBar() {
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const searchInput = (event.target as HTMLFormElement).elements.namedItem('search') as HTMLInputElement;
+    const searchInput = (event.target as HTMLFormElement).elements.namedItem(
+      'search'
+    ) as HTMLInputElement;
     console.log(searchInput);
     const searchQuery = searchInput.value;
-    if (searchQuery.length>0){
-        router.push(`/gamelist?keyword=${encodeURIComponent(searchQuery)}`);
+    if (searchQuery.length > 0) {
+      router.push(`/gamelist?keyword=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -280,7 +291,10 @@ export default function NavigationBar() {
             </NavbarContent>
           </div>
           <div className="flex items-center gap-8">
-            <form onSubmit={handleSearch} className="flex items-center space-x-2">
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center space-x-2"
+            >
               <Input
                 name="search"
                 classNames={{
@@ -293,13 +307,17 @@ export default function NavigationBar() {
                 placeholder="검색"
                 type="search"
               />
-              <Button type="submit" className= "bg-white p-0 flex justify-center items-center rounded-3xl" style={{ width: '35px', height: '35px' }}>
-              <Image
-                 src="/svgs/search.svg"
-                 alt="search icon"
-                 width={18}
-                 height={18}
-               />
+              <Button
+                type="submit"
+                className="bg-white p-0 flex justify-center items-center rounded-3xl"
+                style={{ width: '35px', height: '35px' }}
+              >
+                <Image
+                  src="/svgs/search.svg"
+                  alt="search icon"
+                  width={18}
+                  height={18}
+                />
               </Button>
             </form>
             {isMounted && isLoggedInState && (
@@ -314,10 +332,7 @@ export default function NavigationBar() {
                   </button>
                 </NavbarItem>
                 <NavbarItem>
-                  <Link
-                    href={`/member/${loginUserState?.id}`}
-                    className="text-white text-sm"
-                  >
+                  <Link href="/member" className="text-white text-sm">
                     마이페이지
                   </Link>
                 </NavbarItem>
@@ -326,18 +341,23 @@ export default function NavigationBar() {
                     {loginUserState?.nickname || loginUserState?.username}
                   </span>
                   {loginUserState?.imagePath !== null && isMounted ? (
-                    <Avatar src={loginUserState.imagePath} size="sm" />
+                    <Avatar
+                      src={loginUserState.imagePath}
+                      size="sm"
+                      style={{ width: 32, height: 32 }}
+                    />
                   ) : (
                     <Avatar
                       src="/svgs/person.svg"
                       size="sm"
                       className="bg-lightGray"
+                      style={{ width: 32, height: 32 }}
                     />
                   )}
                 </div>
               </NavbarContent>
             )}
-            {isMounted && !isLoggedInState && (
+            {isMounted && !loginUserState && (
               <div className="flex gap-2">
                 <Button
                   className="bg-white text-primary border-primary border-0 rounded-full"
