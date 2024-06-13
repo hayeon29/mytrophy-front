@@ -28,10 +28,9 @@ export default function GameDetail({ gameDetail }) {
   };
 
   const cleanRequirementString = (requirement) => {
+    if (requirement === null) return '';
     return requirement.replace(/[:*]/g, '');
   };
-
-  console.log(gameDetail);
 
   return (
     <div className="w-full min-h-[450px] py-8 m-0 block">

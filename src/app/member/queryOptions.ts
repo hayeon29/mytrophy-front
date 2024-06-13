@@ -3,6 +3,7 @@ import membersAPI from '@/services/members';
 import { UserAllGameInfo } from '@/types/UserInfo';
 
 const queryKeys = {
+  userInfo: ['member_info'] as const,
   game: (id: string) => ['member_games', id] as const,
   achievement: (id: string, appId: string) =>
     ['member_achievement', id, appId] as const,
@@ -10,6 +11,11 @@ const queryKeys = {
 };
 
 const queryOptions = {
+  userInfo: () => ({
+    queryKey: queryKeys.userInfo,
+    queryFn: () => membersAPI.getUserInfo(),
+    select: (data) => data.data,
+  }),
   game: (id: string) => ({
     queryKey: queryKeys.game(id),
     queryFn: () => {
