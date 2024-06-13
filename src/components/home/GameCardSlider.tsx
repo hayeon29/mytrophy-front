@@ -4,12 +4,10 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import SwiperCore from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import GameCard from './GameCard';
 
-// 필요한 모듈 임포트
-
-SwiperCore.use([Navigation, Pagination]);
+SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 function GameCardSlider({ games, idKey }) {
   return (
@@ -17,9 +15,13 @@ function GameCardSlider({ games, idKey }) {
       <Swiper
         spaceBetween={0} // 슬라이드 간의 여백
         slidesPerView={Math.min(3, games.length)} // 기본 슬라이드 수
-        navigation // 내비게이션 활성화
+        navigation
         pagination={{ clickable: true }}
-        loop={games.length >= 4} // 루프 모드 활성화
+        loop={games.length >= 4}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
         breakpoints={{
           1440: {
             slidesPerView: 3,

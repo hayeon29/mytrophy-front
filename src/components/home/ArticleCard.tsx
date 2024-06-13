@@ -50,7 +50,7 @@ function ArticleCard({ article }: ArticleCardProps) {
     <Card className="w-full max-w-[400px] bg-[#F6F7FF] shadow-md rounded-3xl p-3">
       <CardHeader className="flex items-center justify-between p-4">
         <div className="flex items-center">
-          <Link href={`/articles?category=${article.header}`} passHref>
+          <Link href="/article" passHref>
             <Button
               size="sm"
               className="bg-[#5779E9] rounded-md text-white text-sm mr-3"
@@ -59,7 +59,7 @@ function ArticleCard({ article }: ArticleCardProps) {
               {headerText}
             </Button>
           </Link>
-          <Link href={`/games/${article.appId}/posts`} passHref>
+          <Link href={`/game/${article.appId}`} passHref>
             <span className="text-lg font-bold text-[#2E396C] hover:underline cursor-pointer">
               {gameName}
             </span>

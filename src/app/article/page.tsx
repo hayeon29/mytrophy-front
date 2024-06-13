@@ -11,16 +11,21 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useDisclosure,
   Input,
   Textarea,
-  Checkbox, Card, CardHeader, Avatar, CardBody,
+  Checkbox,
+  Card,
+  CardHeader,
+  Avatar,
+  CardBody,
 } from '@nextui-org/react';
 import articleAPI from "@/services/article";
 import gameAPI from "@/services/game";
+import membersAPI from "@/services/members";
 
 export default function Article() {
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const modalPlacement = 'center';
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [checkedFiles, setCheckedFiles] = useState<boolean[]>([]);
@@ -28,17 +33,34 @@ export default function Article() {
   const [articles, setArticles] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [gameTotalPages, setGameTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedAppId, setSelectedAppId] = useState(null);
+  const [selectedGameId, setSelectedGameId] = useState(null);
+  const [selectedGameName, setSelectedGameName] = useState('');
+  const [memberInfo, setMemberInfo] = useState(null);
+  const [isLikeModalOpen, setIsLikeModalOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isGameCurrentPage, setGameCurrentPage] = useState(1);
+  const [showLikeLabel, setShowLikeLabel] = useState(false);
   const [userInfo, setUserInfo] = useState({
     header: '',
     name: '',
     content: '',
   });
 
+  const getMemberByToken = async () => {
+    try {
+      const memberInfo = await membersAPI.getUserInfo();
+      setMemberInfo(memberInfo);
+      console.log('멤버 정보:', memberInfo);
+    } catch (error) {
+      console.error('토큰으로 멤버 정보를 가져오는 데 실패했습니다:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -75,26 +97,33 @@ export default function Article() {
     };
 
     fetchArticles();
+    getMemberByToken();
   }, [currentPage]);
 
   const handleSearch = async () => {
     try {
       setIsLoading(true);
-      const response = await gameAPI.searchGameByName(searchValue);
-      setSearchResults(response);
-      console.log('검색 결과:', response);
+      const response = await gameAPI.searchGameByName(isGameCurrentPage - 1, 10, searchValue);
+      setSearchResults(response.content);
+      setIsSearchModalOpen(true);
+      setGameTotalPages(response.totalPages);
+      console.log('검색 결과:', searchResults);
     } catch (error) {
         console.error('게임 검색에 실패했습니다:', error);
     }
-  }
+  };
 
-  const handleGameSelect = (appId) => {
-    setSelectedAppId(appId);
+  const handleGameSelectAppId = (appId, gameName, onClose) => {
+    setSelectedGameId(appId);
+    setSelectedGameName(gameName);
+    setIsLoading(false);
+    onClose();
+    setSearchValue(selectedGameName);
   };
 
   const handleClickCreateArticle = async (onClose) => {
     try {
-      let fileUrls: string[] | null = null; // 파일 URL 배열을 초기화
+      let fileUrls = null; // 파일 URL 문자열을 초기화
 
       if (selectedFiles.length > 0) {
         const formData = new FormData();
@@ -105,36 +134,44 @@ export default function Article() {
         // 파일 업로드 API를 호출하여 파일 URL 배열을 가져옴
         const response = await articleAPI.articleFileUpload(formData);
 
-        // 파일이 업로드되었다면 파일 URL 배열을 설정
-        fileUrls = response.length > 0 ? response : null;
+        // 파일이 업로드되었다면 파일 URL들을 쉼표(,)로 구분하여 문자열로 변환
+        fileUrls = response.join(',');
       }
 
-      console.log('imagePaths:', fileUrls); // 파일 URL들을 로그로 출력
+      console.log('imagePaths:', fileUrls); // 파일 URL 문자열을 로그로 출력
 
       await articleAPI.articleCreate(
           activeButton,
           userInfo.name,
           userInfo.content,
-          570,
+          selectedGameId, // 선택한 게임의 selectedGameId 사용
           fileUrls
       );
 
       onClose();
+      window.location.reload();
     } catch (error) {
       console.error('게시글 작성에 실패했습니다:', error);
     }
   };
 
 
-
   const handleClick = async (header) => {
     try {
       setLoading(true);
 
-      const response = await articleAPI.getArticlesByHeader(header, currentPage - 1, 10);
+      let response;
+      if (activeButton === header) {
+        // 이미 눌렀던 버튼을 다시 누르면 전체 게시글을 가져오기
+        response = await articleAPI.getArticleList(currentPage - 1, 10);
+        setActiveButton('ALL');
+      } else {
+        response = await articleAPI.getArticlesByHeader(header, currentPage - 1, 10);
+        setActiveButton(header);
+      }
+
       setArticles(response.content);
       setTotalPages(response.totalPages);
-      setActiveButton(header);
     } catch (error) {
       console.error('게시글 목록을 불러오는데 실패했습니다:', error);
     } finally {
@@ -146,18 +183,20 @@ export default function Article() {
       try {
         // 게시글을 추천하고 결과를 받아옴
         const response = await articleAPI.articleLike(articleId);
-
-        // 추천 후에 게시글 정보를 업데이트하거나 필요한 작업을 수행할 수 있습니다.
+        setIsLiked(true);
+        setIsLikeModalOpen(false);
+        window.location.reload();
       } catch (error) {
         // 오류 발생 시
         console.error('게시글 추천에 실패했습니다:', error);
       }
     };
 
-    const handleLikeClick = (article) => {
-      handleLike(article.id); // 게시글 추천 함수 호출
-    };
-
+  const handleLikeClick = (articleId) => {
+    // 좋아요 버튼을 클릭하는 동작
+    setSelectedArticle(articleId);
+    handleLike(articleId);
+  };
 
     const handlePageChange = (page) => {
       setCurrentPage(page);
@@ -209,6 +248,52 @@ export default function Article() {
     }));
   };
 
+  const handleCloseSearchModal = () => {
+    setIsSearchModalOpen(false);
+    setIsLoading(false);
+  };
+
+  const handleClosePostModal = () => {
+    setIsPostModalOpen(false);
+  };
+
+  const handleGameSelect = (appId, gameName) => {
+    setSelectedGameId(appId);
+    setSelectedGameName(gameName);
+  };
+
+    const getBackgroundColor = (header) => {
+      switch (header) {
+        case 'FREE_BOARD':
+          return 'bg-blue-500';
+        case 'INFORMATION':
+          return 'bg-green-500';
+        case 'GUIDE':
+          return 'bg-yellow-500';
+        case 'REVIEW':
+          return 'bg-red-500';
+        case 'CHATING':
+          return 'bg-black';
+        default:
+          return 'bg-gray-500';
+      }
+    };
+
+  const handleMouseEnter = (articleId) => {
+    setShowLikeLabel((prev) => ({
+      ...prev,
+      [articleId]: true
+    }));
+  };
+
+  const handleMouseLeave = (articleId) => {
+    setShowLikeLabel((prev) => ({
+      ...prev,
+      [articleId]: false
+    }));
+  };
+
+
     return (
         <div className="bg-white h-screen mx-auto">
           <div className="max-w-7xl mx-auto relative bg-white pt-4">
@@ -253,16 +338,11 @@ export default function Article() {
           <div className="bg-white flex justify-center items-center py-4">
             <div
                 className="w-full max-w-7xl border border-gray p-4 flex items-center rounded-lg h-26 shadow-md text-left">
-              <Image
-                  width={64}
-                  alt="main profile image"
-                  src="/svgs/mainprofile.svg"
-              />
               <Button
                   color="default"
                   variant="faded"
-                  className="ml-4 flex-grow test-small"
-                  onPress={onOpen}
+                  className="flex-grow test-small"
+                  onPress={() => setIsPostModalOpen(true)}
               >
                 클릭 후 글을 작성해보세요.
               </Button>
@@ -271,9 +351,9 @@ export default function Article() {
 
           {/* 게시글 작성 모달창 */}
           <Modal
-              isOpen={isOpen}
+              isOpen={isPostModalOpen}
               size="4xl"
-              onOpenChange={onOpenChange}
+              onOpenChange={handleClosePostModal}
               placement={modalPlacement}
           >
             <ModalContent>
@@ -312,6 +392,13 @@ export default function Article() {
                         >
                           리뷰
                         </Button>
+                        <Button
+                            color="primary"
+                            variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
+                            onClick={() => handleButtonClick('CHATING')}
+                        >
+                          채팅
+                        </Button>
                       </div>
 
                       <div>
@@ -322,6 +409,7 @@ export default function Article() {
                               value={searchValue}
                               onChange={(e) => setSearchValue(e.target.value)}
                           />
+
                           <Button
                               color="primary"
                               className="text-white"
@@ -331,22 +419,40 @@ export default function Article() {
                             {isLoading ? '검색 중...' : '게임 검색'}
                           </Button>
                         </div>
-                        {searchResults.length > 0 && (
-                            <div className="mt-4">
-                              <ul>
-                                {searchResults.map((game) => (
-                                    <li
-                                        key={game.id}
-                                        className="border-b border-gray-200 py-2 cursor-pointer"
-                                        onClick={() => handleGameSelect(game.appId)}
-                                    >
-                                      {game.name}
-                                    </li>
-                                ))}
-                              </ul>
-                            </div>
-                        )}
                       </div>
+                        <>
+                          <Modal isOpen={isSearchModalOpen} onOpenChange={handleCloseSearchModal}>
+                            <ModalContent>
+                              {(onClose) => (
+                                  <>
+                                    <ModalHeader className="flex flex-col gap-1 items-center">게임 검색</ModalHeader>
+                                    <ModalBody className="flex">
+                                      <div className="flex flex-col gap-4">
+                                        {searchResults.map((game, index) => (
+                                            <div key={index} className="flex items-center gap-2">
+                                              <input
+                                                  type="checkbox"
+                                                  onChange={() => handleGameSelect(game.id, game.name)}
+                                                  checked={selectedGameId === game.id} // 선택한 게임이 체크되도록 확인
+                                              />
+                                              <label>{game.name}</label>
+                                            </div>
+                                        ))}
+                                      </div>
+                                    </ModalBody>
+                                    <ModalFooter>
+                                      <Button color="danger" variant="light" onPress={onClose}>
+                                        취소
+                                      </Button>
+                                      <Button color="primary" onPress={() => handleGameSelectAppId(selectedGameId, selectedGameName, onClose)}>
+                                        선택
+                                      </Button>
+                                    </ModalFooter>
+                                  </>
+                              )}
+                            </ModalContent>
+                          </Modal>
+                        </>
 
                       <hr style={{ border: '1px solid #ddd' }} />
                       <p>제목</p>
@@ -410,7 +516,7 @@ export default function Article() {
                       <Button color="danger" variant="light" onPress={onClose}>
                         취소
                       </Button>
-                      <Button color="primary" onPress={handleClickCreateArticle}>
+                      <Button color="primary" onPress={() => handleClickCreateArticle(onClose)}>
                         작성
                       </Button>
                     </ModalFooter>
@@ -432,27 +538,39 @@ export default function Article() {
                           size="md"
                           src={article.memberImage}
                       />
-                      <div className="flex gap-1 items-center">
-                        <h4 className="text-small font-semibold leading-none text-default-600">
-                          {article.nickname} {/* 유저 이름 */}
-                        </h4>
-                        <h5 className="text-small tracking-tight text-default-400">
-                          {article.username} {/* 유저 아이디 */}
-                        </h5>
+                      <div className="flex gap-1 items-start flex-col sm:flex-row sm:items-center">
+                          <h5 className="text-small font-semibold leading-none text-default-600">
+                            {article.nickname} {/* 유저 이름 */}
+                          </h5>
+                          <h4 className="text-small tracking-tight text-default-400">
+                            {article.username} {/* 유저 아이디 */}
+                          </h4>
                       </div>
+                      <span className={`${getBackgroundColor(article.header)} rounded-sm text-white px-2 py-0.5 text-sm mr-2`}>
+                        {article.header}
+                      </span>
+
                     </div>
                     {/* Counts */}
                     <div className="flex gap-3 items-center">
-                      <button onClick={handleLikeClick}>
-                        <Image key={article.id} width={16} alt="vector" src="/svgs/likeIcon.svg"/>
+                      <button
+                          onMouseEnter={() => handleMouseEnter(article.id)}
+                          onMouseLeave={() => handleMouseLeave(article.id)}
+                          onClick={() => handleLikeClick(article.id)}
+                      >
+                        {showLikeLabel[article.id] ? (
+                            <span className="border border-gray bg-primary text-white text-sm p-2 rounded-full">좋아요</span>
+                        ) : (
+                            <Image width={16} alt="vector" src="/svgs/likeIcon.svg"/>
+                        )}
                       </button>
                       <span className="text-sm text-gray-500 text-default-400">
-            {article.cntUp}
-          </span>
+                        {article.cntUp}
+                      </span>
                       <Image width={16} alt="comment" src="/svgs/commentIcon.svg"/>
                       <span className="text-sm text-gray-500 text-default-400">
-            {article.commentCount}
-          </span>
+                        {article.commentCount}
+                      </span>
                     </div>
                   </CardHeader>
                   <div className="flex p-4">
