@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 
 export async function handleAxiosError(error: AxiosError | Error) {
   if (error instanceof AxiosError) {
+
     const { status, data } = error.response;
     if (status === 401 && data === 'access token expired') {
       try {

@@ -132,9 +132,11 @@ export default function GameList() {
   };
 
   useEffect(() => {
-    fetchTotalItems();
-    handleApplyFilters();
-  }, [selectedCategoryIds, priceRange, keyword]);
+      if (keyword) {
+        handleApplyFilters();
+      }
+    }, [keyword]);
+
 
   useEffect(() => {
     loadMoreData(currentPage);

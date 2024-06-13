@@ -109,6 +109,7 @@ export default function NavigationBar() {
         setIsLoggedInState(true);
         onClose();
         router.refresh();
+        window.location.reload();
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -167,7 +168,6 @@ export default function NavigationBar() {
     const searchInput = (event.target as HTMLFormElement).elements.namedItem(
       'search'
     ) as HTMLInputElement;
-    console.log(searchInput);
     const searchQuery = searchInput.value;
     if (searchQuery.length > 0) {
       router.push(`/gamelist?keyword=${encodeURIComponent(searchQuery)}`);
@@ -250,23 +250,7 @@ export default function NavigationBar() {
                   </Link>
                 </NavbarItem>
               )}
-              {path === '/recommend' ? (
-                <NavbarItem isActive>
-                  <Link href="/recommend" color="secondary" className="text-sm">
-                    게임 추천
-                  </Link>
-                </NavbarItem>
-              ) : (
-                <NavbarItem>
-                  <Link
-                    href="/recommend"
-                    color="foreground"
-                    className="text-sm"
-                  >
-                    게임 추천
-                  </Link>
-                </NavbarItem>
-              )}
+
               {path === '/gamelist' ? (
                 <NavbarItem isActive>
                   <Link
