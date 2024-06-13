@@ -5,11 +5,12 @@ import articleAPI from "@/services/article";
 import gameAPI from "@/services/game";
 import React, { useEffect, useState } from "react";
 
-const ArticleThumbnail = () => {
+const ArticleThumbnail = ({ onUpdateArticleCount }) => {
   const [memberInfo, setMemberInfo] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [articles, setArticles] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalArticleCount, setTotalArticleCount] = useState(0);
 
   useEffect(() => {
     const fetchMemberInfo = async () => {
@@ -47,7 +48,9 @@ const ArticleThumbnail = () => {
         );
 
         setArticles(articlesWithGameDetails);
-        setTotalPages(totalPages); // totalPages 설정 추가
+        setTotalPages(totalPages);
+        setTotalArticleCount(content.length);
+        onUpdateArticleCount(content.length);
       } catch (error) {
         console.error('좋아요한 게시글을 가져오는 데 실패했습니다:', error);
       }
