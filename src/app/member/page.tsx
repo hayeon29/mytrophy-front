@@ -154,7 +154,7 @@ export default function MyPage() {
       setTotalArticles(totalCount);
     };
     fetchLikedArticles();
-  }, [currentPage, userInfo.id]);
+  }, [currentPage]);
 
   const handleProfileEdit = () => {
     openModal(<ProfileEdit onClick={closeModal} />);
@@ -336,7 +336,7 @@ export default function MyPage() {
               className={`flex flex-col items-center cursor-pointer ${selectedTab === 3 ? '!text-secondary' : ''}`}
             >
               <span className="text-5xl font-bold mb-2" aria-valuetext="3">
-                {totalArticles}
+                {userInfo ? totalArticles : 0}
               </span>
               <span
                 className={selectedTab !== 3 ? 'text-black' : ''}
