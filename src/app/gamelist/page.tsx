@@ -113,7 +113,6 @@ export default function GameList() {
       };
 
       try {
-      console.log("keyword :  "+keyword);
         setLoading(true);
         const details = await gameAPI.getFilteredGames(filterData);
         setGameDetails(details.content);
