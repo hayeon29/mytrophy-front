@@ -41,7 +41,7 @@ export default function ArticleManagement() {
     INFORMATION: 'success',
     GUIDE: 'warning',
     REVIEW: 'danger',
-    CHATING: 'primary',
+    CHATTING: 'primary',
   };
 
   const columns = [

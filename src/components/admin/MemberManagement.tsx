@@ -366,25 +366,6 @@ export default function MemberManagement() {
                         />
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell align="right">카테고리 ID:</TableCell>
-                      <TableCell>
-                        <input
-                          type="text"
-                          name="categoryIds"
-                          value={editedUser?.categoryIds?.join(', ') || ''}
-                          onChange={(e) => {
-                            const value = e.target.value
-                              .split(',')
-                              .map((id) => id.trim());
-                            setEditedUser({
-                              ...editedUser,
-                              categoryIds: value,
-                            });
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
                   </TableBody>
                 </Table>
               )}
