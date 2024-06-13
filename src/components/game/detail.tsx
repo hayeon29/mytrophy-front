@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+
 'use client';
 
 import React from 'react';
@@ -29,9 +31,11 @@ export default function GameDetail({ gameDetail }) {
     return requirement.replace(/[:*]/g, '');
   };
 
+  console.log(gameDetail);
+
   return (
-    <div className="w-full min-h-[550px] py-8 m-0 block">
-      <div className="w-full min-h-[500px] px-6 py-7 block bg-[#F6F7FF] rounded-[20px]">
+    <div className="w-full min-h-[450px] py-8 m-0 block">
+      <div className="w-full min-h-[400px] px-6 py-7 block bg-[#F6F7FF] rounded-[20px]">
         <div className="w-full min-h-[10%] mb-4 text-lg flex items-start bg-none">
           <span className="text" style={{ wordWrap: 'break-word' }}>
             {gameDetail.description}
@@ -41,11 +45,11 @@ export default function GameDetail({ gameDetail }) {
           <div className="w-full h-[33%] flex justify-start items-start">
             <span className="text-base font-bold mr-2 mb-2">가격</span>
             <span className="text-base">
-              {gameDetail.price === 0
-                ? '무료'
-                : `${gameDetail.price
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
+              {gameDetail.price === null
+                ? '가격 정보 없음'
+                : gameDetail.price === 0
+                  ? '무료'
+                  : `${gameDetail.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
             </span>
           </div>
           <div className="w-full h-[33%] flex justify-start items-start">
