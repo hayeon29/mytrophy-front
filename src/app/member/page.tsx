@@ -37,7 +37,7 @@ export default function MyPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { modals, openModal, closeModal } = useModal();
   const [totalArticles, setTotalArticles] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const handleClickTab = (event: React.MouseEvent<HTMLDivElement>) => {
     const eventTarget = event.target;
     if (eventTarget instanceof HTMLSpanElement) {
@@ -144,14 +144,17 @@ export default function MyPage() {
 
   useEffect(() => {
     const fetchLikedArticles = async () => {
-      const response = await articleAPI.getLikedArticlesByMemberId(userInfo.id, currentPage - 1, 10);
-    const { content } = response;
-    const totalCount = content.length;
-    setTotalArticles(totalCount);
-      }
+      const response = await articleAPI.getLikedArticlesByMemberId(
+        userInfo.id,
+        currentPage - 1,
+        10
+      );
+      const { content } = response;
+      const totalCount = content.length;
+      setTotalArticles(totalCount);
+    };
     fetchLikedArticles();
-    }, [currentPage, userInfo.id]);
-
+  }, [currentPage, userInfo.id]);
 
   const handleProfileEdit = () => {
     openModal(<ProfileEdit onClick={closeModal} />);
@@ -362,7 +365,12 @@ export default function MyPage() {
         )}
         {selectedTab === 2 && <UserArticle />}
         {selectedTab === 3 && <UserRecommend />}
-        {selectedTab !== 0 && <PageSelectButton currentPage={1} />}
+        {selectedTab !== 0 && (
+          <PageSelectButton
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
       </div>
     </>
   );

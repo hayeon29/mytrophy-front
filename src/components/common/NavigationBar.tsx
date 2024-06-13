@@ -162,6 +162,18 @@ export default function NavigationBar() {
     setIsMounted(true);
   }, []);
 
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const searchInput = (event.target as HTMLFormElement).elements.namedItem(
+      'search'
+    ) as HTMLInputElement;
+    console.log(searchInput);
+    const searchQuery = searchInput.value;
+    if (searchQuery.length > 0) {
+      router.push(`/gamelist?keyword=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   return (
     <>
       {modals.length > 0 &&
@@ -279,25 +291,35 @@ export default function NavigationBar() {
             </NavbarContent>
           </div>
           <div className="flex items-center gap-8">
-            <Input
-              classNames={{
-                base: 'max-w-full sm:max-w-48 ',
-                mainWrapper: 'h-full',
-                input: 'text-small',
-              }}
-              radius="full"
-              size="md"
-              placeholder="검색"
-              startContent={
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center space-x-2"
+            >
+              <Input
+                name="search"
+                classNames={{
+                  base: 'max-w-full sm:max-w-48 ',
+                  mainWrapper: 'h-full',
+                  input: 'text-small',
+                }}
+                radius="full"
+                size="md"
+                placeholder="검색"
+                type="search"
+              />
+              <Button
+                type="submit"
+                className="bg-white p-0 flex justify-center items-center rounded-3xl"
+                style={{ width: '35px', height: '35px' }}
+              >
                 <Image
                   src="/svgs/search.svg"
                   alt="search icon"
                   width={18}
                   height={18}
                 />
-              }
-              type="search"
-            />
+              </Button>
+            </form>
             {isMounted && isLoggedInState && (
               <NavbarContent className="text-sm">
                 <NavbarItem>
