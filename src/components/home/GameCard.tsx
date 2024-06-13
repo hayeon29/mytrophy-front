@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Card,
-  CardFooter,
-  CardBody,
-  Image,
-  Button,
-  useDisclosure,
-} from '@nextui-org/react';
+import { Card, CardFooter, CardBody, Image, Button, useDisclosure } from '@nextui-org/react';
 import { FaCheck, FaTimes } from 'react-icons/fa';
-import {
-  FaRegFaceFrown,
-  FaRegFaceGrin,
-  FaRegFaceGrinSquint,
-} from 'react-icons/fa6';
+import { FaRegFaceFrown, FaRegFaceGrin, FaRegFaceGrinSquint } from 'react-icons/fa6';
 import homeAPI from '@/services/home';
 import Link from 'next/link';
 import Category from './Category';
 import GameReviewModal from './GameReviewModal';
+import { useRecoilValue } from 'recoil';
+import { loginState } from '@/recoils/loginAtom';
 
 export default function GameCard({ game, idKey }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [reviewIcon, setReviewIcon] = useState(
-    <FaRegFaceGrin className="text-gray-400" />
-  );
+  const [reviewIcon, setReviewIcon] = useState(<FaRegFaceGrin className="text-gray-400" />);
+  const isLoggedIn = useRecoilValue(loginState); // 로그인 여부 가져오기
 
   useEffect(() => {
     async function fetchReviewStatus() {
@@ -129,14 +119,16 @@ export default function GameCard({ game, idKey }) {
               >
                 {game.name}
               </Link>
-              <Button
-                isIconOnly
-                color="default"
-                onPress={onOpen}
-                className="bg-transparent"
-              >
-                {React.cloneElement(reviewIcon, { size: 24 })}
-              </Button>
+              {isLoggedIn && ( // 로그인한 경우에만 리뷰 아이콘 표시
+                <Button
+                  isIconOnly
+                  color="default"
+                  onPress={onOpen}
+                  className="bg-transparent"
+                >
+                  {React.cloneElement(reviewIcon, { size: 24 })}
+                </Button>
+              )}
             </div>
             <div className="h-[56px]">
               <div className="flex flex-wrap gap-2">
