@@ -95,8 +95,6 @@ function ArticleDetail({ params }: Props) {
     }
   };
 
-  // const getCommentAuthor = (commentId: string) => {};
-
   const handleEditSubmit = async (commentId: string) => {
     try {
       await commentAPI.updateComment(commentId, editContent);
@@ -339,8 +337,188 @@ function ArticleDetail({ params }: Props) {
                   <Button color="danger" variant="light" onPress={onClose}>
                     취소
                   </Button>
-                  <Button color="primary">수정</Button>
-                  {/* 삭제 완료 모달 */}
+                  <Button className="py-2 px-4 rounded" color="primary" variant="bordered" onPress={() => setIsPostModalOpen(true)}>수정</Button>
+
+                  {/* 게시글 작성 모달창 */}
+                  <Modal
+                      isOpen={isPostModalOpen}
+                      size="4xl"
+                      onOpenChange={handleClosePostModal}
+                      placement={modalPlacement}
+                  >
+                    <ModalContent>
+                      {(onClose) => (
+                          <>
+                            <ModalHeader className="flex flex-col gap-1">
+                              게시글 수정
+                            </ModalHeader>
+                            <ModalBody>
+                              <div className="flex gap-2">
+                                <Button
+                                    color="primary"
+                                    variant={activeButton === 'FREE_BOARD' ? 'solid' : 'ghost'}
+                                    onClick={() => handleButtonClick('FREE_BOARD')}
+                                >
+                                  자유
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant={activeButton === 'INFORMATION' ? 'solid' : 'ghost'}
+                                    onClick={() => handleButtonClick('INFORMATION')}
+                                >
+                                  정보
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant={activeButton === 'GUIDE' ? 'solid' : 'ghost'}
+                                    onClick={() => handleButtonClick('GUIDE')}
+                                >
+                                  공략
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant={activeButton === 'REVIEW' ? 'solid' : 'ghost'}
+                                    onClick={() => handleButtonClick('REVIEW')}
+                                >
+                                  리뷰
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
+                                    onClick={() => handleButtonClick('CHATING')}
+                                >
+                                  채팅
+                                </Button>
+                              </div>
+
+                              <div>
+                                <div className="flex items-center gap-4">
+                                  <Input
+                                      type="text"
+                                      label="게임을 검색해주세요."
+                                      value={searchValue}
+                                      onChange={(e) => setSearchValue(e.target.value)}
+                                  />
+
+                                  <Button
+                                      color="primary"
+                                      className="text-white"
+                                      onClick={handleSearch}
+                                      disabled={isLoading}
+                                  >
+                                    {isLoading ? '검색 중...' : '게임 검색'}
+                                  </Button>
+                                </div>
+                              </div>
+                              <>
+                                <Modal isOpen={isSearchModalOpen} onOpenChange={handleCloseSearchModal}>
+                                  <ModalContent>
+                                    {(onClose) => (
+                                        <>
+                                          <ModalHeader className="flex flex-col gap-1 items-center">게임 검색</ModalHeader>
+                                          <ModalBody className="flex mx-auto">
+                                            <div className="flex flex-col items-center gap-4">
+                                              {searchResults.map((game, index) => (
+                                                  <div key={index} className="flex items-center gap-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={() => handleGameSelect(game.id, game.name)}
+                                                        checked={selectedGameId === game.id} // 선택한 게임이 체크되도록 확인
+                                                    />
+                                                    <label>{game.name}</label>
+                                                  </div>
+                                              ))}
+                                            </div>
+                                          </ModalBody>
+                                          <ModalFooter>
+                                            <Button color="danger" variant="light" onPress={onClose}>
+                                              취소
+                                            </Button>
+                                            <Button color="primary" onPress={() => handleGameSelectAppId(selectedGameId, selectedGameName, onClose)}>
+                                              선택
+                                            </Button>
+                                          </ModalFooter>
+                                        </>
+                                    )}
+                                  </ModalContent>
+                                </Modal>
+                              </>
+
+                              <hr style={{ border: '1px solid #ddd' }} />
+                              <p>제목</p>
+                              <Textarea
+                                  name="name"
+                                  value={userInfo.name}
+                                  onChange={handleInput}
+                                  placeholder="제목을 입력해주세요."
+                                  className="mb-4"
+                              />
+                              <p>내용</p>
+                              <Textarea
+                                  name="content"
+                                  value={userInfo.content}
+                                  onChange={handleInput}
+                                  placeholder="내용을 입력해주세요."
+                                  className="mb-4"
+                              />
+                              <hr style={{ border: '1px solid #ddd' }} />
+                              {/*  파일 업로드  */}
+                              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <label
+                                    htmlFor="fileUpload"
+                                    style={{
+                                      cursor: 'pointer',
+                                      maxWidth: '81px',
+                                      border: '1px solid #ccc',
+                                      padding: '5px',
+                                      borderRadius: '5px',
+                                    }}
+                                >
+                                  파일 선택
+                                </label>
+                                <Button color="danger" variant="light" onClick={handleDeleteAllFiles}>
+                                  파일 전체 삭제
+                                </Button>
+                                <Button color="danger" variant="light" onClick={handleDeleteSelectedFiles}>
+                                  선택된 파일 삭제
+                                </Button>
+                              </div>
+                              <input
+                                  type="file"
+                                  multiple
+                                  id="fileUpload"
+                                  onChange={handleFileChange}
+                                  style={{ display: 'none' }}
+                              />
+                              {selectedFiles.map((file, index) => (
+                                  <div key={file.name}>
+                                    <label>
+                                      <Checkbox
+                                          checked={!!checkedFiles[index]}
+                                          onChange={() => handleCheckboxChange(index)}
+                                      />
+                                      <span>{file.name}</span>
+                                    </label>
+                                  </div>
+                              ))}
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button color="danger" onPress={() => handleArticleDeleteSubmit(articleId)}>
+                                삭제
+                              </Button>
+                              <Button color="danger" variant="light" onPress={onClose}>
+                                취소
+                              </Button>
+                              <Button color="primary" onPress={() => handleClickEditArticle(onClose)}>
+                                수정
+                              </Button>
+                            </ModalFooter>
+                          </>
+                      )}
+                    </ModalContent>
+                  </Modal>
+
+                {/* 삭제 완료 모달 */}
                 </ModalFooter>
               </>
             )}
