@@ -359,7 +359,7 @@ export default function Game({ params }: Props) {
                     .map((eachCategory: GetGameCategoryDTO) => (
                       <span
                         key={category.id}
-                        className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
+                        className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1 cursor-default"
                       >
                         {eachCategory.name}
                       </span>
@@ -380,7 +380,7 @@ export default function Game({ params }: Props) {
                     .map((eachCategory: GetGameCategoryDTO) => (
                       <span
                         key={eachCategory.id}
-                        className="inline-block h-min text-[12px] text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
+                        className="inline-block h-min text-[12px] cursor-default text-[#2e396c] text-center bg-[#d2daf8] rounded-[2px] px-0.5 mr-1.5 mt-1"
                       >
                         {eachCategory.name}
                       </span>
