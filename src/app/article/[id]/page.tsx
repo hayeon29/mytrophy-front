@@ -437,8 +437,7 @@ function ArticleDetail({ params }: Props) {
         </div>
         <hr style={{ border: '1px solid #ddd' }} className="mt-20" />
         <div className="flex justify-center items-center mt-5">
-          <p className="mr-60 text-lg text-primary">좋아요</p>
-          <p className="text-lg text-primary">공유하기</p>
+          <p className="text-lg text-primary">좋아요</p>
         </div>
         <hr style={{ border: '1px solid #ddd' }} className="mt-5" />
 

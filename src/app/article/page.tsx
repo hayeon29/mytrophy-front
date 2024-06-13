@@ -277,6 +277,11 @@ export default function Article() {
       }
     };
 
+  const displayHeader = (header) => {
+    if (header === 'CHATING') return 'CHATTING';
+    return header;
+  };
+
   const handleMouseEnter = (articleId) => {
     setShowLikeLabel((prev) => ({
       ...prev,
@@ -290,7 +295,6 @@ export default function Article() {
       [articleId]: false
     }));
   };
-
 
     return (
         <div className="bg-white h-screen mx-auto">
@@ -545,7 +549,7 @@ export default function Article() {
                           </h4>
                       </div>
                       <span className={`${getBackgroundColor(article.header)} rounded-sm text-white px-2 py-0.5 text-sm mr-2`}>
-                        {article.header}
+                        {displayHeader(article.header)}
                       </span>
 
                     </div>
