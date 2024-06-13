@@ -1,18 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardFooter, CardBody, Image, Button, useDisclosure } from '@nextui-org/react';
+import {
+  Card,
+  CardFooter,
+  CardBody,
+  Image,
+  Button,
+  useDisclosure,
+} from '@nextui-org/react';
 import { FaCheck, FaTimes } from 'react-icons/fa';
-import { FaRegFaceFrown, FaRegFaceGrin, FaRegFaceGrinSquint } from 'react-icons/fa6';
+import {
+  FaRegFaceFrown,
+  FaRegFaceGrin,
+  FaRegFaceGrinSquint,
+} from 'react-icons/fa6';
 import homeAPI from '@/services/home';
 import Link from 'next/link';
+import { useRecoilValue } from 'recoil';
+import { userState } from '@/recoils/userAtom';
 import Category from './Category';
 import GameReviewModal from './GameReviewModal';
-import { useRecoilValue } from 'recoil';
-import { loginState } from '@/recoils/loginAtom';
 
 export default function GameCard({ game, idKey }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [reviewIcon, setReviewIcon] = useState(<FaRegFaceGrin className="text-gray-400" />);
-  const isLoggedIn = useRecoilValue(loginState); // 로그인 여부 가져오기
+  const [reviewIcon, setReviewIcon] = useState(
+    <FaRegFaceGrin className="text-gray-400" />
+  );
+  const isLoggedIn = useRecoilValue(userState); // 로그인 여부 가져오기
 
   useEffect(() => {
     async function fetchReviewStatus() {
