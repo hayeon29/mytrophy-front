@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import articleAPI from '@/services/article';
 import { GameArticleDTO } from '@/types/GameDetail';
 import { Pagination, Avatar } from '@nextui-org/react';
+import Link from 'next/link';
 
 export default function GameReview({ appId }) {
   const [gameArticleDTOList, setGameArticleDTOList] = useState<
@@ -53,9 +54,11 @@ export default function GameReview({ appId }) {
               />
               <div className="w-[824px] flex  p-[24px] bg-[#f6f7ff] rounded-[15px] ">
                 <div className="w-[80%] whitespace-pre-wrap overflow-hidden">
-                  <span className="text" style={{ wordWrap: 'break-word' }}>
-                    {article.content}
-                  </span>
+                  <Link href="/article">
+                    <span className="text" style={{ wordWrap: 'break-word' }}>
+                      {article.content}
+                    </span>
+                  </Link>
                 </div>
                 <div className="w-[20%] flex items-end justify-end whitespace-pre-wrap overflow-hidden">
                   <span className="text" style={{ wordWrap: 'break-word' }}>
