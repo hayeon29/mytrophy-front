@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5720629-f8b1-44a4-b862-2c2ca3474566" name="Changes" comment="Refactor: dev merge">
+    <list default="true" id="f5720629-f8b1-44a4-b862-2c2ca3474566" name="Changes" comment="fix: CHATTING 수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/article/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/article/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/home/ArticleCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/home/ArticleCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config/AxiosConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/AxiosConfig.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/article.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/article.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,7 +89,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718258121912</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="fix: CHATTING 수정">
+      <option name="closed" value="true" />
+      <created>1718260083619</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1718260083619</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,6 +118,7 @@
     <MESSAGE value="Refactor: workspace" />
     <MESSAGE value="feat: 마이페이지 내가 좋아요 누른 게시물 출력 기능 추가" />
     <MESSAGE value="Refactor: dev merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor: dev merge" />
+    <MESSAGE value="fix: CHATTING 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: CHATTING 수정" />
   </component>
 </project>

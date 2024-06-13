@@ -270,7 +270,7 @@ export default function Article() {
           return 'bg-yellow-500';
         case 'REVIEW':
           return 'bg-red-500';
-        case 'CHATTING':
+        case 'CHATING':
           return 'bg-black';
         default:
           return 'bg-gray-500';
@@ -326,8 +326,8 @@ export default function Article() {
               </Button>
               <Button
                   color="primary"
-                  variant={activeButton === 'CHATTING' ? 'solid' : 'ghost'}
-                  onClick={() => handleClick('CHATTING')}
+                  variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
+                  onClick={() => handleClick('CHATING')}
               >
                 채팅
               </Button>
@@ -392,8 +392,8 @@ export default function Article() {
                         </Button>
                         <Button
                             color="primary"
-                            variant={activeButton === 'CHATTING' ? 'solid' : 'ghost'}
-                            onClick={() => handleButtonClick('CHATTING')}
+                            variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
+                            onClick={() => handleButtonClick('CHATING')}
                         >
                           채팅
                         </Button>

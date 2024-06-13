@@ -41,7 +41,7 @@ function ArticleCard({ article }: ArticleCardProps) {
     INFORMATION: '정보',
     GUIDE: '공략',
     REVIEW: '리뷰',
-    CHATTING: '채팅',
+    CHATING: '채팅',
   };
 
   const headerText = headerMapping[article.header] || article.header;
