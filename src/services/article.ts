@@ -3,8 +3,12 @@ import api from '@/config/AxiosConfig';
 const API_URL = process.env.NEXT_PUBLIC_ARTICLE_API_URL;
 
 const articleAPI = {
-    async getArticleList(page = 1, size = 10) {
-        return (await api.get(`${API_URL}?page=${page}&size=${size}`)).data;
+    async getArticleList(page = 1, size = 10, memberId?: number) {
+        let url = `${API_URL}?page=${page}&size=${size}`;
+        if (memberId) {
+            url += `&memberId=${memberId}`;
+        }
+        return (await api.get(url)).data;
     },
 
     async getArticlesByHeader(header: string, page = 1, size = 10) {
@@ -65,17 +69,12 @@ const articleAPI = {
     },
 
     async articleFileUpload(formData: FormData) {
-        try {
             const response = await api.post<string[]>(`${API_URL}/files`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
             return response.data;
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            throw error;
-        }
     },
 
   async articleDelete(articleId: string) {

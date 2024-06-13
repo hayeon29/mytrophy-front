@@ -17,7 +17,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useDisclosure,
   Textarea, Checkbox
 } from "@nextui-org/react";
 
@@ -32,28 +31,22 @@ function ArticleDetail({ params }: Props) {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [gameDetail, setGameDetail] = useState(null); // 게임의 상세 정보 상태 추가
-  const [commentAuthors, setCommentAuthors] = useState({});
   const [newComment, setNewComment] = useState("");
   const [isCommentEditOpen, setCommentEditOpen] = useState(false);
   const [editContent, setEditContent] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
   const [selectedComment, setSelectedComment] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const modalPlacement = 'center';
   const [activeButton, setActiveButton] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [checkedFiles, setCheckedFiles] = useState<boolean[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState('');
   const [selectedGameName, setSelectedGameName] = useState('');
-  const [gameTotalPages, setGameTotalPages] = useState(1);
-  const [isLiked, setIsLiked] = useState(false);
   const [selectedCommentId, setSelectedCommentId] = useState('');
   const [selectedCommentNickname, setSelectedCommentNickname] = useState('');
   const [selectedDeleteComment, setSelectedDeleteComment] = useState('');
@@ -66,17 +59,12 @@ function ArticleDetail({ params }: Props) {
   });
 
   const getMemberByToken = async () => {
-    try {
       const response = await membersAPI.getUserInfo();
       setMemberInfo(response.data);
-    } catch (error) {
-      console.error('토큰으로 멤버 정보를 가져오는 데 실패했습니다:', error);
-    }
   };
 
   useEffect(() => {
     const fetchArticleDetail = async () => {
-      try {
         setLoading(true);
         const articleDetail = await articleAPI.getArticleDetail(articleId);
         setArticle(articleDetail);
@@ -85,66 +73,33 @@ function ArticleDetail({ params }: Props) {
         const gameDetailData = await gameAPI.getGameDetail(articleDetail.appId);
         setGameDetail(gameDetailData);
 
-        // 댓글 작성자 정보 가져오기
-        const authorPromises = articleDetail.comments.map(async (comment) => {
-          const commentMemberDetail = await membersAPI.getMemberById(comment.memberId);
-          return { commentId: comment.id, ...commentMemberDetail };
-        });
-
-        const authors = await Promise.all(authorPromises);
-        const authorsMap = authors.reduce((acc, author) => {
-          acc[author.commentId] = author;
-          return acc;
-        }, {});
-
-        console.log(articleDetail);
-        setCommentAuthors(authorsMap);
-      } catch (error) {
-        console.error('Error fetching article detail:', error);
-      } finally {
         setLoading(false);
-      }
-    };
+      };
 
     fetchArticleDetail();
     getMemberByToken();
-    const isLiked = localStorage.getItem('isLiked') === 'true';
-    setIsLiked(isLiked);
   }, [articleId]);
 
 
 
   const handleCommentSubmit = async (articleId, newComment, selectedCommentId) => {
-    try {
       await commentAPI.createComment(articleId, newComment, selectedCommentId);
       setNewComment('');
       window.location.reload();
-    } catch (error) {
-      console.error('Error creating comment:', error);
-    }
   };
 
 
   const handleEditSubmit = async (commentId: string, onClose) => {
-    try {
       await commentAPI.updateComment(commentId, editContent);
-      setIsEditing(false);
       setEditContent('');
       window.location.reload();
       onClose();
-    } catch (error) {
-      console.error('Error updating comment:', error);
-    }
   };
 
   const handleDeleteSubmit = async (commentId: string) => {
-    try {
       await commentAPI.deleteComment(commentId);
       setIsDeleteModalOpen(false);
       window.location.reload();
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-    }
   };
 
 
@@ -155,9 +110,6 @@ function ArticleDetail({ params }: Props) {
   if (!article) {
     return <div>Article not found</div>;
   }
-
-  const createdAtDate = new Date(article.createdAt);
-  const formattedDate = `${createdAtDate.getFullYear()}년 ${createdAtDate.getMonth() + 1}월 ${createdAtDate.getDate()}일 ${createdAtDate.getHours()}시 ${createdAtDate.getMinutes()}분`;
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
@@ -210,24 +162,15 @@ function ArticleDetail({ params }: Props) {
   };
 
   const handleArticleDeleteSubmit = async (articleId: string) => {
-    try {
       await articleAPI.articleDelete(articleId);
       window.location.href = '/article';
-    } catch (error) {
-      console.error('게시글 삭제에 실패했습니다:', error);
-    }
   };
 
   const handleSearch = async () => {
-    try {
       setIsLoading(true);
-      const response = await gameAPI.searchGameByName(currentPage - 1, 10, searchValue);
+      const response = await gameAPI.searchGameByName(0, 10, searchValue);
       setSearchResults(response.content);
       setIsSearchModalOpen(true);
-      setGameTotalPages(response.totalPages);
-    } catch (error) {
-      console.error('게임 검색에 실패했습니다:', error);
-    }
   }
 
   const handleCloseSearchModal = () => {
@@ -249,7 +192,6 @@ function ArticleDetail({ params }: Props) {
   };
 
   const handleClickEditArticle = async (onClose) => {
-    try {
       let fileUrls = null;
 
       if (selectedFiles.length > 0) {
@@ -268,11 +210,7 @@ function ArticleDetail({ params }: Props) {
           selectedGameId, // 선택한 게임의 selectedGameId 사용
           fileUrls
       );
-
       onClose();
-    } catch (error) {
-      console.error('게시글 수정에 실패했습니다:', error);
-    }
   };
 
   const handleDeleteCommentId = (commentId) => {
@@ -285,16 +223,9 @@ function ArticleDetail({ params }: Props) {
   }
 
   const handleLike = async (commentId) => {
-    try {
-      // 게시글을 추천하고 결과를 받아옴
-      const response = await commentAPI.commentLike(commentId);
-      localStorage.setItem('isLiked', 'true');
-      window.location.reload();
-      setIsLiked(true);
-    } catch (error) {
-      // 오류 발생 시
-      console.error('댓글 추천에 실패했습니다:', error);
-    }
+    await commentAPI.commentLike(commentId);
+    localStorage.setItem('isLiked', 'true');
+    window.location.reload();
   };
 
   const handleReply = (commentId, commentNickname) => {
@@ -599,7 +530,7 @@ function ArticleDetail({ params }: Props) {
                       <p className="mr-4 text-sm text-gray">
                         {new Date(comment.createdAt).toLocaleString()}
                       </p>
-                      <button className="border-none text-sm" onClick={() => handleReply(comment.id, comment.nickname)}>
+                      <button type="submit" className="border-none text-sm" onClick={() => handleReply(comment.id, comment.nickname)}>
                         답글달기
                       </button>
                     </div>
@@ -610,6 +541,7 @@ function ArticleDetail({ params }: Props) {
                               className="py-2 px-4 rounded mb-2 w-20"
                               variant="ghost"
                               color="primary"
+                              type="submit"
                               onClick={() => handleLike(comment.id)} // API 호출 연결
                           >
                             좋아요 {comment.likes}
