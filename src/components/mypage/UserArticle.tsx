@@ -1,16 +1,21 @@
 import { Divider } from '@nextui-org/react';
-import ArticleThumbnail from './ArticleThumbnail';
+import UserArticleList from './UserArticleList';
+import {useState} from "react";
 
 export default function UserArticle() {
+    const [totalArticles, setTotalArticles] = useState(0);
+
+    const handleUpdateMyArticleCount = (count) => {
+        setTotalArticles(count);
+    };
+
   return (
     <div className="flex flex-col gap-4">
       <span className="font-bold">내 게시글</span>
       <Divider className="bg-primary" />
-      <span className="text-blackGray">총 OO개</span>
+      <span className="text-blackGray">총 {totalArticles}개</span>
       <div className="flex flex-col gap-6">
-        <ArticleThumbnail />
-        <ArticleThumbnail />
-        <ArticleThumbnail />
+        <UserArticleList onUpdateMyArticleCount={handleUpdateMyArticleCount}/>
       </div>
     </div>
   );

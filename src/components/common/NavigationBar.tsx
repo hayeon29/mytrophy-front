@@ -28,7 +28,7 @@ import { AxiosError } from 'axios';
 import { userState } from '@/recoils/userAtom';
 import { UserInfo } from '@/types/UserInfo';
 import { useRecoilState } from 'recoil';
-import { loginState } from '@/recoils/loginAtom';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 export default function NavigationBar() {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -45,7 +45,6 @@ export default function NavigationBar() {
   });
 
   const [loginUserState, setLoginUserState] = useRecoilState(userState);
-  const [isLoggedInState, setIsLoggedInState] = useRecoilState(loginState);
 
   const path = usePathname();
   const router = useRouter();
@@ -85,31 +84,34 @@ export default function NavigationBar() {
             onClick={closeModal}
           />
         );
-        const memberInfo = await membersAPI.getUserInfo();
-        const {
-          username,
-          nickname,
-          id,
-          steamId,
-          name,
-          email,
-          imagePath,
-          loginType,
-        } = memberInfo.data as UserInfo;
-        setLoginUserState({
-          username,
-          nickname,
-          id,
-          steamId,
-          name,
-          email,
-          imagePath,
-          loginType,
-        });
-        setIsLoggedInState(true);
-        onClose();
-        router.refresh();
-        window.location.reload();
+
+        try {
+          const memberInfo = await membersAPI.getUserInfo();
+          const {
+            username,
+            nickname,
+            id,
+            steamId,
+            name,
+            email,
+            imagePath,
+            loginType,
+          } = memberInfo.data as UserInfo;
+          setLoginUserState({
+            username,
+            nickname,
+            id,
+            steamId,
+            name,
+            email,
+            imagePath,
+            loginType,
+          });
+          onClose();
+          router.refresh();
+        } catch (error) {
+          handleAxiosError(error);
+        }
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -153,7 +155,6 @@ export default function NavigationBar() {
     const response = await membersAPI.logout();
     if (response.status === 200) {
       LocalStorage.removeItem('access');
-      setIsLoggedInState(false);
       setLoginUserState(null);
       router.refresh();
     }
@@ -304,7 +305,7 @@ export default function NavigationBar() {
                 />
               </Button>
             </form>
-            {isMounted && isLoggedInState && (
+            {isMounted && loginUserState && (
               <NavbarContent className="text-sm">
                 <NavbarItem>
                   <button
@@ -322,7 +323,7 @@ export default function NavigationBar() {
                 </NavbarItem>
                 <div className="flex items-center gap-4">
                   <span className="text-white">
-                    {loginUserState?.nickname || loginUserState?.username}
+                    {loginUserState?.nickname || loginUserState?.name || '유저'}
                   </span>
                   {loginUserState?.imagePath !== null && isMounted ? (
                     <Avatar

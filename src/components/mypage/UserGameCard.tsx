@@ -29,7 +29,6 @@ interface UserGameCardProps {
     id: number,
     newStatus: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT'
   ) => void;
-  isMissing: boolean;
 }
 
 const iconStyle = {
@@ -59,7 +58,6 @@ export default function UserGameCard({
   playtime,
   reviewStatus,
   onReviewChange,
-  isMissing,
 }: UserGameCardProps) {
   const [showPopover, setShowPopover] = useState(false);
   const [currentIcon, setCurrentIcon] = useState<React.ReactElement>(
@@ -72,11 +70,9 @@ export default function UserGameCard({
   }, [reviewStatus]);
 
   const handleReview = async (status: 'BAD' | 'GOOD' | 'PERFECT') => {
-    if (!isMissing) {
-      await onReviewChange(game.id, status);
-      setCurrentIcon(getIconByStatus(status));
-      setShowPopover(false);
-    }
+    await onReviewChange(game.id, status);
+    setCurrentIcon(getIconByStatus(status));
+    setShowPopover(false);
   };
 
   const handleMouseEnter = (e: React.MouseEvent<SVGElement>, color: string) => {
@@ -86,20 +82,6 @@ export default function UserGameCard({
   const handleMouseLeave = (e: React.MouseEvent<SVGElement>) => {
     e.currentTarget.style.color = iconStyle.default.color as string;
   };
-
-  if (isMissing) {
-    return (
-      <Card className="p-6 flex flex-row shadow-none drop-shadow-primary border-0 mb-4">
-        <CardBody className="text-black px-6 py-0 flex justify-between grow overflow-hidden">
-          <div>
-            <p className="font-bold mb-1">
-              mytrophy에 저장되지 않은 게임입니다
-            </p>
-          </div>
-        </CardBody>
-      </Card>
-    );
-  }
 
   return (
     <Card className="p-6 flex flex-row shadow-none drop-shadow-primary border-0 mb-4">

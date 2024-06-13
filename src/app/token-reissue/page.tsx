@@ -22,9 +22,26 @@ export default function Reissue() {
         if (response.status === 200) {
           LocalStorage.setItem('access', response.headers.access);
           const memberInfo = await membersAPI.getUserInfo();
-          const { username, id, nickname, steamId, imagePath } =
-            memberInfo.data as UserInfo;
-          setLoginUserState({ username, id, nickname, steamId, imagePath });
+          const {
+            username,
+            nickname,
+            id,
+            steamId,
+            name,
+            email,
+            imagePath,
+            loginType,
+          } = memberInfo.data as UserInfo;
+          setLoginUserState({
+            username,
+            nickname,
+            id,
+            steamId,
+            name,
+            email,
+            imagePath,
+            loginType,
+          });
           if (isFirstLogin) {
             router.replace('/select-category');
           } else {
