@@ -206,7 +206,6 @@ export default function MyPage() {
             <span className="text-black font-black mt-3 mb-8">
               {userInfo !== null &&
               userInfo !== undefined &&
-              userInfo?.nickname.length > 0 &&
               isMounted
                 ? userInfo?.nickname
                 : '유저'}

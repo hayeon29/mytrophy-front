@@ -7,7 +7,7 @@ import ReactPaginate from 'react-paginate';
 import { FaCheck, FaTimes } from "react-icons/fa";
 import Link from 'next/link';
 import { Pagination, Spinner } from '@nextui-org/react';
-
+import { useSearchParams } from 'next/navigation';
 
 export default function GameList() {
   const [gameDetails, setGameDetails] = useState([]);
@@ -60,10 +60,16 @@ export default function GameList() {
     return `${str.slice(0, num)}..`;
   };
 
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const keywordFromURL = searchParams.get('keyword') || '';
+    setKeyword(keywordFromURL);
+  }, [searchParams]);
+
   useEffect(() => {
     fetchTotalItems();
     handleApplyFilters();
-  }, [selectedCategoryIds, priceRange]);
+  }, [selectedCategoryIds, priceRange, keyword]);
 
   useEffect(() => {
     loadMoreData(currentPage);
@@ -131,9 +137,7 @@ export default function GameList() {
       setLoading(false);
     }
   };
-   const handleSearch = () => {
-      handleApplyFilters();
-    };
+
   return (
     <div className="bg-white py-5 sm:py-10">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -152,7 +156,7 @@ export default function GameList() {
               className="border border-gray-300 rounded-md p-2"
             />
             <button
-              onClick={handleSearch}
+              onClick={handleApplyFilters}
               className="bg-blue-500 text-white rounded-md p-2"
             >
               검색
