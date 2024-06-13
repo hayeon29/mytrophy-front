@@ -189,7 +189,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-start">
       <div className="w-full flex justify-center">
         <Image
-          src="/svgs/event_header.svg"
+          src="/image/event_header.png"
           alt="Event Header"
           width={1280}
           height={300}
