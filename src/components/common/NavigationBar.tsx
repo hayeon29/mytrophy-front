@@ -86,16 +86,25 @@ export default function NavigationBar() {
           />
         );
         const memberInfo = await membersAPI.getUserInfo();
-        const { username, id, nickname, steamId, name, email, imagePath } =
-          memberInfo.data as UserInfo;
-        setLoginUserState({
+        const {
           username,
-          id,
           nickname,
+          id,
           steamId,
           name,
           email,
           imagePath,
+          loginType,
+        } = memberInfo.data as UserInfo;
+        setLoginUserState({
+          username,
+          nickname,
+          id,
+          steamId,
+          name,
+          email,
+          imagePath,
+          loginType,
         });
         setIsLoggedInState(true);
         onClose();
@@ -301,10 +310,7 @@ export default function NavigationBar() {
                   </button>
                 </NavbarItem>
                 <NavbarItem>
-                  <Link
-                    href={`/member/${loginUserState?.id}`}
-                    className="text-white text-sm"
-                  >
+                  <Link href="/member" className="text-white text-sm">
                     마이페이지
                   </Link>
                 </NavbarItem>
@@ -313,18 +319,23 @@ export default function NavigationBar() {
                     {loginUserState?.nickname || loginUserState?.username}
                   </span>
                   {loginUserState?.imagePath !== null && isMounted ? (
-                    <Avatar src={loginUserState.imagePath} size="sm" />
+                    <Avatar
+                      src={loginUserState.imagePath}
+                      size="sm"
+                      style={{ width: 32, height: 32 }}
+                    />
                   ) : (
                     <Avatar
                       src="/svgs/person.svg"
                       size="sm"
                       className="bg-lightGray"
+                      style={{ width: 32, height: 32 }}
                     />
                   )}
                 </div>
               </NavbarContent>
             )}
-            {isMounted && !isLoggedInState && (
+            {isMounted && !loginUserState && (
               <div className="flex gap-2">
                 <Button
                   className="bg-white text-primary border-primary border-0 rounded-full"

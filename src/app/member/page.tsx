@@ -105,9 +105,26 @@ export default function MyPage() {
     async function handleUserInfo() {
       try {
         const memberInfo = await membersAPI.getUserInfo();
-        const { username, id, nickname, steamId, imagePath } =
-          memberInfo.data as UserInfo;
-        setUserInfo({ username, id, nickname, steamId, imagePath });
+        const {
+          username,
+          nickname,
+          id,
+          steamId,
+          name,
+          email,
+          imagePath,
+          loginType,
+        } = memberInfo.data as UserInfo;
+        setUserInfo({
+          username,
+          nickname,
+          id,
+          steamId,
+          name,
+          email,
+          imagePath,
+          loginType,
+        });
       } catch (error) {
         if (error instanceof AxiosError) {
           handleAxiosError(error);
@@ -200,13 +217,15 @@ export default function MyPage() {
                 alt="mypage user profile"
                 width={128}
                 height={128}
+                style={{ width: 128, height: 128 }}
+                priority
                 className="bg-lightGray rounded-full"
               />
             )}
             <span className="text-black font-black mt-3 mb-8">
               {userInfo !== null &&
               userInfo !== undefined &&
-              userInfo?.nickname.length > 0 &&
+              userInfo?.nickname?.length > 0 &&
               isMounted
                 ? userInfo?.nickname
                 : '유저'}
@@ -241,7 +260,7 @@ export default function MyPage() {
                     />
                   }
                 >
-                  스팀으로 로그인하기
+                  스팀 계정 연동하기
                 </Button>
               </div>
             )}

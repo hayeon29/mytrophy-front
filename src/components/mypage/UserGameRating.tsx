@@ -35,8 +35,10 @@ export default function UserGameRating({
                     src={value.headerImagePath}
                     width={256}
                     height={128}
+                    style={{ width: 256, height: 128 }}
                     className="rounded-xl"
                     alt={`${value.name} game header image`}
+                    priority
                   />
                 </CardHeader>
                 <CardBody className="text-black px-6 py-0 flex justify-between grow overflow-hidden">
@@ -82,8 +84,10 @@ export default function UserGameRating({
                       src={value.headerImagePath}
                       width={256}
                       height={128}
+                      style={{ width: 256, height: 128 }}
                       className="rounded-xl"
                       alt={`${value.name} game header image`}
+                      priority
                     />
                   </CardHeader>
                   <CardBody className="text-black px-6 py-0 flex justify-between grow overflow-hidden">

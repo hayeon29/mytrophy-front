@@ -2,6 +2,7 @@ type UserInfo = {
   [index: string]: string;
   username: string;
   id: string;
+  loginType: 'mytrophy' | 'naver' | 'steam' | 'google';
   nickname?: null | string;
   name?: null | string;
   email?: null | string;
