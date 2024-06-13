@@ -2,9 +2,19 @@ type UserInfo = {
   [index: string]: string;
   username: string;
   id: string;
-  nickname: null | string;
-  steamId: null | string;
-  imagePath: null | string;
+  nickname?: null | string;
+  name?: null | string;
+  email?: null | string;
+  steamId?: null | string;
+  imagePath?: null | string;
+};
+
+type UserEditInfo = {
+  username: string;
+  nickname?: null | string;
+  name?: null | string;
+  email?: null | string;
+  imagePath?: null | string;
 };
 
 type UserGameInfo = {
@@ -18,7 +28,7 @@ type UserAllGameInfo = {
   games: UserGameInfo[];
 };
 
-type UserGameAchievementInfo = {
+type UserGameAchievementDataInfo = {
   apiname: string;
   achieved: number;
   unlocktime: number;
@@ -27,20 +37,37 @@ type UserGameAchievementInfo = {
 type PlayerStats = {
   steamId: string;
   gameName: string;
-  achievements: UserGameAchievementInfo[];
+  achievements: UserGameAchievementDataInfo[];
   success: boolean;
 };
 
-type UserGameAchievementList = {
+type UserGameAchievementDataList = {
   data: {
     playerstats: PlayerStats;
   };
 };
 
+type AchievementInfo = {
+  name: string;
+  description: string;
+  imagePath: string;
+  achieved: boolean;
+  unlockTime: string;
+};
+
+type UserGameAchievementList = {
+  name: string;
+  imagePath: string;
+  achievements: AchievementInfo[];
+};
+
 export type {
   UserInfo,
+  UserEditInfo,
   UserGameInfo,
   UserAllGameInfo,
-  UserGameAchievementInfo,
+  UserGameAchievementDataInfo,
+  UserGameAchievementDataList,
+  AchievementInfo,
   UserGameAchievementList,
 };

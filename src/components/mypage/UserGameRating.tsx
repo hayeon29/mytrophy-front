@@ -64,7 +64,11 @@ export default function UserGameRating({
       {!isLoading && (
         <div>
           <p className="font-bold mb-6">
-            총 {userGameInfo.game_count} 개의 게임
+            총{' '}
+            {userGameInfo.game_count !== undefined
+              ? userGameInfo.game_count
+              : 0}{' '}
+            개의 게임
           </p>
           {gameInfo.map((value: GetGameDetailDTO, index) => {
             if (value !== undefined) {

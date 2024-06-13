@@ -29,7 +29,7 @@ export default function OkModal({
   }, [onOpen, onClose]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xs">
+    <Modal isOpen={isOpen} onClose={onClick} size="xs">
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>
         <ModalBody>{message}</ModalBody>

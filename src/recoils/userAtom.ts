@@ -11,7 +11,7 @@ const userState = atom<UserInfo>({
   effects_UNSTABLE: [persistAtom],
 });
 
-function useSSR() {
+function useUserStateSSR() {
   const [isInitial, setIsInitial] = useState(true);
   const [value, setValue] = useRecoilState(userState);
 
@@ -22,4 +22,4 @@ function useSSR() {
   return [isInitial ? null : value, setValue] as const;
 }
 
-export { userState, useSSR };
+export { userState, useUserStateSSR };
