@@ -11,7 +11,9 @@ export async function handleAxiosError(error: AxiosError | Error) {
           try {
             const response = await authAPI.reissue();
             localStorage.setItem('access', response.headers.access);
-            window.location.reload();
+            if (typeof window !== 'undefined') {
+              window.location.reload();
+            }
           } catch (reissueError) {
             // 리프레시 토큰 만료 시
             await membersAPI.logout();
