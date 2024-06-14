@@ -1,7 +1,7 @@
 import api from '@/config/AxiosConfig';
 import LocalStorage from '@/constants/LocalStorage';
 import { UserGameAchievementList, UserInfo } from '@/types/UserInfo';
-import { Get } from '@/utils/axiosMethod';
+import { Get, Patch } from '@/utils/axiosMethod';
 
 const API_URL = '/api/members';
 
@@ -64,9 +64,24 @@ const membersAPI = {
 
   async logout() {
     const token = LocalStorage.getItem('access');
-    return api.post(`/logout`, {
-      headers: { access: `${token}` },
-    });
+    return api.post(
+      `/logout`,
+      {},
+      {
+        headers: { access: `${token}` },
+      }
+    );
+  },
+
+  async patchCategories(id: string, categoryIds: number[]) {
+    const token = LocalStorage.getItem('access');
+    return Patch<string>(
+      `${API_URL}/${id}/categories`,
+      { categoryIds },
+      {
+        headers: { access: `${token}` },
+      }
+    );
   },
 };
 

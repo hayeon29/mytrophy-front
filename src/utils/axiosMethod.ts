@@ -21,3 +21,12 @@ export const Post = async <T>(
   const response = await api.post(url, data, config);
   return response;
 };
+
+export const Patch = async <T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig
+): Promise<AxiosResponse<T>> => {
+  const response = await api.patch(url, data, config);
+  return response;
+};
