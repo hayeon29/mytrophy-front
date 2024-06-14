@@ -18,7 +18,6 @@ import { GetGameDetailDTO } from '@/types/GameDetail';
 import dayjs from 'dayjs';
 import { useModal } from '@/hooks/useModal';
 import ProfileEdit from '@/components/modals/ProfileEdit';
-// import PageSelectButton from '@/components/common/PageSelectButton';
 import {
   useGameDetail,
   useMemberGameAchievementQueries,
