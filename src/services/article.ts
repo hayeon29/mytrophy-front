@@ -3,7 +3,12 @@ import api from '@/config/AxiosConfig';
 const API_URL = process.env.NEXT_PUBLIC_ARTICLE_API_URL;
 
 const articleAPI = {
-  async getArticleList(page = 1, size = 10, memberId?: string, cntUp?: boolean) {
+  async getArticleList(
+    page = 1,
+    size = 10,
+    memberId?: string,
+    cntUp?: boolean
+  ) {
     let url = `${API_URL}?page=${page}&size=${size}`;
     if (memberId) {
       url += `&memberId=${memberId}`;
@@ -124,12 +129,12 @@ const articleAPI = {
     }
 
     const response = await api.get(
-        `${API_URL}/liked/${memberId}?page=${page}&size=${size}`,
-        {
-          headers: {
-            'access': accessToken,
-          },
-        }
+      `${API_URL}/liked/${memberId}?page=${page}&size=${size}`,
+      {
+        headers: {
+          access: accessToken,
+        },
+      }
     );
 
     return response.data;

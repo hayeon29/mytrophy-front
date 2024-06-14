@@ -10,6 +10,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Category from '@/components/home/Category';
 import { HomeCategory } from '@/types/HomeCategory';
 import GAME_CATEGORY from '@/constants/gameCategory';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 export default function GameList() {
   const [gameDetails, setGameDetails] = useState([]);
@@ -69,15 +70,6 @@ export default function GameList() {
     router.push(`/gamelist?page=${page}`);
   };
 
-  // const fetchTotalItems = async () => {
-  //   try {
-  //     // const response = await gameAPI.getTotalItems();
-  //     // setTotalItems(response);
-  //   } catch (error) {
-  //     // console.error('Error fetching total items:', error);
-  //   }
-  // };
-
   const loadMoreData = useCallback(
     async (page) => {
       const filterData = {
@@ -102,7 +94,7 @@ export default function GameList() {
         setGameDetails(details.content);
         setTotalPages(details.totalPages);
       } catch (error) {
-        // console.error('Error applying filters:', error);
+        handleAxiosError(error);
       } finally {
         setLoading(false);
       }
