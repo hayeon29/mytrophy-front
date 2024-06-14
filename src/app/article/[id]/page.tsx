@@ -478,6 +478,9 @@ function ArticleDetail({ params }: Props) {
               )}
             </div>
           </div>
+          <div className="max-w-4xl">
+            <h1 className="text-2xl font-bold mt-4 ">{article?.name}</h1>
+          </div>
           <div className="flex flex-col items-center mt-6">
             {article && article.imagePath && article.imagePath.split(',').map((imagePath, index) => (
                 <Image
