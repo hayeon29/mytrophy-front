@@ -12,7 +12,7 @@ import {
   Button,
 } from '@nextui-org/react';
 import Link from 'next/link';
-import articleAPI from '@/services/article';
+import gameAPI from '@/services/game';
 
 interface ArticleCardProps {
   article: HomeArticle;
@@ -24,7 +24,7 @@ function ArticleCard({ article }: ArticleCardProps) {
   useEffect(() => {
     const fetchGameName = async () => {
       try {
-        const response = await articleAPI.getGameByAppId(article.appId);
+        const response = await gameAPI.getGameDetail(article.appId.toString());
         setGameName(response.data.name);
       } catch (error) {
         setGameName('게임 이름 못가져옴');

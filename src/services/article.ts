@@ -145,38 +145,6 @@ const articleAPI = {
       params: { page, size, cntUp },
     });
   },
-
-  async topGames(page = 1, size = 10) {
-    return api.get(`${API_URL}/top100`, {
-      params: { page, size },
-    });
-  },
-
-  async getGameByAppId(appId: number) {
-    return api.get(`${API_URL}/${appId}`);
-  },
-
-  async submitReview(appId: number, reviewStatus: string) {
-    const accessToken = localStorage.getItem('access');
-    return api.post(
-      `${API_URL}/${appId}/reviews`,
-      { reviewStatus },
-      {
-        headers: {
-          access: accessToken,
-        },
-      }
-    );
-  },
-
-  async getMyReview(appId: number) {
-    const accessToken = localStorage.getItem('access');
-    return api.get(`${API_URL}/${appId}/my-review`, {
-      headers: {
-        access: accessToken,
-      },
-    });
-  },
 };
 
 export default articleAPI;
