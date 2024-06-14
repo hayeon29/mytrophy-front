@@ -6,11 +6,12 @@ import authAPI from '@/services/auth';
 import membersAPI from '@/services/members';
 import { UserInfo } from '@/types/UserInfo';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import { CircularProgress } from '@nextui-org/react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';
 
-export default function Reissue() {
+function Reissue() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const isFirstLogin = searchParams.get('firstLogin');
@@ -57,3 +58,11 @@ export default function Reissue() {
 
   return <div />;
 }
+
+const ReissuePage = () => {
+  <Suspense fallback={<CircularProgress aria-label="로딩중" />}>
+    <Reissue />
+  </Suspense>;
+};
+
+export default ReissuePage;
