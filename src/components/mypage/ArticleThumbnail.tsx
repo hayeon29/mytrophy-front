@@ -10,6 +10,7 @@ import membersAPI from '@/services/members';
 import articleAPI from '@/services/article';
 import gameAPI from '@/services/game';
 import React, { useEffect, useState } from 'react';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 function ArticleThumbnail({ onUpdateArticleCount }) {
   const [memberInfo, setMemberInfo] = useState(null);
@@ -56,12 +57,12 @@ function ArticleThumbnail({ onUpdateArticleCount }) {
         setTotalPages(totalPages);
         onUpdateArticleCount(content.length);
       } catch (error) {
-        console.error('좋아요한 게시글을 가져오는 데 실패했습니다:', error);
+        handleAxiosError(error);
       }
     };
 
     fetchLikedArticles();
-  }, [currentPage, memberInfo]);
+  }, [currentPage, memberInfo, onUpdateArticleCount]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
