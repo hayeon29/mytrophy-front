@@ -90,7 +90,7 @@ function ArticleDetail({ params }: Props) {
       // 기존 게시글 정보를 폼에 설정
       setUserInfo({
         header: userInfo.header,
-        title: article.title,
+        title: article.name,
         content: article.content,
       });
     }
@@ -343,10 +343,9 @@ function ArticleDetail({ params }: Props) {
           onPress={() => setIsPostModalOpen(true)}
           style={{
             display:
-              memberInfo === null ||
-              (article && article.memberId === memberInfo?.id)
-                ? 'none'
-                : 'block',
+              memberInfo !== null && article.memberId === memberInfo?.id
+                ? 'block'
+                : 'none',
           }}
         >
           수정
@@ -496,18 +495,20 @@ function ArticleDetail({ params }: Props) {
                   <p>제목</p>
                   <Textarea
                     name="name"
-                    value={article.name}
+                    value={userInfo.title}
                     onChange={handleInputChange}
                     placeholder="제목을 입력해주세요."
                     className="mb-4"
+                    rows={4}
                   />
                   <p>내용</p>
                   <Textarea
                     name="content"
-                    value={article.content}
+                    value={userInfo.content}
                     onChange={handleInputChange}
                     placeholder="내용을 입력해주세요."
                     className="mb-4"
+                    rows={10}
                   />
                   <hr style={{ border: '1px solid #ddd' }} />
                   {/*  파일 업로드  */}
@@ -764,8 +765,8 @@ function ArticleDetail({ params }: Props) {
                         color="danger"
                         style={{
                           display:
-                            memberInfo !== null ||
-                            (article && article.memberId === memberInfo.id)
+                            memberInfo !== null &&
+                            comment.memberId === memberInfo?.id
                               ? 'block'
                               : 'none',
                         }}
@@ -910,6 +911,7 @@ function ArticleDetail({ params }: Props) {
                             color="danger"
                             style={{
                               display:
+                                memberInfo !== null &&
                                 childComment.memberId === memberInfo?.id
                                   ? 'block'
                                   : 'none',

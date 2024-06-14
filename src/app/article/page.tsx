@@ -43,6 +43,9 @@ export default function Article() {
   const memberInfo = useRecoilValue(userState);
   const [showLikeLabel, setShowLikeLabel] = useState({});
   const [isOpen, setIsOpen] = useState(false);
+  const [isGameOpen, setIsGameOpen] = useState(false);
+  const [isArticleOpen, setIsArticleOpen] = useState(false);
+  const [isLikedOpen, setIsLikedOpen] = useState(false);
   const [message, setMessage] = useState('게시글을 작성하시겠습니까?');
   const [userInfo, setUserInfo] = useState({
     header: '',
@@ -92,12 +95,12 @@ export default function Article() {
 
       if (response.content.length === 0) {
         setMessage('검색한 게임이 없습니다. 다시 검색해주세요.');
-        setIsOpen(true);
+        setIsGameOpen(true);
       }
     } catch (error) {
       handleAxiosError(error);
       setMessage('게임 검색 중 오류가 발생했습니다. 다시 시도해주세요.');
-      setIsOpen(true);
+      setIsGameOpen(true);
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +121,7 @@ export default function Article() {
       // Your form validation logic
       if (!userInfo.name || !userInfo.content || !selectedGameId) {
         setMessage('제목과 내용, 선택한 게임을 모두 입력해주세요.'); // Update message for invalid input
-        setIsOpen(true); // Open modal for invalid input
+        setIsArticleOpen(true); // Open modal for invalid input
         return;
       }
 
@@ -144,25 +147,33 @@ export default function Article() {
       if (response.status === 200) {
         setMessage('게시글 작성이 완료되었습니다.');
       } else {
-        setMessage(
-          '게시글 작성에 실패했습니다. 다시 시도해주세요.\n(파일은 10MB 이하만 업로드 가능합니다.)'
-        );
-        setIsOpen(true);
+        setMessage('게시글 작성에 실패했습니다. 다시 시도해주세요.');
+        setIsArticleOpen(false);
       }
 
       onClose();
       window.location.reload();
     } catch (error) {
       handleAxiosError(error);
-      setMessage(
-        '게시글 작성에 실패했습니다. 다시 시도해주세요.\n(파일은 10MB 이하만 업로드 가능합니다.)'
-      );
+      setMessage('게시글 작성에 실패했습니다. 다시 시도해주세요.');
       setIsOpen(true);
     }
   };
 
   const handleCloseModal = () => {
     setIsOpen(false);
+  };
+
+  const handleArticleCloseModal = () => {
+    setIsArticleOpen(false);
+  };
+
+  const handleGameCloseModal = () => {
+    setIsGameOpen(false);
+  };
+
+  const handleLikedCloseModal = () => {
+    setIsLikedOpen(false);
   };
 
   const handleClick = async (header) => {
@@ -213,7 +224,7 @@ export default function Article() {
       handleLike(articleId);
     } else {
       setMessage('로그인 후 추천을 누를 수 있습니다.');
-      setIsOpen(true);
+      setIsLikedOpen(true);
     }
   };
 
@@ -366,11 +377,9 @@ export default function Article() {
             클릭 후 글을 작성해보세요.
           </Button>
 
-          <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+          <Modal isOpen={isOpen} onOpenChange={setIsOpen} shadow="sm">
             <ModalContent>
-              <ModalHeader className="flex flex-col gap-1">
-                게시글 작성 실패
-              </ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
               <ModalBody>
                 <p>{message}</p>
               </ModalBody>
@@ -451,10 +460,10 @@ export default function Article() {
                       {isLoading ? '검색 중...' : '게임 검색'}
                     </Button>
 
-                    <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                    <Modal isOpen={isGameOpen} onOpenChange={setIsGameOpen}>
                       <ModalContent>
                         <ModalHeader className="flex flex-col gap-1">
-                          게임 검색 실패
+                          게임 검색
                         </ModalHeader>
                         <ModalBody>
                           <p>{message}</p>
@@ -463,7 +472,7 @@ export default function Article() {
                           <Button
                             color="danger"
                             variant="light"
-                            onPress={handleCloseModal}
+                            onPress={handleGameCloseModal}
                           >
                             확인
                           </Button>
@@ -605,10 +614,10 @@ export default function Article() {
                   작성
                 </Button>
 
-                <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                <Modal isOpen={isArticleOpen} onOpenChange={setIsArticleOpen}>
                   <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">
-                      게시글 작성 실패
+                      게시글
                     </ModalHeader>
                     <ModalBody>
                       <p>{message}</p>
@@ -617,7 +626,7 @@ export default function Article() {
                       <Button
                         color="danger"
                         variant="light"
-                        onPress={handleCloseModal}
+                        onPress={handleArticleCloseModal}
                       >
                         확인
                       </Button>
@@ -677,10 +686,10 @@ export default function Article() {
                   {article.cntUp}
                 </span>
 
-                <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                <Modal isOpen={isLikedOpen} onOpenChange={setIsLikedOpen}>
                   <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">
-                      게시글 추천 실패
+                      게시글
                     </ModalHeader>
                     <ModalBody>
                       <p>{message}</p>
@@ -689,7 +698,7 @@ export default function Article() {
                       <Button
                         color="danger"
                         variant="light"
-                        onPress={handleCloseModal}
+                        onPress={handleLikedCloseModal}
                       >
                         확인
                       </Button>
