@@ -14,7 +14,7 @@ import {
   FaRegFaceGrinSquint,
 } from 'react-icons/fa6';
 import Link from 'next/link';
-import articleAPI from '@/services/article';
+import gameAPI from '@/services/game';
 import Category from './Category';
 import GameReviewModal from './GameReviewModal';
 
@@ -31,7 +31,7 @@ export default function GameCard({ game, idKey }) {
 
     async function fetchReviewStatus() {
       try {
-        const response = await articleAPI.getMyReview(game[idKey]);
+        const response = await gameAPI.getMyReview(game[idKey]);
         const { reviewStatus } = response.data;
 
         if (reviewStatus) {
@@ -62,7 +62,7 @@ export default function GameCard({ game, idKey }) {
 
   const submitReview = async (status) => {
     try {
-      await articleAPI.submitReview(game[idKey], status);
+      await gameAPI.submitReview(game[idKey], status);
       switch (status) {
         case 'BAD':
           setReviewIcon(<FaRegFaceFrown className="text-red-500" />);

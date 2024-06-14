@@ -113,5 +113,27 @@ const gameAPI = {
       params: { page, size },
     });
   },
+
+  async getMyReview(appId: number) {
+    const accessToken = localStorage.getItem('access');
+    return api.get(`${API_URL}/${appId}/my-review`, {
+      headers: {
+        access: accessToken,
+      },
+    });
+  },
+
+  async submitReview(appId: number, reviewStatus: string) {
+    const accessToken = localStorage.getItem('access');
+    return api.post(
+      `${API_URL}/${appId}/reviews`,
+      { reviewStatus },
+      {
+        headers: {
+          access: accessToken,
+        },
+      }
+    );
+  },
 };
 export default gameAPI;
