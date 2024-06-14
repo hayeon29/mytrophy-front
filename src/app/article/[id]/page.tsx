@@ -21,6 +21,7 @@ import {
   Checkbox,
 } from '@nextui-org/react';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   params: {
@@ -61,6 +62,7 @@ function ArticleDetail({ params }: Props) {
     title: '',
     content: '',
   });
+  const router = useRouter();
 
   const getMemberByToken = async () => {
     const memberInfo = await membersAPI.getUserInfo();
@@ -111,20 +113,20 @@ function ArticleDetail({ params }: Props) {
   ) => {
     await commentAPI.createComment(articleId, newComment, selectedCommentId);
     setNewComment('');
-    window.location.reload();
+    router.refresh();
   };
 
   const handleEditSubmit = async (commentId: string, onClose) => {
     await commentAPI.updateComment(commentId, editContent);
     setEditContent('');
-    window.location.reload();
+    router.refresh();
     onClose();
   };
 
   const handleDeleteSubmit = async (commentId: string) => {
     await commentAPI.deleteComment(commentId);
     setIsDeleteModalOpen(false);
-    window.location.reload();
+    router.refresh();
   };
 
   if (loading) {
@@ -179,7 +181,7 @@ function ArticleDetail({ params }: Props) {
 
   const handleArticleDeleteSubmit = async (articleId: string) => {
     await articleAPI.articleDelete(articleId);
-    window.location.href = '/article';
+    router.push('/article');
   };
 
   const handleSearch = async () => {
@@ -272,7 +274,7 @@ function ArticleDetail({ params }: Props) {
   const handleLike = async (commentId) => {
     await commentAPI.commentLike(commentId);
     localStorage.setItem('isLiked', 'true');
-    window.location.reload();
+    router.refresh();
   };
 
   const handleReply = (commentId, commentNickname) => {

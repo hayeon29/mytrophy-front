@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import gameAPI from '@/services/game';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
-import { Pagination, Spinner } from '@nextui-org/react';
+import { CircularProgress, Pagination, Spinner } from '@nextui-org/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Category from '@/components/home/Category';
 import { HomeCategory } from '@/types/HomeCategory';
 import GAME_CATEGORY from '@/constants/gameCategory';
 import { handleAxiosError } from '@/utils/handleAxiosError';
 
-export default function GameList() {
+function GameList() {
   const [gameDetails, setGameDetails] = useState([]);
   const [sortOption, setSortOption] = useState('최신순');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
@@ -290,3 +290,13 @@ export default function GameList() {
     </div>
   );
 }
+
+function GameListPage() {
+  return (
+    <Suspense fallback={<CircularProgress aria-label="로딩중" />}>
+      <GameList />
+    </Suspense>
+  );
+}
+
+export default GameListPage;
