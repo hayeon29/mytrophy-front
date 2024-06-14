@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import homeAPI from '@/services/home';
 import { HomeGame } from '@/types/HomeGame';
 import { HomeCategory } from '@/types/HomeCategory';
 import Category from '@/components/home/Category';
@@ -25,6 +24,8 @@ import gameAPI from '@/services/game';
 import GAME_CATEGORY from '@/constants/gameCategory';
 import LoginModal from '@/components/modals/LoginModal';
 import { useModal } from '@/hooks/useModal';
+import articleAPI from '@/services/article';
+import membersAPI from '@/services/members';
 
 export default function Home() {
   const { modals, openModal, closeModal } = useModal();
@@ -48,7 +49,7 @@ export default function Home() {
     const getTopGames = async () => {
       setLoadingGames(true);
       try {
-        const response = await homeAPI.topGames(1, 10);
+        const response = await gameAPI.getGameDetailsByTop(1, 10);
         setTopGames(response.data.content.filter((game) => game.id !== null));
       } catch (error) {
         // 에러처리
@@ -60,7 +61,7 @@ export default function Home() {
     const getTopArticles = async () => {
       setLoadingArticles(true);
       try {
-        const response = await homeAPI.topArticles();
+        const response = await articleAPI.getTopArticles();
         setTopArticles(response.data.content);
       } catch (error) {
         // 에러처리
@@ -72,7 +73,7 @@ export default function Home() {
     const getMyRecommendedGames = async () => {
       setLoadingMyRecommendedGames(true);
       try {
-        const response = await homeAPI.getMyRecommendedGames();
+        const response = await gameAPI.getMyRecommendedGames();
         setMyRecommendedGames(response.data.filter((game) => game.id !== null));
       } catch (error) {
         // 에러처리
@@ -85,7 +86,7 @@ export default function Home() {
     const getRecommendedGames = async () => {
       setLoadingRecommendedGames(true);
       try {
-        const response = await homeAPI.getRecommendedGames(0, 10);
+        const response = await gameAPI.getRecommendedGames(0, 10);
         setRecommendedGames(
           response.data.content.filter((game) => game.id !== null)
         );
@@ -123,7 +124,7 @@ export default function Home() {
 
     const fetchUserCategoryIds = async () => {
       try {
-        const response = await homeAPI.getUserInfo();
+        const response = await membersAPI.getUserInfo();
         const { data } = response;
 
         const categoryIds: number[] = Array.isArray(data.categoryIds)

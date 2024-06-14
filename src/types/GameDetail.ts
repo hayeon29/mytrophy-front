@@ -10,9 +10,9 @@ type GetGameDetailDTO = {
   recommendation: number;
   positive: string;
   headerImagePath: string;
-  koIsPossible: boolean;
-  enIsPossible: boolean;
-  jpIsPossible: boolean;
+  koIsPosible: boolean;
+  enIsPosible: boolean;
+  jpIsPosible: boolean;
   getGameCategoryDTOList: GetGameCategoryDTO[];
   getGameScreenshotDTOList: GetGameScreenshotDTO[];
   getGameAchievementDTOList: GetGameAchievementDTO[];

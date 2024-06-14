@@ -113,9 +113,7 @@ export default function MemberManagement() {
             <User
               avatarProps={{
                 radius: 'lg',
-                src:
-                  user.imagePath ||
-                  `${process.env.NEXT_PUBLIC_FRONT_URL}/image/eao1.png`,
+                src: user.imagePath || `/image/eao1.png`,
               }}
               description={user.nickname}
               name={cellValue}

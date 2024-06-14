@@ -664,7 +664,7 @@ function ArticleDetail({ params }: Props) {
               onClick={() => handleLikeClick(article.id)}
             >
               <Image
-                src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/likeIcon.svg`}
+                src="/svgs/likeIcon.svg"
                 alt="좋아요 아이콘"
                 width={25}
                 height={25}
@@ -695,7 +695,7 @@ function ArticleDetail({ params }: Props) {
           </div>
           <div className="flex items-center mr-4">
             <Image
-              src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/commentIcon.svg`}
+              src="/svgs/commentIcon.svg"
               alt="댓글 아이콘"
               width={25}
               height={25}

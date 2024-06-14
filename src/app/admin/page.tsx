@@ -8,8 +8,9 @@ import Dashboard from '@/components/admin/Dashboard';
 import MemberManagement from '@/components/admin/MemberManagement';
 import ArticleManagement from '@/components/admin/ArticleManagement';
 import GameManagement from '@/components/admin/GameManagement';
+import withAuth from '../PrivateRoute';
 
-export default function Admin() {
+function Admin() {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const handleItemClick = (itemKey: string) => {
@@ -90,3 +91,5 @@ export default function Admin() {
     </div>
   );
 }
+
+export default withAuth(Admin);

@@ -1,7 +1,7 @@
 import LocalStorage from '@/constants/LocalStorage';
 import api from '../config/AxiosConfig';
 
-const API_URL = process.env.NEXT_PUBLIC_COMMENT_API_URL;
+const API_URL = '/api';
 
 const commentAPI = {
   async createComment(
