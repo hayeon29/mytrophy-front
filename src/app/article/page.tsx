@@ -382,7 +382,7 @@ export default function Article() {
 
               <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
                 <ModalContent>
-                  <ModalHeader className="flex flex-col gap-1">게시글 작성 실패</ModalHeader>
+                  <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
                   <ModalBody>
                     <p>{message}</p>
                   </ModalBody>
@@ -462,7 +462,7 @@ export default function Article() {
 
                           <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
                             <ModalContent>
-                              <ModalHeader className="flex flex-col gap-1">게임 검색 실패</ModalHeader>
+                              <ModalHeader className="flex flex-col gap-1">게임</ModalHeader>
                               <ModalBody>
                                 <p>{message}</p>
                               </ModalBody>
@@ -579,7 +579,7 @@ export default function Article() {
 
                       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
                         <ModalContent>
-                          <ModalHeader className="flex flex-col gap-1">게시글 작성 실패</ModalHeader>
+                          <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
                           <ModalBody>
                             <p>{message}</p>
                           </ModalBody>
@@ -644,7 +644,7 @@ export default function Article() {
 
                       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
                         <ModalContent>
-                          <ModalHeader className="flex flex-col gap-1">게시글 추천 실패</ModalHeader>
+                          <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
                           <ModalBody>
                             <p>{message}</p>
                           </ModalBody>

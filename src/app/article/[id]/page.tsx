@@ -190,11 +190,24 @@ function ArticleDetail({ params }: Props) {
   };
 
   const handleSearch = async () => {
-      setIsLoading(true);
+    setIsLoading(true);
+    try {
       const response = await gameAPI.searchGameByName(0, 10, searchValue);
       setSearchResults(response.content);
       setIsSearchModalOpen(true);
-  }
+
+      if (response.content.length === 0) {
+        setMessage("검색한 게임이 없습니다. 다시 검색해주세요.");
+        setIsOpen(true);
+      }
+    } catch (error) {
+      console.error('게임 검색 에러:', error);
+      setMessage("게임 검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setIsOpen(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCloseSearchModal = () => {
     setIsSearchModalOpen(false);
@@ -390,6 +403,21 @@ function ArticleDetail({ params }: Props) {
                           >
                             {isLoading ? '검색 중...' : '게임 검색'}
                           </Button>
+
+                          <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                            <ModalContent>
+                              <ModalHeader className="flex flex-col gap-1">게임</ModalHeader>
+                              <ModalBody>
+                                <p>{message}</p>
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button color="danger" variant="light" onPress={handleCloseModal}>
+                                  확인
+                                </Button>
+                              </ModalFooter>
+                            </ModalContent>
+                          </Modal>
+
                         </div>
                       </div>
                       <>
@@ -571,7 +599,7 @@ function ArticleDetail({ params }: Props) {
 
               <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
                 <ModalContent>
-                  <ModalHeader className="flex flex-col gap-1">게시글 추천 실패</ModalHeader>
+                  <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
                   <ModalBody>
                     <p>{message}</p>
                   </ModalBody>
