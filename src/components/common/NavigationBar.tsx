@@ -29,6 +29,7 @@ import { UserInfo } from '@/types/UserInfo';
 import { useRecoilState } from 'recoil';
 import { handleAxiosError } from '@/utils/handleAxiosError';
 import { useLoginModal } from '@/providers/LoginModalContext';
+import { FaSearch } from 'react-icons/fa';
 
 export default function NavigationBar() {
   const { isLoginModalOpen, openLoginModal, closeLoginModal } = useLoginModal();
@@ -278,7 +279,7 @@ export default function NavigationBar() {
           <div className="flex items-center gap-8">
             <form
               onSubmit={handleSearch}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-1"
             >
               <Input
                 name="search"
@@ -294,15 +295,13 @@ export default function NavigationBar() {
               />
               <Button
                 type="submit"
-                className="bg-white p-0 flex justify-center items-center rounded-3xl"
+                className="p-0 flex justify-center items-center rounded-full"
+                isIconOnly
+                color="default"
+                variant="light" 
                 style={{ width: '35px', height: '35px' }}
               >
-                <Image
-                  src="/svgs/search.svg"
-                  alt="search icon"
-                  width={18}
-                  height={18}
-                />
+                <FaSearch color="white" size={22} />
               </Button>
             </form>
             {isMounted && loginUserState && (

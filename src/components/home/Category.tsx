@@ -9,9 +9,12 @@ interface CategoryProps {
 }
 
 function Category({ categories = [] }: CategoryProps) {
+  const visibleCategories = categories.slice(0, 4);
+  const hasMoreCategories = categories.length > 3;
+
   return (
     <div className="flex flex-wrap">
-      {categories.slice(0, 4).map((category) => (
+      {visibleCategories.map((category) => (
         <Button
           key={category.id}
           size="sm"
@@ -24,12 +27,32 @@ function Category({ categories = [] }: CategoryProps) {
             fontSize: '0.8rem',
             minWidth: 'auto',
             height: '24px',
+            cursor: 'default',
           }}
-          // 클릭 핸들러 추가하기
+          onClick={(e) => e.preventDefault()}
         >
           {category.name}
         </Button>
       ))}
+      {hasMoreCategories && (
+        <Button
+          size="sm"
+          variant="flat"
+          className="text-sm mr-2 mb-1"
+          style={{
+            backgroundColor: '#D2DAF8',
+            color: '#2E396C',
+            borderRadius: '5px',
+            fontSize: '0.8rem',
+            minWidth: 'auto',
+            height: '24px',
+            cursor: 'default',
+          }}
+          onClick={(e) => e.preventDefault()}
+        >
+          ...
+        </Button>
+      )}
     </div>
   );
 }
