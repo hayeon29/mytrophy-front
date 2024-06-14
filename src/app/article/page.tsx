@@ -24,6 +24,7 @@ import gameAPI from '@/services/game';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@/recoils/userAtom';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import { useRouter } from 'next/navigation';
 
 export default function Article() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -49,6 +50,7 @@ export default function Article() {
     name: '',
     content: '',
   });
+  const router = useRouter();
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -151,7 +153,7 @@ export default function Article() {
       }
 
       onClose();
-      window.location.reload();
+      router.refresh();
     } catch (error) {
       handleAxiosError(error);
       setMessage(
