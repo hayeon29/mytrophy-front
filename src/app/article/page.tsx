@@ -42,9 +42,6 @@ export default function Article() {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [selectedGameName, setSelectedGameName] = useState('');
   const [memberInfo, setMemberInfo] = useState(null);
-  const [isLikeModalOpen, setIsLikeModalOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
   const [isGameCurrentPage, setGameCurrentPage] = useState(1);
   const [showLikeLabel, setShowLikeLabel] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -103,15 +100,6 @@ export default function Article() {
     fetchArticles();
     getMemberByToken();
   }, [currentPage]);
-
-  useEffect(() => {
-    // 초기 게시글의 좋아요 상태를 초기화
-    const initialLikes = {};
-    articles.forEach(article => {
-      initialLikes[article.id] = false;
-    });
-    setLikes(initialLikes);
-  }, [articles]);
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -227,7 +215,6 @@ export default function Article() {
               article.id === articleId ? { ...article, cntUp: updatedArticle.cntUp, isLiked: updatedArticle.isLiked } : article
           )
       );
-      setIsLikeModalOpen(false);
     };
 
   const handleLikeClick = (articleId) => {
