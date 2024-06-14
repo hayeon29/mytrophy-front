@@ -9,6 +9,7 @@ import Image from 'next/image';
 import membersAPI from '@/services/members';
 import articleAPI from '@/services/article';
 import gameAPI from '@/services/game';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { handleAxiosError } from '@/utils/handleAxiosError';
 
@@ -76,13 +77,17 @@ function ArticleThumbnail({ onUpdateArticleCount }) {
           className="text-black p-8 shadow-none drop-shadow-primary flex flex-row min-h-72 mb-4"
         >
           <CardBody className="w-fit flex flex-col gap-4 p-0">
-            <div className="flex flex-row items-center">
-              <Avatar src={article.memberImage} className="w-8 h-8 mr-2" />
-              <span className="text-black text-l">{article.nickname}</span>
-              <span className="text-blackGray text-xs">{article.username}</span>
-            </div>
-            <p className="text-xl font-bold">{article.name}</p>
-            <div className="text-sm">{article.content}</div>
+            <Link href={`/article/${article.id}`}>
+              <div className="flex flex-row items-center">
+                <Avatar src={article.memberImage} className="w-8 h-8 mr-2" />
+                <span className="text-black text-l">{article.nickname}</span>
+                <span className="text-blackGray text-xs">
+                  {article.username}
+                </span>
+              </div>
+              <p className="text-xl font-bold">{article.name}</p>
+              <div className="text-sm">{article.content}</div>
+            </Link>
           </CardBody>
           <CardFooter className="flex flex-col justify-between w-max p-0">
             <div className="w-full flex flex-row gap-4 justify-end">
