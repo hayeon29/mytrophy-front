@@ -77,7 +77,6 @@ export default function ChangePassword({
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-    console.log(userInfo);
   };
 
   useEffect(() => {
