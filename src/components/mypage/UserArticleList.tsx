@@ -13,11 +13,14 @@ const UserArticleList = ({ onUpdateMyArticleCount }) => {
     const [totalArticleCount, setTotalArticleCount] = useState(0);
 
     useEffect(() => {
-        const fetchMemberInfo = async () => {
+        const getMemberByToken = async () => {
             const memberInfo = await membersAPI.getUserInfo();
-            setMemberInfo(memberInfo.data);
+            setMemberInfo(memberInfo);
+            if (memberInfo === null) {
+                setMemberInfo(null);
+            }
         };
-        fetchMemberInfo();
+        getMemberByToken();
     }, []);
 
     useEffect(() => {
