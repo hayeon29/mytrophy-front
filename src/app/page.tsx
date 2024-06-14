@@ -16,6 +16,7 @@ import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
 import gameAPI from '@/services/game';
 import { useLoginModal } from '@/providers/LoginModalContext';
+import { Button, Tooltip } from '@nextui-org/react';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
@@ -241,22 +242,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start">
-      <div
-        className="w-full flex justify-center cursor-pointer"
-        onClick={() => {
-          window.open('https://store.steampowered.com/sale/nextfest', '_blank');
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            window.open(
-              'https://store.steampowered.com/sale/nextfest',
-              '_blank'
-            );
-          }
-        }}
-        role="button"
-        tabIndex={0}
-      >
+      <a href="https://store.steampowered.com/sale/nextfest" target="_blank" rel="noopener noreferrer" className="w-full flex justify-center">
         <Image
           src="/image/event_header.png"
           alt="Event Header"
@@ -265,7 +251,7 @@ export default function Home() {
           priority
           className="w-full h-auto"
         />
-      </div>
+      </a>
 
       <div className="w-full h-[600px] flex justify-center items-center bg-[#6078EA]">
         <div className="w-full max-w-7xl h-[500px] flex items-center justify-center">
@@ -443,7 +429,13 @@ export default function Home() {
       {/* 게임추천 */}
       <div className="w-full h-[600px] flex justify-center items-center bg-[#D2DAF8]">
         <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
-          <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
+          <Tooltip 
+            content="관심 카테고리를 기반으로 추천된 게임이에요" 
+            isDisabled={userCategoryIds.length === 0}
+            placement="right"
+          >
+            <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
+          </Tooltip>
           {renderGameRecommendation()}
         </div>
       </div>
