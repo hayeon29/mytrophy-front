@@ -6,7 +6,7 @@ import gameAPI from '@/services/game';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
 import { Pagination, Spinner } from '@nextui-org/react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function GameList() {
   const [gameDetails, setGameDetails] = useState([]);
@@ -16,8 +16,7 @@ export default function GameList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [keyword, setKeyword] = useState();
-  // const [totalItems, setTotalItems] = useState(0); // 총 아이템 수
+  const [keyword, setKeyword] = useState('');
 
   const itemsPerPage = 10;
 
@@ -60,6 +59,8 @@ export default function GameList() {
   };
 
   const searchParams = useSearchParams();
+  const router = useRouter();
+
   useEffect(() => {
     const keywordFromURL = searchParams.get('keyword') || '';
     setKeyword(keywordFromURL);
@@ -83,16 +84,17 @@ export default function GameList() {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    router.push(`/gamelist?page=${page}`);
   };
 
-  const fetchTotalItems = async () => {
-    try {
-      // const response = await gameAPI.getTotalItems();
-      // setTotalItems(response);
-    } catch (error) {
-      // console.error('Error fetching total items:', error);
-    }
-  };
+  // const fetchTotalItems = async () => {
+  //   try {
+  //     // const response = await gameAPI.getTotalItems();
+  //     // setTotalItems(response);
+  //   } catch (error) {
+  //     // console.error('Error fetching total items:', error);
+  //   }
+  // };
 
   const loadMoreData = useCallback(
     async (page) => {
@@ -129,14 +131,12 @@ export default function GameList() {
   const handleApplyFilters = async () => {
     setCurrentPage(1);
     await loadMoreData(1);
+    router.push(`/gamelist?page=1`);
   };
 
-
-
   useEffect(() => {
-    if(keyword != null)
-    loadMoreData(currentPage);
-  }, [currentPage, sortOption, loadMoreData,keyword]);
+    if (keyword != null) loadMoreData(currentPage);
+  }, [currentPage, sortOption, loadMoreData, keyword]);
 
   return (
     <div className="bg-white py-5 sm:py-10">
