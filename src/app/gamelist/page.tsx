@@ -182,7 +182,11 @@ export default function GameList() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-1">
                               {truncateString(post.name, 40)}
                             </h3>
-                            <Category categories={post.getGameCategoryDTOList as HomeCategory[]} />
+                            <Category
+                              categories={
+                                post.getGameCategoryDTOList as HomeCategory[]
+                              }
+                            />
                             <p className="text-gray-600">
                               {' '}
                               {positivityMapping[post.positive]}
