@@ -16,6 +16,7 @@ import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
 import gameAPI from '@/services/game';
 import { useLoginModal } from '@/providers/LoginModalContext';
+import GAME_CATEGORY from '@/constants/gameCategory';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
@@ -292,7 +293,12 @@ export default function Home() {
                           />
                           <TbRosetteNumber1 className="absolute top-4 left-1 text-yellow-500 text-6xl" />
                         </div>
-                        <span className="text-xl font-bold mb-3 text-gray-900 transition-colors duration-300 hover:text-[#2E396C]">
+                        <span className="max-w-full w-auto text-xl font-bold mb-1 text-gray-900 transition-colors duration-300 hover:text-[#2E396C] whitespace-nowrap overflow-hidden text-ellipsis"
+                          style={{
+                            display: 'inline-block',
+                            width: 'auto', 
+                          }}
+                        >
                           {topGame.name}
                         </span>
                       </Link>
@@ -301,13 +307,13 @@ export default function Home() {
                           topGame.getGameCategoryDTOList as HomeCategory[]
                         }
                       />
-                      <p className="text-base mt-2 mb-2">
+                      <p className="text-base mt-1 mb-1">
                         <span className="font-bold">가격</span>
                         <span className="font-normal ml-3">
                           {topGame.price === 0 ? '무료' : `${topGame.price}원`}
                         </span>
                       </p>
-                      <p className="text-base mb-2">
+                      <p className="text-base mb-1">
                         <span className="font-bold">평가</span>
                         <span className="font-normal ml-3">
                           {positiveText(topGame.positive)}
@@ -360,7 +366,7 @@ export default function Home() {
 
           <div className="h-full flex flex-col justify-between flex-[0.4] ml-8 space-y-4">
             {/* 공략 */}
-            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col">
+            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col transition-transform duration-200 hover:shadow-2xl">
               <Link href="/article">
                 <CardHeader className="text-2xl font-bold text-black p-8 pb-0 cursor-pointer">
                   <h2>공략</h2>
@@ -387,7 +393,7 @@ export default function Home() {
               </Link>
             </Card>
 
-            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col">
+            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col transition-transform duration-200 hover:shadow-2xl">
               <Link href="/article">
                 <CardHeader className="text-2xl font-bold text-black p-8 pb-0 cursor-pointer">
                   <h2>게임 메이트 모집</h2>
@@ -440,13 +446,28 @@ export default function Home() {
       {/* 게임추천 */}
       <div className="w-full h-[600px] flex justify-center items-center bg-[#D2DAF8]">
         <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
-          <Tooltip 
-            content="관심 카테고리를 기반으로 추천된 게임이에요" 
-            isDisabled={userCategoryIds.length === 0}
-            placement="right"
-          >
-            <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
-          </Tooltip>
+        <Tooltip
+          content={
+            userCategoryIds.length > 0 ? (
+              <div className="p-2">
+                <p className="mb-2">관심 카테고리를 기반으로 추천된 게임이에요</p>
+                <Category
+                  categories={userCategoryIds.map((id) => 
+                    GAME_CATEGORY.find((category) => category.id === id)
+                  ).filter((category) => category)}
+                />
+              </div>
+            ) : (
+              '관심 카테고리를 기반으로 추천된 게임이에요'
+            )
+          }
+          isDisabled={userCategoryIds.length === 0}
+          placement="right"
+          offset={20} // 오른쪽으로 약간 이동
+          showArrow
+        >
+          <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
+        </Tooltip>
           {renderGameRecommendation()}
         </div>
       </div>
