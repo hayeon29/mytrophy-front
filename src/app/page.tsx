@@ -11,12 +11,11 @@ import ArticleCard from '@/components/home/ArticleCard';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { GoArrowUpRight } from 'react-icons/go';
 import { TbRosetteNumber1 } from 'react-icons/tb';
-import { Spinner, Card, CardHeader, CardBody, Button } from '@nextui-org/react';
+import { Spinner, Card, CardHeader, CardBody, Button, Tooltip } from '@nextui-org/react';
 import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
 import gameAPI from '@/services/game';
 import { useLoginModal } from '@/providers/LoginModalContext';
-import { Button, Tooltip } from '@nextui-org/react';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
@@ -242,7 +241,19 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start">
-      <a href="https://store.steampowered.com/sale/nextfest" target="_blank" rel="noopener noreferrer" className="w-full flex justify-center">
+      <div
+        className="w-full flex justify-center cursor-pointer"
+        onClick={() => {
+          window.open('https://store.steampowered.com/sale/nextfest', '_blank');
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            window.open('https://store.steampowered.com/sale/nextfest', '_blank');
+          }
+        }}
+        role="button" // Div 역할을 버튼으로 지정
+        tabIndex={0} // Tab을 사용하여 접근할 수 있게 지정
+      >
         <Image
           src="/image/event_header.png"
           alt="Event Header"
@@ -251,7 +262,7 @@ export default function Home() {
           priority
           className="w-full h-auto"
         />
-      </a>
+      </div>
 
       <div className="w-full h-[600px] flex justify-center items-center bg-[#6078EA]">
         <div className="w-full max-w-7xl h-[500px] flex items-center justify-center">
