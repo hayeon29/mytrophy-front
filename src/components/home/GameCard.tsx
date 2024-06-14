@@ -13,8 +13,8 @@ import {
   FaRegFaceGrin,
   FaRegFaceGrinSquint,
 } from 'react-icons/fa6';
-import homeAPI from '@/services/home';
 import Link from 'next/link';
+import articleAPI from '@/services/article';
 import Category from './Category';
 import GameReviewModal from './GameReviewModal';
 
@@ -31,7 +31,7 @@ export default function GameCard({ game, idKey }) {
 
     async function fetchReviewStatus() {
       try {
-        const response = await homeAPI.getMyReview(game[idKey]);
+        const response = await articleAPI.getMyReview(game[idKey]);
         const { reviewStatus } = response.data;
 
         if (reviewStatus) {
@@ -62,7 +62,7 @@ export default function GameCard({ game, idKey }) {
 
   const submitReview = async (status) => {
     try {
-      await homeAPI.submitReview(game[idKey], status);
+      await articleAPI.submitReview(game[idKey], status);
       switch (status) {
         case 'BAD':
           setReviewIcon(<FaRegFaceFrown className="text-red-500" />);
@@ -98,10 +98,7 @@ export default function GameCard({ game, idKey }) {
 
   return (
     <div className="flex h-[400px]">
-      <Card
-        isHoverable
-        className="shadow-lg rounded-2xl w-[360px] h-full flex flex-col m-0 p-0 transition-shadow duration-300 ease-in-out hover:shadow-2xl"
-      >
+      <Card className="shadow-lg rounded-2xl w-[360px] h-full flex flex-col m-0 p-0 transition-shadow duration-300 ease-in-out hover:shadow-2xl">
         <CardBody className="p-0 overflow-hidden">
           <Link href={`/game/${String(game[idKey])}`} className="block">
             <Image
