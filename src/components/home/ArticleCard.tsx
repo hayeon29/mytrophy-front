@@ -60,7 +60,15 @@ function ArticleCard({ article }: ArticleCardProps) {
             </Button>
           </Link>
           <Link href={`/game/${article.appId}`} passHref>
-            <span className="text-lg font-bold text-[#2E396C] hover:underline cursor-pointer">
+            <span className="text-lg font-bold text-[#2E396C] hover:underline cursor-pointer items-center mt-1"
+              style={{
+                display: 'inline-block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: '250px',
+              }}
+            >
               {gameName}
             </span>
           </Link>
@@ -70,7 +78,15 @@ function ArticleCard({ article }: ArticleCardProps) {
       <CardBody className="p-4 pt-0">
         <div className="flex justify-between mb-1">
           <Link href={`/article/${article.id}`} passHref>
-            <div className="text-[#2E396C] text-lg font-semibold cursor-pointer">
+            <div className="text-[#2E396C] text-lg font-semibold cursor-pointer"
+              style={{
+                display: 'inline-block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: '230px',
+              }}
+            >
               {article.name}
             </div>
           </Link>

@@ -61,7 +61,6 @@ export default function UserGameRating({
         setReviews(reviewStatuses);
       }
 
-      // Calculate missing games count
       const totalGames = gameInfo?.length || 0;
       const validGamesCount = validGames.length;
       setMissingGamesCount(totalGames - validGamesCount);
@@ -141,7 +140,6 @@ export default function UserGameRating({
   };
 
   const filteredGames = getFilteredGames();
-  const gameCount = gameInfo?.length || 0;
 
   const displayGameCount = () => {
     if (!gameInfo) return 0;
@@ -219,7 +217,11 @@ export default function UserGameRating({
             );
           })
         ) : (
-          <div className="text-center text-gray-500">보유한 Steam 게임이 없습니다.</div>
+          <div className="text-center text-gray-500">
+            {selectedTab === 'unrated' && '모든 게임을 평가했습니다.'}
+            {selectedTab === 'rated' && '게임에 평가를 남겨보세요.'}
+            {selectedTab === 'all' && '보유한 Steam 게임이 없습니다.'}
+          </div>
         )
       ) : (
         <div className="flex justify-center items-center h-32">

@@ -61,6 +61,7 @@ export default function GameCard({ game, idKey }) {
   }, [game, idKey]);
 
   const submitReview = async (status) => {
+    console.log('Submitting review for game ID:', game[idKey]);
     try {
       await homeAPI.submitReview(game[idKey], status);
       switch (status) {

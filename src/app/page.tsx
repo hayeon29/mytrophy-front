@@ -31,6 +31,7 @@ export default function Home() {
   const [loadingNewGames, setLoadingNewGames] = useState(true);
   const [loadingPositiveGames, setLoadingPositiveGames] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userCategoryIds, setUserCategoryIds] = useState<number[]>([]);
 
   useEffect(() => {
     const getTopGames = async () => {
@@ -109,6 +110,24 @@ export default function Home() {
       }
     };
 
+    const fetchUserCategoryIds = async () => {
+      try {
+        const response = await homeAPI.getUserInfo();
+        const data = response.data;
+
+        const categoryIds: number[] = Array.isArray(data.categoryIds)
+          ? data.categoryIds.map((id: unknown) => {
+              const numberId = Number(id);
+              return !isNaN(numberId) ? numberId : NaN;
+            }).filter((id) => !isNaN(id))
+          : [];
+
+        setUserCategoryIds(categoryIds);
+      } catch (error) {
+        //에러처리
+      }
+    };
+
     getTopGames();
     getTopArticles();
     getNewGames();
@@ -119,6 +138,7 @@ export default function Home() {
       setIsLoggedIn(true);
       getMyRecommendedGames();
       getRecommendedGames();
+      fetchUserCategoryIds();
     } else {
       setIsLoggedIn(false);
     }
@@ -132,7 +152,7 @@ export default function Home() {
       return (
         <div className="flex flex-col items-center justify-center w-full h-full">
           <p className="text-lg font-semibold text-center mb-4">
-            MyTrophy에 가입하고 추천 게임을 확인하세요
+            나에게 딱 맞는 게임을 발견하고 새로운 모험을 시작하세요!
           </p>
           <Link href="/signup">
             <button
@@ -155,10 +175,29 @@ export default function Home() {
       );
     }
 
+    if (userCategoryIds.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center w-full h-full">
+          <p className="text-lg font-semibold text-center mb-4">
+            관심 카테고리를 선택하세요
+          </p>
+          <Link href="/select-category">
+            <button
+              type="button"
+              className="flex flex-row items-center px-4 py-2 bg-[#FF8289] text-white rounded-xl hover:bg-[#FB5A91] transition duration-200"
+            >
+              카테고리 선택
+              <GoArrowUpRight className="ml-2" />
+            </button>
+          </Link>
+        </div>
+      );
+    }
+
     return (
       <GameCardSlider
         games={recommendedGames.filter((game) => game.id !== null)}
-        idKey="appId"
+        idKey="id"
       />
     );
   };
@@ -184,6 +223,18 @@ export default function Home() {
       </div>
     );
   };
+
+  const positiveMappings = {
+    OVERWHELMING_POSITIVE: '압도적으로 긍정적',
+    VERY_POSITIVE: '매우 긍정적',
+    MOSTLY_POSITIVE: '대체로 긍정적',
+    MIXED: '중립적',
+    MOSTLY_NEGATIVE: '대체로 부정적',
+    VERY_NEGATIVE: '매우 부정적',
+    UNKNOWN: '알 수 없음',
+  };
+
+  const positiveText = (positive) => positiveMappings[positive] || positive;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start">
@@ -244,7 +295,7 @@ export default function Home() {
                       <p className="text-base mb-2">
                         <span className="font-bold">평가</span>
                         <span className="font-normal ml-3">
-                          {topGame.positive}
+                        {positiveText(topGame.positive)}
                         </span>
                       </p>
                       <p className="text-base flex items-center">
