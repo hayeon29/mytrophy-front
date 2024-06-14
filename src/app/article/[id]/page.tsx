@@ -60,7 +60,8 @@ function ArticleDetail({ params }: Props) {
 
   const getMemberByToken = async () => {
       const response = await membersAPI.getUserInfo();
-      setMemberInfo(response.data);
+      const member = response.data;
+      console.log(member);
   };
 
   useEffect(() => {

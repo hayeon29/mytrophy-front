@@ -3,10 +3,13 @@ import api from '@/config/AxiosConfig';
 const API_URL = process.env.NEXT_PUBLIC_ARTICLE_API_URL;
 
 const articleAPI = {
-  async getArticleList(page = 1, size = 10, memberId?: string) {
+  async getArticleList(page = 1, size = 10, memberId?: string, cntUp?: boolean) {
     let url = `${API_URL}?page=${page}&size=${size}`;
     if (memberId) {
       url += `&memberId=${memberId}`;
+    }
+    if (cntUp) {
+      url += `&cntUp=true`;
     }
     return (await api.get(url)).data;
   },
