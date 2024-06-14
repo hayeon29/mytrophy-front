@@ -56,7 +56,7 @@ export default function AchievementCard({
             className="mr-14"
           />
         )}
-        <span className="text-sm text-blackGray">
+        <span className="text-sm text-blackGray w-[120px] text-end mr-10">
           {eachAchievement.unlockTime === '1970년 01월 01일'
             ? '미달성'
             : eachAchievement.unlockTime}
