@@ -163,7 +163,7 @@ export default function Article() {
       if (response.status === 200) {
         setMessage("게시글 작성이 완료되었습니다.");
       } else {
-        setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+        setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.\n(파일은 10MB 이하만 업로드 가능합니다.)");
         setIsOpen(true);
       }
 
@@ -171,7 +171,7 @@ export default function Article() {
       window.location.reload();
     } catch (error) {
       console.error('게시글 작성 에러:', error);
-      setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+      setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.\n(파일은 10MB 이하만 업로드 가능합니다.)");
       setIsOpen(true);
     }
   };
@@ -300,8 +300,6 @@ export default function Article() {
           return 'bg-yellow-500';
         case 'REVIEW':
           return 'bg-red-500';
-        case 'CHATING':
-          return 'bg-black';
         default:
           return 'bg-gray-500';
       }
@@ -367,13 +365,6 @@ export default function Article() {
                   onClick={() => handleClick('REVIEW')}
               >
                 리뷰
-              </Button>
-              <Button
-                  color="primary"
-                  variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
-                  onClick={() => handleClick('CHATING')}
-              >
-                채팅
               </Button>
             </div>
           </div>
@@ -448,13 +439,6 @@ export default function Article() {
                             onClick={() => handleButtonClick('REVIEW')}
                         >
                           리뷰
-                        </Button>
-                        <Button
-                            color="primary"
-                            variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
-                            onClick={() => handleButtonClick('CHATING')}
-                        >
-                          채팅
                         </Button>
                       </div>
 

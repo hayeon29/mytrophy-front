@@ -215,25 +215,37 @@ function ArticleDetail({ params }: Props) {
   };
 
   const handleClickEditArticle = async (onClose) => {
-      let fileUrls = null;
+      try {
+        let fileUrls = null;
 
-      if (selectedFiles.length > 0) {
-        const formData = new FormData();
-        selectedFiles.forEach((file) => {
-          formData.append('file', file);
-        });
-        const response = await articleAPI.articleFileUpload(formData);
-        fileUrls = response.join(',');
+        if (selectedFiles.length > 0) {
+          const formData = new FormData();
+          selectedFiles.forEach((file) => {
+            formData.append('file', file);
+          });
+          const response = await articleAPI.articleFileUpload(formData);
+          fileUrls = response.join(',');
+        }
+        await articleAPI.articleUpdate(
+            articleId,
+            activeButton,
+            userInfo.name,
+            userInfo.content,
+            selectedGameId, // 선택한 게임의 selectedGameId 사용
+            fileUrls
+        );
+
+        if (activeButton === '' || userInfo.name === '' || userInfo.content === '' || selectedGameId === '') {
+          setMessage("모든 항목을 입력해주세요.");
+          setIsOpen(true);
+        } else {
+          onClose();
+        }
+
+      } catch (error) {
+        setMessage("게시글 수정에 실패했습니다.\n(파일은 10MB 이하만 업로드 가능합니다.)");
+        setIsOpen(true);
       }
-      await articleAPI.articleUpdate(
-          articleId,
-          activeButton,
-          userInfo.name,
-          userInfo.content,
-          selectedGameId, // 선택한 게임의 selectedGameId 사용
-          fileUrls
-      );
-      onClose();
   };
 
   const handleDeleteCommentId = (commentId) => {
@@ -482,6 +494,21 @@ function ArticleDetail({ params }: Props) {
                       <Button color="primary" onPress={() => handleClickEditArticle(onClose)}>
                         수정
                       </Button>
+
+                      <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                        <ModalContent>
+                          <ModalHeader className="flex flex-col gap-1">게시글 수정 실패</ModalHeader>
+                          <ModalBody>
+                            <p>{message}</p>
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button color="danger" variant="light" onPress={handleCloseModal}>
+                              확인
+                            </Button>
+                          </ModalFooter>
+                        </ModalContent>
+                      </Modal>
+
                     </ModalFooter>
                   </>
               )}

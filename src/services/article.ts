@@ -122,15 +122,16 @@ const articleAPI = {
     if (!accessToken) {
       throw new Error('No access token found in local storage.');
     }
+
     const response = await api.get(
-      `${API_URL}/liked/${memberId}?page=${page}&size=${size}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'access': accessToken,
-        },
-      }
+        `${API_URL}/liked/${memberId}?page=${page}&size=${size}`,
+        {
+          headers: {
+            'access': accessToken,
+          },
+        }
     );
+
     return response.data;
   },
 };
