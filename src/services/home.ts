@@ -68,8 +68,8 @@ const homeAPI = {
       headers: {
         access: accessToken,
       },
-    })
-  }
+    });
+  },
 };
 
 export default homeAPI;

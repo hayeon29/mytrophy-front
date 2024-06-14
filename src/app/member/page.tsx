@@ -110,25 +110,29 @@ function MyPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const likedResponse = await articleAPI.getLikedArticlesByMemberId(
-        userInfo?.id,
-        currentPage - 1,
-        10
-      );
-      const likedCount = likedResponse.content.length;
-      setTotalArticles(likedCount);
+      if (userInfo === undefined) {
+        setTotalArticles(0);
+        setTotalMyArticles(0);
+      } else {
+        const likedResponse = await articleAPI.getLikedArticlesByMemberId(
+          userInfo?.id,
+          currentPage - 1,
+          10
+        );
+        const likedCount = likedResponse.content.length;
+        setTotalArticles(likedCount);
 
-      const myArticlesResponse = await articleAPI.getArticleList(
-        currentPage - 1,
-        10,
-        userInfo?.id
-      );
-      const myArticlesCount = myArticlesResponse.content.length;
-      console.log(myArticlesCount);
-      setTotalMyArticles(myArticlesCount);
+        const myArticlesResponse = await articleAPI.getArticleList(
+          currentPage - 1,
+          10,
+          userInfo?.id
+        );
+        const myArticlesCount = myArticlesResponse.content.length;
+        setTotalMyArticles(myArticlesCount);
+      }
     };
     fetchData();
-  }, [currentPage, userInfo?.id]);
+  }, [currentPage, userInfo]);
 
   const handleProfileEdit = () => {
     openModal(<ProfileEdit onClick={closeModal} />);

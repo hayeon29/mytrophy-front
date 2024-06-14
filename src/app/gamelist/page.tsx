@@ -7,6 +7,10 @@ import { FaCheck, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
 import { Pagination, Spinner } from '@nextui-org/react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Category from '@/components/home/Category';
+import { HomeCategory } from '@/types/HomeCategory';
+import GAME_CATEGORY from '@/constants/gameCategory';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 export default function GameList() {
   const [gameDetails, setGameDetails] = useState([]);
@@ -19,27 +23,6 @@ export default function GameList() {
   const [keyword, setKeyword] = useState('');
 
   const itemsPerPage = 10;
-
-  const categories = [
-    { id: 101, name: '액션' },
-    { id: 102, name: '전략' },
-    { id: 103, name: 'RPG' },
-    { id: 104, name: '캐주얼' },
-    { id: 109, name: '레이싱' },
-    { id: 118, name: '스포츠' },
-    { id: 123, name: '인디' },
-    { id: 125, name: '어드벤처' },
-    { id: 128, name: '시뮬레이션' },
-    { id: 154, name: '교육' },
-    { id: 31, name: 'VR 지원' },
-    { id: 49, name: 'PvP' },
-    { id: 9, name: '협동' },
-    { id: 1, name: '멀티 플레이어' },
-    { id: 2, name: '싱글 플레이어' },
-    { id: 62, name: '가족' },
-    { id: 170, name: '앞서 해보기' },
-    { id: 157, name: '유틸리티' },
-  ];
 
   const positivityMapping = {
     OVERWHELMING_POSITIVE: '압도적으로 긍정적',
@@ -87,15 +70,6 @@ export default function GameList() {
     router.push(`/gamelist?page=${page}`);
   };
 
-  // const fetchTotalItems = async () => {
-  //   try {
-  //     // const response = await gameAPI.getTotalItems();
-  //     // setTotalItems(response);
-  //   } catch (error) {
-  //     // console.error('Error fetching total items:', error);
-  //   }
-  // };
-
   const loadMoreData = useCallback(
     async (page) => {
       const filterData = {
@@ -120,7 +94,7 @@ export default function GameList() {
         setGameDetails(details.content);
         setTotalPages(details.totalPages);
       } catch (error) {
-        // console.error('Error applying filters:', error);
+        handleAxiosError(error);
       } finally {
         setLoading(false);
       }
@@ -200,25 +174,11 @@ export default function GameList() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-1">
                               {truncateString(post.name, 40)}
                             </h3>
-                            <div className="flex flex-wrap mb-1">
-                              {post.getGameCategoryDTOList
-                                .slice(0, 5)
-                                .map((category) => {
-                                  const shortenedName =
-                                    category.name.length > 10
-                                      ? `${category.name.slice(0, 10)}..`
-                                      : category.name;
-                                  return (
-                                    <span
-                                      key={category.name}
-                                      className="text-gray-600 rounded bg-blue-100  sm:px-0.5 py-1 mx-1"
-                                      style={{ backgroundColor: '#D2DAF8' }}
-                                    >
-                                      {shortenedName}
-                                    </span>
-                                  );
-                                })}
-                            </div>
+                            <Category
+                              categories={
+                                post.getGameCategoryDTOList as HomeCategory[]
+                              }
+                            />
                             <p className="text-gray-600">
                               {' '}
                               {positivityMapping[post.positive]}
@@ -260,7 +220,7 @@ export default function GameList() {
             <div className="mb-4">
               <h4 className="font-bold mb-2">카테고리</h4>
               <div className="grid grid-cols-2 gap-2 bg-gray-100 shadow-md p-4 rounded-lg">
-                {categories.map((category) => (
+                {GAME_CATEGORY.map((category) => (
                   <button
                     type="button"
                     key={category.id}

@@ -21,6 +21,7 @@ const config: Config = {
         lightGray: '#D9D9D9',
         blackGray: '#B1B1B1',
         gray: '#CBD5E1',
+        blueLightGray: '#E2E8F0',
         blueGray: '#D2DAF8',
         blueBlack: '#2E396C',
         kakao: '#FFEB00',
@@ -33,6 +34,7 @@ const config: Config = {
       },
       boxShadow: {
         disabled: '0 0 0px 1000px #FFF inset',
+        gray: '0px 4px 24px 0px rgba(46,57,108,0.15)',
       },
       dropShadow: {
         primary: '0 4px 12px rgba(87, 121, 233, 0.15)',

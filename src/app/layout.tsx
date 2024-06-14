@@ -5,7 +5,6 @@ import NavigationBar from '@/components/common/NavigationBar';
 import RecoilRootProvider from '@/providers/RecoilRootProvider';
 import Providers from '@/providers/NextUiProvider';
 import ReactQueryProviders from '@/providers/ReactQueryProviders';
-import { LoginModalProvider } from '@/providers/LoginModalContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,10 +24,10 @@ export default function RootLayout({
         <RecoilRootProvider>
           <Providers>
             <ReactQueryProviders>
-              <LoginModalProvider> {/* Wrap components with LoginModalProvider */}
-                <NavigationBar />
-                {children}
-              </LoginModalProvider>
+              {' '}
+              {/* Wrap components with LoginModalProvider */}
+              <NavigationBar />
+              {children}
             </ReactQueryProviders>
           </Providers>
         </RecoilRootProvider>

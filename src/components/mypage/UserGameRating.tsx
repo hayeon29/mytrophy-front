@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Divider, Tabs, Tab, Spinner, Tooltip, Button } from '@nextui-org/react';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/dropdown';
+import {
+  Divider,
+  Tabs,
+  Tab,
+  Spinner,
+  Tooltip,
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from '@nextui-org/react';
 import { GetGameDetailDTO } from '@/types/GameDetail';
 import { UserAllGameInfo } from '@/types/UserInfo';
 import homeAPI from '@/services/home';
+import { IoIosWarning } from 'react-icons/io'; // 아이콘 추가
 import UserGameCard from './UserGameCard';
-import { IoIosWarning } from "react-icons/io"; // 아이콘 추가
 
 interface UserGameRatingProps {
   gameInfo: GetGameDetailDTO[] | undefined;
@@ -21,14 +31,18 @@ export default function UserGameRating({
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedSortKey, setSelectedSortKey] = useState('highPlaytime');
   const [sortButtonText, setSortButtonText] = useState('높은 플레이시간');
-  const [reviews, setReviews] = useState<{ [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT' }>({});
+  const [reviews, setReviews] = useState<{
+    [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
+  }>({});
   const [missingGamesCount, setMissingGamesCount] = useState(0);
 
   useEffect(() => {
     async function fetchReviews() {
       if (!gameInfo) return;
 
-      const reviewStatuses: { [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT' } = {};
+      const reviewStatuses: {
+        [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
+      } = {};
       const validGames = gameInfo.filter(
         (game): game is GetGameDetailDTO =>
           game !== undefined && game.id !== undefined
@@ -38,7 +52,10 @@ export default function UserGameRating({
         const promises = validGames.map(async (game) => {
           try {
             const response = await homeAPI.getMyReview(game.id);
-            return { id: game.id, status: response.data.reviewStatus || 'NONE' };
+            return {
+              id: game.id,
+              status: response.data.reviewStatus || 'NONE',
+            };
           } catch (error) {
             return { id: game.id, status: 'NONE' };
           }
@@ -71,8 +88,12 @@ export default function UserGameRating({
 
   const sortGames = (games: GetGameDetailDTO[]) => {
     return games.sort((a, b) => {
-      const playtimeA = userGameInfo?.games.find((g) => g.appid === a.id)?.playtime_forever || 0;
-      const playtimeB = userGameInfo?.games.find((g) => g.appid === b.id)?.playtime_forever || 0;
+      const playtimeA =
+        userGameInfo?.games.find((g) => g.appid === a.id)?.playtime_forever ||
+        0;
+      const playtimeB =
+        userGameInfo?.games.find((g) => g.appid === b.id)?.playtime_forever ||
+        0;
       const reviewA = reviews[a.id] || 'NONE';
       const reviewB = reviews[b.id] || 'NONE';
 
@@ -82,9 +103,21 @@ export default function UserGameRating({
         case 'lowPlaytime':
           return playtimeA - playtimeB;
         case 'highRating':
-          return (reviewB === 'NONE' ? -1 : reviewA === 'NONE' ? 1 : reviewB.localeCompare(reviewA));
+          if (reviewB === 'NONE') {
+            return -1;
+          }
+          if (reviewA === 'NONE') {
+            return 1;
+          }
+          return reviewB.localeCompare(reviewA);
         case 'lowRating':
-          return (reviewA === 'NONE' ? -1 : reviewB === 'NONE' ? 1 : reviewA.localeCompare(reviewB));
+          if (reviewA === 'NONE') {
+            return -1;
+          }
+          if (reviewB === 'NONE') {
+            return 1;
+          }
+          return reviewA.localeCompare(reviewB);
         default:
           return playtimeB - playtimeA;
       }
@@ -95,10 +128,10 @@ export default function UserGameRating({
     if (!gameInfo) return [];
     const filteredGames = gameInfo.filter(
       (game) =>
-        game !== undefined && 
-        (selectedTab === 'all' || 
-        (selectedTab === 'unrated' && reviews[game.id] === 'NONE') || 
-        (selectedTab === 'rated' && reviews[game.id] !== 'NONE'))
+        game !== undefined &&
+        (selectedTab === 'all' ||
+          (selectedTab === 'unrated' && reviews[game.id] === 'NONE') ||
+          (selectedTab === 'rated' && reviews[game.id] !== 'NONE'))
     );
     return sortGames(filteredGames);
   };
@@ -147,9 +180,11 @@ export default function UserGameRating({
       return gameInfo.filter((game) => reviews[game?.id] === 'NONE').length;
     }
     if (selectedTab === 'rated') {
-      return gameInfo.filter((game) => reviews[game?.id] && reviews[game?.id] !== 'NONE').length;
+      return gameInfo.filter(
+        (game) => reviews[game?.id] && reviews[game?.id] !== 'NONE'
+      ).length;
     }
-    return gameInfo.length; 
+    return gameInfo.length;
   };
 
   return (
@@ -162,17 +197,20 @@ export default function UserGameRating({
         variant="underlined"
         color="primary"
       >
-        <Tab key="all" title="전체 게임"></Tab>
-        <Tab key="unrated" title="평가되지 않은 게임"></Tab>
-        <Tab key="rated" title="평가한 게임"></Tab>
+        <Tab key="all" title="전체 게임" />
+        <Tab key="unrated" title="평가되지 않은 게임" />
+        <Tab key="rated" title="평가한 게임" />
       </Tabs>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <p className="font-bold">
-            총 <span className="text-[#FB5D8D]">{displayGameCount()}</span>개의 게임
+            총 <span className="text-[#FB5D8D]">{displayGameCount()}</span>개의
+            게임
           </p>
           {selectedTab === 'all' && missingGamesCount > 0 && (
-            <Tooltip content={`${missingGamesCount}개의 게임이 mytrophy데이터에 존재하지 않습니다.`}>
+            <Tooltip
+              content={`${missingGamesCount}개의 게임이 mytrophy데이터에 존재하지 않습니다.`}
+            >
               <Button
                 isIconOnly
                 as="div"
@@ -200,11 +238,17 @@ export default function UserGameRating({
         </Dropdown>
       </div>
       <Divider className="bg-primary mt-2 mb-6" />
-      {!isLoading ? (
-        filteredGames.length > 0 ? (
+      {isLoading && (
+        <div className="flex justify-center items-center h-32">
+          <Spinner color="primary" size="lg" />
+        </div>
+      )}
+      {!isLoading &&
+        (filteredGames.length > 0 ? (
           filteredGames.map((game) => {
             const playtime =
-              userGameInfo?.games.find((g) => g.appid === game.id)?.playtime_forever || 0;
+              userGameInfo?.games.find((g) => g.appid === game.id)
+                ?.playtime_forever || 0;
             const reviewStatus = reviews[game.id] || 'NONE';
             return (
               <UserGameCard
@@ -222,12 +266,7 @@ export default function UserGameRating({
             {selectedTab === 'rated' && '게임에 평가를 남겨보세요.'}
             {selectedTab === 'all' && '보유한 Steam 게임이 없습니다.'}
           </div>
-        )
-      ) : (
-        <div className="flex justify-center items-center h-32">
-          <Spinner color="primary" size="lg" />
-        </div>
-      )}
+        ))}
     </div>
   );
 }
