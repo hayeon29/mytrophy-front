@@ -9,6 +9,12 @@ import membersAPI from '@/services/members';
 import { useModal } from '@/hooks/useModal';
 import { useRouter } from 'next/navigation';
 import OkModal from '@/components/modals/OkModal';
+import LocalStorage from '@/constants/LocalStorage';
+import { UserInfo } from '@/types/UserInfo';
+import { useSetRecoilState } from 'recoil';
+import { userState } from '@/recoils/userAtom';
+import { AxiosError } from 'axios';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 export default function SignUp() {
   const router = useRouter();
@@ -19,6 +25,7 @@ export default function SignUp() {
   const [isUsernameExistChecked, setIsUsernameExistChecked] =
     useState<boolean>(false);
   const { openModal, modals, closeModal } = useModal();
+  const setLoginUserState = useSetRecoilState(userState);
 
   const [userInfo, setUserInfo] = useState<UserAdditionalSignUpInfo>({
     username: '',
@@ -71,17 +78,70 @@ export default function SignUp() {
     try {
       const response = await membersAPI.signUp(userInfo);
       if (response.status === 201) {
+        try {
+          const loginResponse = await membersAPI.login({
+            username: userInfo.username,
+            password: userInfo.password,
+          });
+          if (loginResponse.status === 200) {
+            LocalStorage.setItem('access', loginResponse.headers.access);
+            openModal(
+              <OkModal
+                title="로그인 결과"
+                message="로그인에 성공했습니다."
+                onClick={closeModal}
+              />
+            );
+            const memberInfo = await membersAPI.getUserInfo();
+            const {
+              username,
+              nickname,
+              id,
+              steamId,
+              name,
+              email,
+              imagePath,
+              loginType,
+            } = memberInfo.data as UserInfo;
+            setLoginUserState({
+              username,
+              nickname,
+              id,
+              steamId,
+              name,
+              email,
+              imagePath,
+              loginType,
+            });
+            router.refresh();
+          }
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            openModal(
+              <OkModal
+                title="로그인 결과"
+                message="로그인에 실패했습니다."
+                onClick={closeModal}
+              />
+            );
+          }
+        }
         openModal(
-          <OkModal message="회원가입이 성공하였습니다." onClick={closeModal} />
+          <OkModal
+            message="회원가입이 성공하였습니다."
+            onClick={() => {
+              closeModal();
+              router.push('/select-category');
+            }}
+          />
         );
-        router.push('/select-category');
       } else {
         openModal(
           <OkModal message="회원가입이 실패하였습니다." onClick={closeModal} />
         );
       }
     } catch (error) {
-      // 에러 메시지 모달창 출력
+      handleAxiosError(error);
     }
   };
 
