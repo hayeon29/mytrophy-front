@@ -216,7 +216,7 @@ export default function NavigationBar() {
           maxWidth="xl"
         >
           <div className="flex items-center gap-8">
-            <NavbarBrand>
+            <NavbarBrand as={Link} href="/">
               <Image
                 src="/svgs/logo.svg"
                 width={32}
@@ -363,7 +363,9 @@ export default function NavigationBar() {
             <Modal
               size="2xl"
               isOpen={isLoginModalOpen}
-              onOpenChange={(isOpen) => { if (!isOpen) closeLoginModal(); }}
+              onOpenChange={(isOpen) => {
+                if (!isOpen) closeLoginModal();
+              }}
               isDismissable={false}
               isKeyboardDismissDisabled
             >

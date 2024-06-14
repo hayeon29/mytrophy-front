@@ -11,12 +11,11 @@ import ArticleCard from '@/components/home/ArticleCard';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { GoArrowUpRight } from 'react-icons/go';
 import { TbRosetteNumber1 } from 'react-icons/tb';
-import { Spinner, Card, CardHeader, CardBody } from '@nextui-org/react';
+import { Spinner, Card, CardHeader, CardBody, Button } from '@nextui-org/react';
 import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
 import gameAPI from '@/services/game';
 import { useLoginModal } from '@/providers/LoginModalContext';
-import { Button } from '@nextui-org/react';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
@@ -27,7 +26,8 @@ export default function Home() {
   const [positiveGames, setPositiveGames] = useState<HomeGame[]>([]); // 압도적으로 긍정적인 게임
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingArticles, setLoadingArticles] = useState(true);
-  const [loadingMyRecommendedGames, setLoadingMyRecommendedGames] = useState(true);
+  const [loadingMyRecommendedGames, setLoadingMyRecommendedGames] =
+    useState(true);
   const [loadingRecommendedGames, setLoadingRecommendedGames] = useState(true); // 게임추천섹션
   const [loadingNewGames, setLoadingNewGames] = useState(true);
   const [loadingPositiveGames, setLoadingPositiveGames] = useState(true);
@@ -115,18 +115,20 @@ export default function Home() {
     const fetchUserCategoryIds = async () => {
       try {
         const response = await homeAPI.getUserInfo();
-        const data = response.data;
+        const { data } = response;
 
         const categoryIds: number[] = Array.isArray(data.categoryIds)
-          ? data.categoryIds.map((id: unknown) => {
-              const numberId = Number(id);
-              return !isNaN(numberId) ? numberId : NaN;
-            }).filter((id) => !isNaN(id))
+          ? data.categoryIds
+              .map((id: unknown) => {
+                const numberId = Number(id);
+                return !Number.isNaN(numberId) ? numberId : NaN;
+              })
+              .filter((id) => !Number.isNaN(id))
           : [];
 
         setUserCategoryIds(categoryIds);
       } catch (error) {
-        //에러처리
+        // Error handling
       }
     };
 
@@ -159,10 +161,10 @@ export default function Home() {
           <Button
             type="button"
             className="flex flex-row items-center px-4 py-2 bg-[#FF8289] text-white rounded-xl hover:bg-[#FB5A91] transition duration-200"
-            onClick={openLoginModal} 
+            onClick={openLoginModal}
           >
             로그인
-            <GoArrowUpRight/>
+            <GoArrowUpRight />
           </Button>
         </div>
       );
@@ -239,7 +241,20 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start">
-      <div className="w-full flex justify-center">
+      <div
+        className="w-full flex justify-center cursor-pointer"
+        onClick={() => {
+          window.location.href = 'https://store.steampowered.com/sale/nextfest';
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            window.location.href =
+              'https://store.steampowered.com/sale/nextfest';
+          }
+        }}
+        role="button"
+        tabIndex={0}
+      >
         <Image
           src="/image/event_header.png"
           alt="Event Header"
@@ -296,7 +311,7 @@ export default function Home() {
                       <p className="text-base mb-2">
                         <span className="font-bold">평가</span>
                         <span className="font-normal ml-3">
-                        {positiveText(topGame.positive)}
+                          {positiveText(topGame.positive)}
                         </span>
                       </p>
                       <p className="text-base flex items-center">
