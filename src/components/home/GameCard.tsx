@@ -15,8 +15,6 @@ import {
 } from 'react-icons/fa6';
 import homeAPI from '@/services/home';
 import Link from 'next/link';
-import { useRecoilValue } from 'recoil';
-import { userState } from '@/recoils/userAtom';
 import Category from './Category';
 import GameReviewModal from './GameReviewModal';
 
@@ -63,6 +61,7 @@ export default function GameCard({ game, idKey }) {
   }, [game, idKey]);
 
   const submitReview = async (status) => {
+    console.log('Submitting review for game ID:', game[idKey]);
     try {
       await homeAPI.submitReview(game[idKey], status);
       switch (status) {

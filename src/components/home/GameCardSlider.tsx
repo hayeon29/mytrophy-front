@@ -19,7 +19,7 @@ function GameCardSlider({ games, idKey }) {
         pagination={{ clickable: true }}
         loop={games.length >= 4}
         autoplay={{
-          delay: 2500,
+          delay: 3200,
           disableOnInteraction: false,
         }}
         breakpoints={{
