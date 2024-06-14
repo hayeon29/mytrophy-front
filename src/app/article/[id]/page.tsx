@@ -51,7 +51,11 @@ function ArticleDetail({ params }: Props) {
   const [selectedCommentNickname, setSelectedCommentNickname] = useState('');
   const [selectedDeleteComment, setSelectedDeleteComment] = useState('');
   const [reCommentOpen, setReCommentOpen] = useState(false);
-  const [memberInfo, setMemberInfo] = useState('');
+  const [memberInfo, setMemberInfo] = useState(null);
+  const [articles, setArticles] = useState([]);
+  const [message, setMessage] = useState("게시글을 작성하시겠습니까?");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const [userInfo, setUserInfo] = useState({
     header: '',
     name: '',
@@ -59,8 +63,12 @@ function ArticleDetail({ params }: Props) {
   });
 
   const getMemberByToken = async () => {
-      const response = await membersAPI.getUserInfo();
-      setMemberInfo(response.data);
+    const memberInfo = await membersAPI.getUserInfo();
+    setMemberInfo(memberInfo.data);
+    console.log(memberInfo.data);
+    if (memberInfo === null) {
+      setMemberInfo(null);
+    }
   };
 
   useEffect(() => {
@@ -68,7 +76,6 @@ function ArticleDetail({ params }: Props) {
         setLoading(true);
         const articleDetail = await articleAPI.getArticleDetail(articleId);
         setArticle(articleDetail);
-
         // 게임의 상세 정보 가져오기
         const gameDetailData = await gameAPI.getGameDetail(articleDetail.appId);
         setGameDetail(gameDetailData);
@@ -258,6 +265,25 @@ function ArticleDetail({ params }: Props) {
   const displayHeader = (header) => {
     if (header === 'CHATING') return 'CHATTING';
     return header;
+  };
+
+  const handleArticleLike = async (articleId) => {
+    const articleDetail = await articleAPI.getArticleDetail(articleId);
+    setArticle(articleDetail);
+  };
+
+  const handleLikeClick = async (articleId) => {
+    if (memberInfo !== null) {
+      await articleAPI.articleLike(articleId);
+      handleArticleLike(articleId);
+    } else {
+      setMessage("로그인 후 추천을 누를 수 있습니다.");
+      setIsOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -498,6 +524,7 @@ function ArticleDetail({ params }: Props) {
           </div>
           <div className="flex justify-end mt-4">
             <div className="flex items-center mr-4">
+              <Button className="border-gray bg-white" onClick={() => handleLikeClick(article.id)}>
               <Image
                   src={`${process.env.NEXT_PUBLIC_FRONT_URL}/svgs/likeIcon.svg`}
                   alt="좋아요 아이콘"
@@ -505,7 +532,23 @@ function ArticleDetail({ params }: Props) {
                   height={25}
                   className="mr-2"
               />
-              <p className="text-gray-500 text-medium ml-1">{article?.cntUp}</p>
+                {article.cntUp}
+              </Button>
+
+              <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                <ModalContent>
+                  <ModalHeader className="flex flex-col gap-1">게시글 추천 실패</ModalHeader>
+                  <ModalBody>
+                    <p>{message}</p>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" variant="light" onPress={handleCloseModal}>
+                      확인
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+
             </div>
             <div className="flex items-center mr-4">
               <Image

@@ -18,14 +18,11 @@ import {
   CardHeader,
   Avatar,
   CardBody,
-    useDisclosure,
 } from '@nextui-org/react';
 import articleAPI from "@/services/article";
 import gameAPI from "@/services/game";
 import membersAPI from "@/services/members";
-import OkModal from '@/components/modals/OkModal';
-import {useModal} from "@/hooks/useModal";
-import {AxiosError} from "axios";
+
 
 export default function Article() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -45,14 +42,12 @@ export default function Article() {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [selectedGameName, setSelectedGameName] = useState('');
   const [memberInfo, setMemberInfo] = useState(null);
-  const [isLikeModalOpen, setIsLikeModalOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
   const [isGameCurrentPage, setGameCurrentPage] = useState(1);
   const [showLikeLabel, setShowLikeLabel] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("게시글을 작성하시겠습니까?");
-
+  const [likes, setLikes] = useState({});
+  const [cntUp, setCntUp] = useState(0);
   const [userInfo, setUserInfo] = useState({
     header: '',
     name: '',
@@ -60,13 +55,11 @@ export default function Article() {
   });
 
   const getMemberByToken = async () => {
-    try {
       const memberInfo = await membersAPI.getUserInfo();
       setMemberInfo(memberInfo);
-      console.log('멤버 정보:', memberInfo);
-    } catch (error) {
-      console.error('토큰으로 멤버 정보를 가져오는 데 실패했습니다:', error);
-    }
+      if (memberInfo === null) {
+        setMemberInfo(null);
+      }
   };
 
   useEffect(() => {
@@ -78,6 +71,7 @@ export default function Article() {
         const response = await articleAPI.getArticleList(currentPage - 1, 10);
         const articles = response.content;
         setArticles(articles);
+        setCntUp(articles.cntUp);
         setTotalPages(response.totalPages);
 
         // 각 게시물의 appId를 사용하여 게임 세부 정보를 가져오기
@@ -170,15 +164,15 @@ export default function Article() {
         setMessage("게시글 작성이 완료되었습니다.");
       } else {
         setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
-        setIsOpen(true); // Open modal for failure
+        setIsOpen(true);
       }
 
-      onClose(); // Close modal in all cases
-      window.location.reload(); // Reload page (if needed)
+      onClose();
+      window.location.reload();
     } catch (error) {
       console.error('게시글 작성 에러:', error);
       setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
-      setIsOpen(true); // Open modal for error
+      setIsOpen(true);
     }
   };
 
@@ -210,23 +204,27 @@ export default function Article() {
     };
 
     const handleLike = async (articleId) => {
-      try {
-        // 게시글을 추천하고 결과를 받아옴
-        const response = await articleAPI.articleLike(articleId);
-        setIsLiked(true);
-        setIsLikeModalOpen(false);
-        window.location.reload();
-      } catch (error) {
-        // 오류 발생 시
-        console.error('게시글 추천에 실패했습니다:', error);
-      }
+      await articleAPI.articleLike(articleId);
+
+      // 서버에서 최신 좋아요 상태 가져오기
+      const updatedArticle = await articleAPI.getArticleDetail(articleId);
+
+      // 좋아요 수 업데이트
+      setArticles(prevArticles =>
+          prevArticles.map(article =>
+              article.id === articleId ? { ...article, cntUp: updatedArticle.cntUp, isLiked: updatedArticle.isLiked } : article
+          )
+      );
     };
 
-    const handleLikeClick = (articleId) => {
-      // 좋아요 버튼을 클릭하는 동작
-      setSelectedArticle(articleId);
+  const handleLikeClick = (articleId) => {
+    if (memberInfo !== null) {
       handleLike(articleId);
-    };
+    } else {
+      setMessage("로그인 후 추천을 누를 수 있습니다.");
+      setIsOpen(true);
+    }
+  };
 
     const handlePageChange = (page) => {
       setCurrentPage(page);
@@ -328,6 +326,16 @@ export default function Article() {
       }));
     };
 
+    const handleWriteArticle = () => {
+      if (memberInfo === null) {
+        setMessage("로그인 후 게시글을 작성할 수 있습니다.");
+        setIsOpen(true);
+        setIsPostModalOpen(false);
+      } else {
+        setIsPostModalOpen(true);
+      }
+    }
+
     return (
         <div className="bg-white h-screen mx-auto">
           <div className="max-w-7xl mx-auto relative bg-white pt-4">
@@ -376,10 +384,25 @@ export default function Article() {
                   color="default"
                   variant="faded"
                   className="flex-grow test-small"
-                  onPress={() => setIsPostModalOpen(true)}
+                  onPress={handleWriteArticle}
               >
                 클릭 후 글을 작성해보세요.
               </Button>
+
+              <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                <ModalContent>
+                  <ModalHeader className="flex flex-col gap-1">게시글 작성 실패</ModalHeader>
+                  <ModalBody>
+                    <p>{message}</p>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" variant="light" onPress={handleCloseModal}>
+                      확인
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+
             </div>
           </div>
 
@@ -592,7 +615,7 @@ export default function Article() {
 
           {/* 게시글 Cards */}
           <div className="flex flex-col justify-center items-center py-4">
-            {articles.map((article) => (
+            {articles.map((article, cntUp) => (
                 <Card key={article.id} className="w-full max-w-7xl mb-4">
                   {/* Card Header */}
                   <CardHeader className="justify-between flex-row px-6 py-4">
@@ -634,6 +657,21 @@ export default function Article() {
                       <span className="text-sm text-gray-500 text-default-400">
                         {article.cntUp}
                       </span>
+
+                      <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                        <ModalContent>
+                          <ModalHeader className="flex flex-col gap-1">게시글 추천 실패</ModalHeader>
+                          <ModalBody>
+                            <p>{message}</p>
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button color="danger" variant="light" onPress={handleCloseModal}>
+                              확인
+                            </Button>
+                          </ModalFooter>
+                        </ModalContent>
+                      </Modal>
+
                       <Image width={16} alt="comment" src="/svgs/commentIcon.svg"/>
                       <span className="text-sm text-gray-500 text-default-400">
                         {article.commentCount}
