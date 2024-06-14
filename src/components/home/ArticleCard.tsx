@@ -41,7 +41,7 @@ function ArticleCard({ article }: ArticleCardProps) {
     INFORMATION: '정보',
     GUIDE: '공략',
     REVIEW: '리뷰',
-    CHATING: '채팅',
+    CHATTING: '채팅',
   };
 
   const headerText = headerMapping[article.header] || article.header;
@@ -60,7 +60,8 @@ function ArticleCard({ article }: ArticleCardProps) {
             </Button>
           </Link>
           <Link href={`/game/${article.appId}`} passHref>
-            <span className="text-lg font-bold text-[#2E396C] hover:underline cursor-pointer items-center mt-1"
+            <span
+              className="text-lg font-bold text-[#2E396C] hover:underline cursor-pointer items-center mt-1"
               style={{
                 display: 'inline-block',
                 overflow: 'hidden',
@@ -78,7 +79,8 @@ function ArticleCard({ article }: ArticleCardProps) {
       <CardBody className="p-4 pt-0">
         <div className="flex justify-between mb-1">
           <Link href={`/article/${article.id}`} passHref>
-            <div className="text-[#2E396C] text-lg font-semibold cursor-pointer"
+            <div
+              className="text-[#2E396C] text-lg font-semibold cursor-pointer"
               style={{
                 display: 'inline-block',
                 overflow: 'hidden',
