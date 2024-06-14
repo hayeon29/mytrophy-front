@@ -11,9 +11,9 @@ const homeAPI = {
     });
   },
 
-  async topArticles(page = 0, size = 3, sort = 'cntUp,desc') {
+  async topArticles(page = 0, size = 3, cntUp = true) {
     return api.get(`${ARTICLE_API}`, {
-      params: { page, size, sort },
+      params: { page, size, cntUp },
     });
   },
 

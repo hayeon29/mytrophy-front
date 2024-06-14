@@ -15,6 +15,8 @@ import { Spinner, Card, CardHeader, CardBody } from '@nextui-org/react';
 import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
 import gameAPI from '@/services/game';
+import { useLoginModal } from '@/providers/LoginModalContext';
+import { Button } from '@nextui-org/react';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
@@ -25,13 +27,13 @@ export default function Home() {
   const [positiveGames, setPositiveGames] = useState<HomeGame[]>([]); // 압도적으로 긍정적인 게임
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingArticles, setLoadingArticles] = useState(true);
-  const [loadingMyRecommendedGames, setLoadingMyRecommendedGames] =
-    useState(true);
+  const [loadingMyRecommendedGames, setLoadingMyRecommendedGames] = useState(true);
   const [loadingRecommendedGames, setLoadingRecommendedGames] = useState(true); // 게임추천섹션
   const [loadingNewGames, setLoadingNewGames] = useState(true);
   const [loadingPositiveGames, setLoadingPositiveGames] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userCategoryIds, setUserCategoryIds] = useState<number[]>([]);
+  const { openLoginModal } = useLoginModal();
 
   useEffect(() => {
     const getTopGames = async () => {
@@ -154,15 +156,14 @@ export default function Home() {
           <p className="text-lg font-semibold text-center mb-4">
             나에게 딱 맞는 게임을 발견하고 새로운 모험을 시작하세요!
           </p>
-          <Link href="/signup">
-            <button
-              type="button"
-              className="flex flex-row items-center px-4 py-2 bg-[#FF8289] text-white rounded-xl hover:bg-[#FB5A91] transition duration-200"
-            >
-              회원가입
-              <GoArrowUpRight className="ml-2" />
-            </button>
-          </Link>
+          <Button
+            type="button"
+            className="flex flex-row items-center px-4 py-2 bg-[#FF8289] text-white rounded-xl hover:bg-[#FB5A91] transition duration-200"
+            onClick={openLoginModal} 
+          >
+            로그인
+            <GoArrowUpRight/>
+          </Button>
         </div>
       );
     }

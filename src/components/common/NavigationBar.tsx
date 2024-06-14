@@ -11,7 +11,6 @@ import {
   Input,
   Link,
   Modal,
-  useDisclosure,
   ModalContent,
   ModalHeader,
   ModalBody,
@@ -29,8 +28,10 @@ import { userState } from '@/recoils/userAtom';
 import { UserInfo } from '@/types/UserInfo';
 import { useRecoilState } from 'recoil';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import { useLoginModal } from '@/providers/LoginModalContext';
 
 export default function NavigationBar() {
+  const { isLoginModalOpen, openLoginModal, closeLoginModal } = useLoginModal();
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -48,7 +49,6 @@ export default function NavigationBar() {
 
   const path = usePathname();
   const router = useRouter();
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { modals, openModal, closeModal } = useModal();
 
   const handlePasswordCheck = () => {
@@ -107,7 +107,7 @@ export default function NavigationBar() {
             imagePath,
             loginType,
           });
-          onClose();
+          closeLoginModal();
           router.refresh();
         } catch (error) {
           handleAxiosError(error);
@@ -346,7 +346,7 @@ export default function NavigationBar() {
               <div className="flex gap-2">
                 <Button
                   className="bg-white text-primary border-primary border-0 rounded-full"
-                  onPress={onOpen}
+                  onPress={openLoginModal}
                 >
                   로그인
                 </Button>
@@ -362,8 +362,8 @@ export default function NavigationBar() {
             )}
             <Modal
               size="2xl"
-              isOpen={isOpen}
-              onOpenChange={onOpenChange}
+              isOpen={isLoginModalOpen}
+              onOpenChange={(isOpen) => { if (!isOpen) closeLoginModal(); }}
               isDismissable={false}
               isKeyboardDismissDisabled
             >
