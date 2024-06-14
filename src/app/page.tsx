@@ -293,7 +293,12 @@ export default function Home() {
                           />
                           <TbRosetteNumber1 className="absolute top-4 left-1 text-yellow-500 text-6xl" />
                         </div>
-                        <span className="text-xl font-bold mb-3 text-gray-900 transition-colors duration-300 hover:text-[#2E396C]">
+                        <span className="max-w-full w-auto text-xl font-bold mb-1 text-gray-900 transition-colors duration-300 hover:text-[#2E396C] whitespace-nowrap overflow-hidden text-ellipsis"
+                          style={{
+                            display: 'inline-block',
+                            width: 'auto', 
+                          }}
+                        >
                           {topGame.name}
                         </span>
                       </Link>
@@ -302,13 +307,13 @@ export default function Home() {
                           topGame.getGameCategoryDTOList as HomeCategory[]
                         }
                       />
-                      <p className="text-base mt-2 mb-2">
+                      <p className="text-base mt-1 mb-1">
                         <span className="font-bold">가격</span>
                         <span className="font-normal ml-3">
                           {topGame.price === 0 ? '무료' : `${topGame.price}원`}
                         </span>
                       </p>
-                      <p className="text-base mb-2">
+                      <p className="text-base mb-1">
                         <span className="font-bold">평가</span>
                         <span className="font-normal ml-3">
                           {positiveText(topGame.positive)}
