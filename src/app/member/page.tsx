@@ -294,7 +294,7 @@ function MyPage() {
                       className={selectedTab !== 1 ? 'text-black' : ''}
                       aria-valuetext="1"
                     >
-                      달성 업적 수
+                      게임 업적들
                     </span>
                   </div>
                 </>
