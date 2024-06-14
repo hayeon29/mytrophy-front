@@ -268,7 +268,15 @@ function ArticleDetail({ params }: Props) {
               커뮤니티로 돌아가기
             </Button>
           </Link>
-          <Button className="py-2 px-4 rounded" color="primary" variant="bordered" onPress={() => setIsPostModalOpen(true)}>수정</Button>
+          <Button
+              className="py-2 px-4 rounded"
+              color="primary"
+              variant="bordered"
+              onPress={() => setIsPostModalOpen(true)}
+              style={{ display: article.memberId === memberInfo.id ? 'block' : 'none' }}
+          >
+            수정
+          </Button>
           {/* 게시글 수정 모달창 */}
           <Modal
               isOpen={isPostModalOpen}
@@ -469,6 +477,9 @@ function ArticleDetail({ params }: Props) {
                   </div>
               )}
             </div>
+          </div>
+          <div className="max-w-4xl">
+            <h1 className="text-2xl font-bold mt-4 ">{article?.name}</h1>
           </div>
           <div className="flex flex-col items-center mt-6">
             {article && article.imagePath && article.imagePath.split(',').map((imagePath, index) => (
