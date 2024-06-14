@@ -20,6 +20,7 @@ import {
   Textarea,
   Checkbox,
 } from '@nextui-org/react';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 type Props = {
   params: {
@@ -193,7 +194,7 @@ function ArticleDetail({ params }: Props) {
         setIsOpen(true);
       }
     } catch (error) {
-      console.error('게임 검색 에러:', error);
+      handleAxiosError(error);
       setMessage('게임 검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setIsOpen(true);
     } finally {
