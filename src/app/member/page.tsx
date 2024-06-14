@@ -18,7 +18,6 @@ import { GetGameDetailDTO } from '@/types/GameDetail';
 import dayjs from 'dayjs';
 import { useModal } from '@/hooks/useModal';
 import ProfileEdit from '@/components/modals/ProfileEdit';
-import PageSelectButton from '@/components/common/PageSelectButton';
 import {
   useGameDetail,
   useMemberGameAchievementQueries,
@@ -33,7 +32,7 @@ function MyPage() {
   const { modals, openModal, closeModal } = useModal();
   const [totalArticles, setTotalArticles] = useState(0);
   const [totalMyArticles, setTotalMyArticles] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
 
   const { data: userInfo, isLoading: userInfoLoading } = useUserInfo();
 
@@ -350,12 +349,6 @@ function MyPage() {
           )}
           {selectedTab === 2 && <UserArticle />}
           {selectedTab === 3 && <UserRecommend />}
-          {selectedTab !== 0 && (
-            <PageSelectButton
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          )}
         </div>
       )}
     </>
