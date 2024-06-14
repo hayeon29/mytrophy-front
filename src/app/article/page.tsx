@@ -18,10 +18,14 @@ import {
   CardHeader,
   Avatar,
   CardBody,
+    useDisclosure,
 } from '@nextui-org/react';
 import articleAPI from "@/services/article";
 import gameAPI from "@/services/game";
 import membersAPI from "@/services/members";
+import OkModal from '@/components/modals/OkModal';
+import {useModal} from "@/hooks/useModal";
+import {AxiosError} from "axios";
 
 export default function Article() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -46,8 +50,9 @@ export default function Article() {
   const [isLiked, setIsLiked] = useState(false);
   const [isGameCurrentPage, setGameCurrentPage] = useState(1);
   const [showLikeLabel, setShowLikeLabel] = useState(false);
-  const [errorCode, setErrorCode] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("게시글을 작성하시겠습니까?");
+
   const [userInfo, setUserInfo] = useState({
     header: '',
     name: '',
@@ -103,15 +108,23 @@ export default function Article() {
   }, [currentPage]);
 
   const handleSearch = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await gameAPI.searchGameByName(isGameCurrentPage - 1, 10, searchValue);
       setSearchResults(response.content);
       setIsSearchModalOpen(true);
       setGameTotalPages(response.totalPages);
-      console.log('검색 결과:', searchResults);
+
+      if (response.content.length === 0) {
+        setMessage("검색한 게임이 없습니다. 다시 검색해주세요.");
+        setIsOpen(true);
+      }
     } catch (error) {
-      console.error('게임 검색에 실패했습니다:', error);
+      console.error('게임 검색 에러:', error);
+      setMessage("게임 검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setIsOpen(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -124,12 +137,15 @@ export default function Article() {
   };
 
   const handleClickCreateArticle = async (onClose) => {
-      if (!userInfo.name || !userInfo.content || !selectedGameId) {
-        setErrorCode(400); // Bad request error code
-        setIsOpen(true);
-      }
+    try {
+      let fileUrls = null; // Initialize file URL string
 
-      let fileUrls: string | null = null; // 파일 URL 문자열을 초기화
+      // Your form validation logic
+      if (!userInfo.name || !userInfo.content || !selectedGameId) {
+        setMessage("제목과 내용, 선택한 게임을 모두 입력해주세요."); // Update message for invalid input
+        setIsOpen(true); // Open modal for invalid input
+        return;
+      }
 
       if (selectedFiles.length > 0) {
         const formData = new FormData();
@@ -137,39 +153,38 @@ export default function Article() {
           formData.append('file', file);
         });
 
-        // 파일 업로드 API를 호출하여 파일 URL 배열을 가져옴
-        const response = await articleAPI.articleFileUpload(formData);
+        const responses = await articleAPI.articleFileUpload(formData);
 
-        // 파일이 업로드되었다면 파일 URL들을 쉼표(,)로 구분하여 문자열로 변환
-        fileUrls = response.join(',');
+        fileUrls = responses.join(',');
       }
 
-      await articleAPI.articleCreate(
+      const response = await articleAPI.articleCreate(
           activeButton,
           userInfo.name,
           userInfo.content,
-          selectedGameId, // 선택한 게임의 selectedGameId 사용
+          selectedGameId,
           fileUrls
       );
 
-      onClose();
-      window.location.reload();
+      if (response.status === 200) {
+        setMessage("게시글 작성이 완료되었습니다.");
+      } else {
+        setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+        setIsOpen(true); // Open modal for failure
+      }
+
+      onClose(); // Close modal in all cases
+      window.location.reload(); // Reload page (if needed)
+    } catch (error) {
+      console.error('게시글 작성 에러:', error);
+      setMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+      setIsOpen(true); // Open modal for error
+    }
   };
 
-    const closeModal = () => {
-      setErrorCode(null);
-      setIsOpen(false);
-    };
-
-    const getErrorMessage = () => {
-      if (!userInfo.name || !userInfo.content) {
-        return "제목과 내용을 모두 입력해주세요.";
-      } else if (!selectedGameId) {
-        return "게임을 선택해주세요.";
-      } else {
-        return "게시물 작성에 실패했습니다. 다시 시도해주세요.";
-      }
-    };
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
 
     const handleClick = async (header) => {
       try {
@@ -437,6 +452,21 @@ export default function Article() {
                           >
                             {isLoading ? '검색 중...' : '게임 검색'}
                           </Button>
+
+                          <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                            <ModalContent>
+                              <ModalHeader className="flex flex-col gap-1">게임 검색 실패</ModalHeader>
+                              <ModalBody>
+                                <p>{message}</p>
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button color="danger" variant="light" onPress={handleCloseModal}>
+                                  확인
+                                </Button>
+                              </ModalFooter>
+                            </ModalContent>
+                          </Modal>
+
                         </div>
                       </div>
                       <>
@@ -536,28 +566,28 @@ export default function Article() {
                       <Button color="danger" variant="light" onPress={onClose}>
                         취소
                       </Button>
-                      <Button color="primary" onPress={() => handleClickCreateArticle(setIsOpen)}>
+                      <Button color="primary" onPress={() => handleClickCreateArticle(onClose)}>
                         작성
                       </Button>
+
+                      <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+                        <ModalContent>
+                          <ModalHeader className="flex flex-col gap-1">게시글 작성 실패</ModalHeader>
+                          <ModalBody>
+                            <p>{message}</p>
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button color="danger" variant="light" onPress={handleCloseModal}>
+                              확인
+                            </Button>
+                          </ModalFooter>
+                        </ModalContent>
+                      </Modal>
+
                     </ModalFooter>
                   </>
               )}
             </ModalContent>
-          </Modal>
-          <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
-            {errorCode === 400 && (
-                <>
-                  <ModalHeader>게시물 작성 실패</ModalHeader>
-                  <ModalBody>
-                    <p>{getErrorMessage()}</p>
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button color="primary" onClick={closeModal}>
-                      확인
-                    </Button>
-                  </ModalFooter>
-                </>
-            )}
           </Modal>
 
           {/* 게시글 Cards */}
