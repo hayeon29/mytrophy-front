@@ -361,7 +361,7 @@ export default function Home() {
 
           <div className="h-full flex flex-col justify-between flex-[0.4] ml-8 space-y-4">
             {/* 공략 */}
-            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col">
+            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col transition-transform duration-200 hover:shadow-2xl">
               <Link href="/article">
                 <CardHeader className="text-2xl font-bold text-black p-8 pb-0 cursor-pointer">
                   <h2>공략</h2>
@@ -388,7 +388,7 @@ export default function Home() {
               </Link>
             </Card>
 
-            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col">
+            <Card className="h-[230px] bg-white rounded-xl p-0 flex flex-col transition-transform duration-200 hover:shadow-2xl">
               <Link href="/article">
                 <CardHeader className="text-2xl font-bold text-black p-8 pb-0 cursor-pointer">
                   <h2>게임 메이트 모집</h2>
