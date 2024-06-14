@@ -244,12 +244,14 @@ export default function Home() {
       <div
         className="w-full flex justify-center cursor-pointer"
         onClick={() => {
-          window.location.href = 'https://store.steampowered.com/sale/nextfest';
+          window.open('https://store.steampowered.com/sale/nextfest', '_blank');
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            window.location.href =
-              'https://store.steampowered.com/sale/nextfest';
+            window.open(
+              'https://store.steampowered.com/sale/nextfest',
+              '_blank'
+            );
           }
         }}
         role="button"
