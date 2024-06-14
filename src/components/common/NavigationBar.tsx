@@ -518,6 +518,13 @@ export default function NavigationBar() {
                             네이버로 로그인하기
                           </Button>
                         </Link>
+                        <Link
+                          href="/signup"
+                          className="text-blue-500 text-sm underline"
+                          onClick={closeLoginModal}
+                        >
+                          회원가입
+                        </Link>
                       </ModalBody>
                     </div>
                   </>
