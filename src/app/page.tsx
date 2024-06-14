@@ -16,6 +16,7 @@ import Link from 'next/link';
 import GameCardSlider from '@/components/home/GameCardSlider';
 import gameAPI from '@/services/game';
 import { useLoginModal } from '@/providers/LoginModalContext';
+import GAME_CATEGORY from '@/constants/gameCategory';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
@@ -440,13 +441,28 @@ export default function Home() {
       {/* 게임추천 */}
       <div className="w-full h-[600px] flex justify-center items-center bg-[#D2DAF8]">
         <div className="w-full max-w-7xl h-[500px] flex flex-col items-start justify-start">
-          <Tooltip 
-            content="관심 카테고리를 기반으로 추천된 게임이에요" 
-            isDisabled={userCategoryIds.length === 0}
-            placement="right"
-          >
-            <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
-          </Tooltip>
+        <Tooltip
+          content={
+            userCategoryIds.length > 0 ? (
+              <div className="p-2">
+                <p className="mb-2">관심 카테고리를 기반으로 추천된 게임이에요</p>
+                <Category
+                  categories={userCategoryIds.map((id) => 
+                    GAME_CATEGORY.find((category) => category.id === id)
+                  ).filter((category) => category)}
+                />
+              </div>
+            ) : (
+              '관심 카테고리를 기반으로 추천된 게임이에요'
+            )
+          }
+          isDisabled={userCategoryIds.length === 0}
+          placement="right"
+          offset={20} // 오른쪽으로 약간 이동
+          showArrow
+        >
+          <h2 className="text-2xl font-bold mb-6">게임 추천</h2>
+        </Tooltip>
           {renderGameRecommendation()}
         </div>
       </div>
