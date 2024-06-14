@@ -1,6 +1,6 @@
 import api from '../config/AxiosConfig';
 
-const API_URL = process.env.NEXT_PUBLIC_GAME_API_URL;
+const API_URL = '/api/games';
 
 const gameAPI = {
   async getGameDetail(appId: string) {
@@ -47,6 +47,7 @@ const gameAPI = {
   async readSteamGameDataOne(id) {
     return (await api.get(`${API_URL}/request/game/${id}`)).data;
   },
+
   async getGameDetailsByRelease(page = 1, size = 10) {
     return (
       await api.get(`${API_URL}/release`, {
@@ -57,6 +58,7 @@ const gameAPI = {
       })
     ).data;
   },
+
   async getGameDetailsByTop(page = 1, size = 10) {
     return (
       await api.get(`${API_URL}/top100`, {
@@ -78,16 +80,38 @@ const gameAPI = {
       })
     ).data;
   },
+
   async getFilteredGames(filterData) {
     return (await api.post(`${API_URL}/search`, filterData)).data;
   },
+
   async getTotalItems() {
     return (await api.get(`${API_URL}/count`)).data;
   },
+
   async searchGameByName(page = 10, size = 1, keyword: string = '') {
     return (
       await api.post(`${API_URL}/search?page=${page}&size=${size}`, { keyword })
     ).data;
+  },
+
+  async getMyRecommendedGames() {
+    const accessToken = localStorage.getItem('access');
+    return api.get(`${API_URL}/reviews/my-recommended`, {
+      headers: {
+        access: accessToken,
+      },
+    });
+  },
+
+  async getRecommendedGames(page: number = 0, size: number = 10) {
+    const accessToken = localStorage.getItem('access');
+    return api.get(`${API_URL}/recommendations`, {
+      headers: {
+        access: accessToken,
+      },
+      params: { page, size },
+    });
   },
 };
 export default gameAPI;

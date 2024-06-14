@@ -13,8 +13,8 @@ import {
 } from '@nextui-org/react';
 import { GetGameDetailDTO } from '@/types/GameDetail';
 import { UserAllGameInfo } from '@/types/UserInfo';
-import homeAPI from '@/services/home';
 import { IoIosWarning } from 'react-icons/io'; // 아이콘 추가
+import articleAPI from '@/services/article';
 import UserGameCard from './UserGameCard';
 
 interface UserGameRatingProps {
@@ -51,7 +51,7 @@ export default function UserGameRating({
       try {
         const promises = validGames.map(async (game) => {
           try {
-            const response = await homeAPI.getMyReview(game.id);
+            const response = await articleAPI.getMyReview(game.id);
             return {
               id: game.id,
               status: response.data.reviewStatus || 'NONE',
@@ -145,7 +145,7 @@ export default function UserGameRating({
       [gameId]: newStatus,
     }));
     try {
-      await homeAPI.submitReview(gameId, newStatus);
+      await articleAPI.submitReview(gameId, newStatus);
     } catch (error) {
       // 에러처리
     }

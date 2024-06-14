@@ -176,7 +176,7 @@ export default function SignUp() {
   );
 
   const buttonClassName: string = clsx(
-    `bg-primary rounded text-white py-3 px-[10px] text-xs whitespace-nowrap`
+    `bg-primary rounded text-white py-3 px-[10px] text-xs whitespace-nowrap disabled:bg-disable disabled:cursor-not-allowed`
   );
 
   return (
@@ -200,6 +200,7 @@ export default function SignUp() {
               htmlFor="username"
             >
               아이디
+              <span className="text-secondary"> *</span>
             </label>
             <div className="flex justify-between gap-x-2">
               <input
@@ -213,8 +214,13 @@ export default function SignUp() {
               />
               <button
                 type="button"
-                className={`${buttonClassName} ${userInfo.username.length === 0 || checkMessage.username.length > 0 || (isUsernameExistChecked && '!bg-disable !cursor-not-allowed')}`}
+                className={buttonClassName}
                 onClick={handleUserExistClick}
+                disabled={
+                  userInfo.username.length === 0 ||
+                  checkMessage.username.length > 0 ||
+                  isUsernameExistChecked
+                }
               >
                 아이디 확인
               </button>
@@ -229,6 +235,7 @@ export default function SignUp() {
               htmlFor="password"
             >
               비밀번호
+              <span className="text-secondary"> *</span>
             </label>
             <div className="flex justify-between gap-x-2 relative ">
               <input
@@ -262,6 +269,7 @@ export default function SignUp() {
               htmlFor="checkPassword"
             >
               비밀번호 확인
+              <span className="text-secondary"> *</span>
             </label>
             <div className="flex justify-between gap-x-2 relative ">
               <input
@@ -344,8 +352,9 @@ export default function SignUp() {
           </div>
           <button
             type="button"
-            className={`w-full ${buttonClassName} ${!isSignUpAvailable && isUsernameExistChecked && '!bg-disable !cursor-not-allowed'}`}
+            className={`w-full ${buttonClassName}`}
             onClick={handleSignUpClick}
+            disabled={!isSignUpAvailable || !isUsernameExistChecked}
           >
             회원가입
           </button>

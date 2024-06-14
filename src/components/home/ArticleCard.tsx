@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { HomeArticle } from '@/types/HomeArticle';
 import { MdRecommend } from 'react-icons/md';
-import homeAPI from '@/services/home';
 import {
   Avatar,
   Card,
@@ -13,6 +12,7 @@ import {
   Button,
 } from '@nextui-org/react';
 import Link from 'next/link';
+import articleAPI from '@/services/article';
 
 interface ArticleCardProps {
   article: HomeArticle;
@@ -24,7 +24,7 @@ function ArticleCard({ article }: ArticleCardProps) {
   useEffect(() => {
     const fetchGameName = async () => {
       try {
-        const response = await homeAPI.getGameByAppId(article.appId);
+        const response = await articleAPI.getGameByAppId(article.appId);
         setGameName(response.data.name);
       } catch (error) {
         setGameName('게임 이름 못가져옴');
