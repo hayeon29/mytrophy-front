@@ -52,10 +52,9 @@ function ArticleDetail({ params }: Props) {
   const [selectedDeleteComment, setSelectedDeleteComment] = useState('');
   const [reCommentOpen, setReCommentOpen] = useState(false);
   const [memberInfo, setMemberInfo] = useState(null);
-  const [articles, setArticles] = useState([]);
   const [message, setMessage] = useState("게시글을 작성하시겠습니까?");
   const [isOpen, setIsOpen] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [editedArticle, setEditedArticle] = useState({ title: '', content: '' });
   const [userInfo, setUserInfo] = useState({
     header: '',
     name: '',
@@ -76,6 +75,7 @@ function ArticleDetail({ params }: Props) {
         setLoading(true);
         const articleDetail = await articleAPI.getArticleDetail(articleId);
         setArticle(articleDetail);
+        console.log(articleDetail);
         // 게임의 상세 정보 가져오기
         const gameDetailData = await gameAPI.getGameDetail(articleDetail.appId);
         setGameDetail(gameDetailData);
@@ -87,7 +87,23 @@ function ArticleDetail({ params }: Props) {
     getMemberByToken();
   }, [articleId]);
 
+  useEffect(() => {
+    if (article) {
+      // 기존 게시글 정보를 폼에 설정
+      setEditedArticle({
+        title: article.title,
+        content: article.content,
+      });
+    }
+  }, [article]);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedArticle(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   const handleCommentSubmit = async (articleId, newComment, selectedCommentId) => {
       await commentAPI.createComment(articleId, newComment, selectedCommentId);
@@ -255,8 +271,6 @@ function ArticleDetail({ params }: Props) {
         return 'bg-yellow-500';
       case 'REVIEW':
         return 'bg-red-500';
-      case 'CHATING':
-        return 'bg-black';
       default:
         return 'bg-gray-500';
     }
@@ -299,7 +313,7 @@ function ArticleDetail({ params }: Props) {
               color="primary"
               variant="bordered"
               onPress={() => setIsPostModalOpen(true)}
-              style={{ display: article.memberId === memberInfo.id ? 'block' : 'none' }}
+              style={{ display: memberInfo === null ? 'none' : (article && article.memberId === memberInfo?.id ? 'block' : 'none') }}
           >
             수정
           </Button>
@@ -345,13 +359,6 @@ function ArticleDetail({ params }: Props) {
                             onClick={() => handleButtonClick('REVIEW')}
                         >
                           리뷰
-                        </Button>
-                        <Button
-                            color="primary"
-                            variant={activeButton === 'CHATING' ? 'solid' : 'ghost'}
-                            onClick={() => handleButtonClick('CHATING')}
-                        >
-                          채팅
                         </Button>
                       </div>
 
@@ -411,16 +418,16 @@ function ArticleDetail({ params }: Props) {
                       <p>제목</p>
                       <Textarea
                           name="name"
-                          value={userInfo.name}
-                          onChange={handleInput}
+                          value={article.name}
+                          onChange={handleInputChange}
                           placeholder="제목을 입력해주세요."
                           className="mb-4"
                       />
                       <p>내용</p>
                       <Textarea
                           name="content"
-                          value={userInfo.content}
-                          onChange={handleInput}
+                          value={article.content}
+                          onChange={handleInputChange}
                           placeholder="내용을 입력해주세요."
                           className="mb-4"
                       />
@@ -608,7 +615,7 @@ function ArticleDetail({ params }: Props) {
                               className="py-2 px-4 rounded w-20"
                               variant="solid"
                               color="danger"
-                              style={{ display: comment.memberId === memberInfo.id ? 'block' : 'none' }}
+                              style={{ display: memberInfo === null ? 'none' : (article && article.memberId === memberInfo.id ? 'block' : 'none') }}
                           >
                             수정
                           </Button>
@@ -718,7 +725,7 @@ function ArticleDetail({ params }: Props) {
                                     className="py-2 px-4 rounded w-20"
                                     variant="solid"
                                     color="danger"
-                                    style={{ display: childComment.memberId === memberInfo.id ? 'block' : 'none' }}
+                                    style={{ display: childComment.memberId === memberInfo?.id ? 'block' : 'none' }}
                                 >
                                   수정
                                 </Button>
@@ -745,9 +752,9 @@ function ArticleDetail({ params }: Props) {
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center gap-4">
               <User
-                  name={<span style={{ fontSize: '1.1rem' }}>{memberInfo.nickname}</span>}
+                  name={<span style={{ fontSize: '1.1rem' }}>{memberInfo?.nickname}</span>}
                   avatarProps={{
-                    src: memberInfo.imagePath,
+                    src: memberInfo?.imagePath,
                     style: { border: '1px solid black' }
                   }}
               />
