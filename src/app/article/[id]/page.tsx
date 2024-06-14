@@ -251,11 +251,10 @@ function ArticleDetail({ params }: Props) {
         setIsOpen(true);
       } else {
         onClose();
+        window.location.reload();
       }
     } catch (error) {
-      setMessage(
-        '게시글 수정에 실패했습니다.\n(파일은 10MB 이하만 업로드 가능합니다.)'
-      );
+      setMessage('게시글 수정에 실패했습니다.');
       setIsOpen(true);
     }
   };
@@ -494,12 +493,12 @@ function ArticleDetail({ params }: Props) {
                   <hr style={{ border: '1px solid #ddd' }} />
                   <p>제목</p>
                   <Textarea
-                    name="name"
+                    name="title"
                     value={userInfo.title}
                     onChange={handleInputChange}
                     placeholder="제목을 입력해주세요."
                     className="mb-4"
-                    rows={4}
+                    rows={10}
                   />
                   <p>내용</p>
                   <Textarea
