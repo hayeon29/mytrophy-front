@@ -24,7 +24,6 @@ import gameAPI from '@/services/game';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@/recoils/userAtom';
 import { handleAxiosError } from '@/utils/handleAxiosError';
-import { useRouter } from 'next/navigation';
 
 export default function Article() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -53,7 +52,6 @@ export default function Article() {
     name: '',
     content: '',
   });
-  const router = useRouter();
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -154,7 +152,9 @@ export default function Article() {
       }
 
       onClose();
-      router.refresh();
+      if (typeof window !== undefined) {
+        window.location.reload();
+      }
     } catch (error) {
       handleAxiosError(error);
       setMessage('게시글 작성에 실패했습니다. 다시 시도해주세요.');

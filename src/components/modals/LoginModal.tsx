@@ -7,7 +7,6 @@ import {
   Input,
   useDisclosure,
 } from '@nextui-org/react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { UserLoginInfo } from '@/types/LoginInfo';
@@ -19,7 +18,6 @@ import { UserInfo } from '@/types/UserInfo';
 import { useSetRecoilState } from 'recoil';
 import { userState } from '@/recoils/userAtom';
 import { handleAxiosError } from '@/utils/handleAxiosError';
-import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import OkModal from './OkModal';
 
@@ -43,8 +41,6 @@ export default function LoginModal({
       closeLoginModal();
     };
   }, [openLoginModal, closeLoginModal]);
-
-  const router = useRouter();
 
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
@@ -115,7 +111,9 @@ export default function LoginModal({
             loginType,
           });
           closeLoginModal();
-          router.refresh();
+          if (typeof window !== undefined) {
+            window.location.reload();
+          }
         } catch (error) {
           handleAxiosError(error);
         }
@@ -292,25 +290,6 @@ export default function LoginModal({
                   >
                     로그인
                   </Button>
-                  <Link
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`}
-                    className="w-full h-full text-white text-center"
-                  >
-                    <Button
-                      className="bg-white text-blueBlack rounded-xl border-blueGray border w-full py-4 text-sm font-bold"
-                      size="lg"
-                      startContent={
-                        <Image
-                          src="/svgs/google_logo.svg"
-                          alt="google logo on login"
-                          width={24}
-                          height={24}
-                        />
-                      }
-                    >
-                      구글로 로그인하기
-                    </Button>
-                  </Link>
                   <Button
                     className="bg-gradient-to-br from-steamGradientFrom via-steamGradientVia to-steamGradientTo rounded-xl w-full py-4 text-white text-sm font-bold"
                     size="lg"
@@ -326,27 +305,6 @@ export default function LoginModal({
                   >
                     스팀으로 로그인하기
                   </Button>
-
-                  <Link
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/naver`}
-                    className="w-full h-full text-white text-center"
-                  >
-                    <Button
-                      id="naverIdLogin"
-                      className="bg-naver rounded-xl w-full py-4 text-white text-sm font-bold"
-                      size="lg"
-                      startContent={
-                        <Image
-                          src="/image/naver.png"
-                          alt="naver logo on login"
-                          width={24}
-                          height={24}
-                        />
-                      }
-                    >
-                      네이버로 로그인하기
-                    </Button>
-                  </Link>
                 </ModalBody>
               </div>
             </>
