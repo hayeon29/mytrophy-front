@@ -13,6 +13,7 @@ import {
   GetGamePlayerNumberDTO,
   GetGameScreenshotDTO,
 } from '@/types/GameDetail';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 type Props = {
   params: {
@@ -126,7 +127,7 @@ export default function Game({ params }: Props) {
         });
         setFormattedDate(formattedReleaseDate);
       } catch (error) {
-        // 에러 처리
+        handleAxiosError(error);
       }
     };
 
@@ -135,7 +136,7 @@ export default function Game({ params }: Props) {
         const response = await gameAPI.getGamePlayerNumber(appId);
         setPlayerNumbers(response);
       } catch (error) {
-        // 에러 처리
+        handleAxiosError(error);
       }
     };
 
@@ -161,7 +162,7 @@ export default function Game({ params }: Props) {
           setSimilarGameDetail2(gameSimilarResponses[1].content || null);
           setSimilarGameDetail3(gameSimilarResponses[2].content || null);
         } catch (error) {
-          // 에러 처리
+          handleAxiosError(error);
         }
       }
     };

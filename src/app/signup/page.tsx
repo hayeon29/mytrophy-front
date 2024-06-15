@@ -70,7 +70,7 @@ export default function SignUp() {
         setIsUsernameExistChecked(true);
       }
     } catch (error) {
-      // 에러 메시지 모달창 출력
+      handleAxiosError(error);
     }
   };
 

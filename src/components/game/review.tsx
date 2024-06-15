@@ -5,6 +5,7 @@ import articleAPI from '@/services/article';
 import { GameArticleDTO } from '@/types/GameDetail';
 import { Pagination, Avatar } from '@nextui-org/react';
 import Link from 'next/link';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 export default function GameReview({ appId }) {
   const [gameArticleDTOList, setGameArticleDTOList] = useState<
@@ -25,7 +26,7 @@ export default function GameReview({ appId }) {
         setGameArticleDTOList(response.content);
         setGameArticleTotalPage(response.totalPages);
       } catch (error) {
-        // Error handling
+        handleAxiosError(error);
       }
     };
 

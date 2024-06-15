@@ -20,6 +20,7 @@ import {
 } from '@nextui-org/react';
 import articleAPI from '@/services/article';
 import Link from 'next/link';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
@@ -63,7 +64,7 @@ export default function ArticleManagement() {
         setArticles(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {
-        // 에러
+        handleAxiosError(error);
       } finally {
         setLoading(false);
       }
@@ -88,7 +89,7 @@ export default function ArticleManagement() {
         prevArticles.filter((article) => article.id !== articleToDelete.id)
       );
     } catch (error) {
-      // 에러
+      handleAxiosError(error);
     } finally {
       setIsDeleteModalOpen(false);
     }
@@ -109,7 +110,7 @@ export default function ArticleManagement() {
       );
       onClose();
     } catch (error) {
-      // 에러
+      handleAxiosError(error);
     }
   };
 
@@ -202,7 +203,7 @@ export default function ArticleManagement() {
           return null;
       }
     },
-    [handleEdit, headerColorMap]
+    [handleEdit]
   );
 
   const handlePageChange = (page) => {
