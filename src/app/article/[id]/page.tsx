@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import articleAPI from '@/services/article';
 import gameAPI from '@/services/game';
-import membersAPI from '@/services/members';
 import commentAPI from '@/services/comment';
 import Link from 'next/link';
 import { VscIndent } from 'react-icons/vsc';
@@ -19,9 +18,12 @@ import {
   ModalFooter,
   Textarea,
   Checkbox,
+  Divider,
 } from '@nextui-org/react';
 import { handleAxiosError } from '@/utils/handleAxiosError';
 import { useRouter } from 'next/navigation';
+import { useRecoilValue } from 'recoil';
+import { userState } from '@/recoils/userAtom';
 
 type Props = {
   params: {
@@ -54,7 +56,7 @@ function ArticleDetail({ params }: Props) {
   const [selectedCommentNickname, setSelectedCommentNickname] = useState('');
   const [selectedDeleteComment, setSelectedDeleteComment] = useState('');
   const [reCommentOpen, setReCommentOpen] = useState(false);
-  const [memberInfo, setMemberInfo] = useState(null);
+  const memberInfo = useRecoilValue(userState);
   const [message, setMessage] = useState('게시글을 작성하시겠습니까?');
   const [isOpen, setIsOpen] = useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -63,14 +65,6 @@ function ArticleDetail({ params }: Props) {
     content: '',
   });
   const router = useRouter();
-
-  const getMemberByToken = async () => {
-    const memberInfo = await membersAPI.getUserInfo();
-    setMemberInfo(memberInfo.data);
-    if (memberInfo === null) {
-      setMemberInfo(null);
-    }
-  };
 
   useEffect(() => {
     const fetchArticleDetail = async () => {
@@ -84,7 +78,6 @@ function ArticleDetail({ params }: Props) {
     };
 
     fetchArticleDetail();
-    getMemberByToken();
   }, [articleId]);
 
   useEffect(() => {
@@ -253,7 +246,7 @@ function ArticleDetail({ params }: Props) {
         setIsOpen(true);
       } else {
         onClose();
-        window.location.reload();
+        router.refresh();
       }
     } catch (error) {
       setMessage('게시글 수정에 실패했습니다.');
@@ -608,29 +601,26 @@ function ArticleDetail({ params }: Props) {
           </ModalContent>
         </Modal>
       </div>
-      <div className="max-w-7xl border border-gray p-4 rounded-lg shadow-md text-left mx-auto">
+      <div className="max-w-7xl border border-blueLightGray shadow-gray text-left mx-auto p-8 rounded-3xl">
         <span
-          className={`${getBackgroundColor(article.header)} rounded-sm text-white px-2 py-0.5 text-sm mr-2`}
+          className={`${getBackgroundColor(article.header)} rounded-sm text-white px-2 py-0.5 text-sm`}
         >
           {displayHeader(article.header)}
         </span>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-6">
           <div className="mr-4">
             <User
-              name={
-                <span style={{ fontSize: '1.1rem' }}>{article?.nickname}</span>
-              }
-              description={gameDetail?.name}
+              name={<span className="font-bold">{article?.nickname}</span>}
+              description={`게임: ${gameDetail?.name}`}
               avatarProps={{
                 src: article?.memberImage,
-                style: { border: '1px solid black' },
               }}
             />
           </div>
           <div className="flex-shrink-0">
             {article && article.createdAt && (
               <div className="flex items-center">
-                <p className="text-gray-500 text-sm">
+                <p className="text-sm text-gray">
                   {new Date(article.createdAt).toLocaleString()}
                 </p>
               </div>
@@ -638,9 +628,9 @@ function ArticleDetail({ params }: Props) {
           </div>
         </div>
         <div className="max-w-4xl">
-          <h1 className="text-2xl font-bold mt-4 ">{article?.name}</h1>
+          <h1 className="text-2xl font-bold mt-4">{article?.name}</h1>
         </div>
-        <div className="flex flex-col items-center mt-6">
+        <div className="flex flex-col mt-6">
           {article &&
             article.imagePath &&
             article.imagePath.split(',').map((imagePath, index) => (
@@ -654,21 +644,20 @@ function ArticleDetail({ params }: Props) {
               />
             ))}
         </div>
-        <div className="mt-8 max-w-4xl mx-auto">
-          <p style={{ wordWrap: 'break-word' }}>{article?.content}</p>
+        <div className="max-w-4xl">
+          <p className="break-words text-textBlack">{article?.content}</p>
         </div>
-        <div className="flex justify-end mt-4">
-          <div className="flex items-center mr-4">
+        <div className="flex justify-end items-center mt-4">
+          <div className="flex justify-between items-center mr-4">
             <Button
-              className="border-gray bg-white"
+              className="bg-white text-textBlack"
               onClick={() => handleLikeClick(article.id)}
             >
               <Image
                 src="/svgs/likeIcon.svg"
                 alt="좋아요 아이콘"
-                width={25}
-                height={25}
-                className="mr-2"
+                width={24}
+                height={24}
               />
               {article.cntUp}
             </Button>
@@ -686,6 +675,7 @@ function ArticleDetail({ params }: Props) {
                     color="danger"
                     variant="light"
                     onPress={handleCloseModal}
+                    className="h-full text-sm"
                   >
                     확인
                   </Button>
@@ -693,47 +683,54 @@ function ArticleDetail({ params }: Props) {
               </ModalContent>
             </Modal>
           </div>
-          <div className="flex items-center mr-4">
+          <div className="flex justify-between items-center mr-4 gap-2">
             <Image
               src="/svgs/commentIcon.svg"
               alt="댓글 아이콘"
-              width={25}
-              height={25}
-              className="mr-2"
+              width={20}
+              height={20}
             />
-            <p className="text-gray-500 text-medium ml-1">
+            <span className="text-textBlack text-sm">
               {article?.commentCount}
-            </p>
+            </span>
           </div>
         </div>
-        <hr style={{ border: '1px solid #ddd' }} className="mt-20" />
-        <div className="flex justify-center items-center mt-5">
-          <p className="text-lg text-primary">댓글</p>
+        <Divider className="bg-blueLightGray my-4" />
+        <div className="flex justify-start items-center mt-5 pl-3">
+          <p className="text-blueBlack font-bold">댓글</p>
         </div>
-        <hr style={{ border: '1px solid #ddd' }} className="mt-5" />
+        <Divider className="bg-blueLightGray my-4" />
         <div className="mt-10">
           {article.comments.map((comment, index) => (
             <div
               key={comment.id}
-              className={`flex flex-col py-2 max-w-${comment.parentCommentId !== null ? '3' : '6'}xl mx-auto mb-8 ${comment.parentCommentId === null ? 'border-b border-gray-300' : 'hidden'}`}
+              className={`flex flex-col py-2 max-w-${comment.parentCommentId !== null ? '3' : '6'}xl mx-auto mb-8 ${comment.parentCommentId === null ? 'border-b border-blueLightGray' : 'hidden'}`}
             >
               {/* 부모 댓글 내용 */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start justify-between">
                 {/* 부모 댓글 정보 출력 */}
-                <User
-                  name={
-                    <span style={{ fontSize: '1.1rem' }}>
-                      {comment.nickname}
-                    </span>
-                  }
-                  avatarProps={{
-                    src: comment.imagePath,
-                    style: { border: '1px solid black' },
-                  }}
-                />
-                <div className="mx-10">
+                <div className="w-full flex flex-row justify-between">
+                  <User
+                    name={comment.nickname}
+                    avatarProps={{
+                      src: comment.imagePath
+                        ? comment.imagePath
+                        : '/svgs/person.svg',
+                    }}
+                  />
+                  <div className="flex flex-row items-center gap-2">
+                    <Image
+                      src="/svgs/likeIcon.svg"
+                      alt="좋아요 아이콘"
+                      width={24}
+                      height={24}
+                    />
+                    <span>{comment.likes}</span>
+                  </div>
+                </div>
+                <div className="mt-4">
                   <p>{comment.content}</p>
-                  <p className="mr-4 text-sm text-gray">
+                  <p className="mt-4 text-sm text-gray">
                     {new Date(comment.createdAt).toLocaleString()}
                   </p>
                   <button
@@ -744,26 +741,25 @@ function ArticleDetail({ params }: Props) {
                     답글달기
                   </button>
                 </div>
-                <div className="ml-auto flex items-center">
+                <div className="ml-auto flex items-center mb-4">
                   <div className="flex flex-col ml-2">
-                    <div className="ml-auto flex flex-col items-end">
+                    <div className="ml-auto flex flex-row items-center gap-4">
                       <Button
-                        className="py-2 px-4 rounded mb-2 w-20"
-                        variant="ghost"
+                        className="py-2 px-4 rounded-xl w-20 text-white"
                         color="primary"
                         type="submit"
                         onClick={() => handleLike(comment.id)} // API 호출 연결
                       >
-                        좋아요 {comment.likes}
+                        좋아요
                       </Button>
                       <Button
                         onPress={() => {
                           setCommentEditOpen(!isCommentEditOpen); // 수정 모달 열기/닫기 토글
                           handleSelectedCommentId(comment.id); // 선택된 댓글의 ID 설정
                         }}
-                        className="py-2 px-4 rounded w-20"
+                        className="py-2 px-4 rounded-xl w-20 text-white"
                         variant="solid"
-                        color="danger"
+                        color="secondary"
                         style={{
                           display:
                             memberInfo !== null &&
@@ -930,40 +926,44 @@ function ArticleDetail({ params }: Props) {
         </div>
         {/* 선택한 댓글의 닉네임이 표시되는 창 */}
         {reCommentOpen && selectedCommentNickname && (
-          <div className="max-w-5xl mx-auto">
-            <div className="flex flex-row items-center rounded-lg bg-gray p-2 max-w-max flex-grow justify-between">
+          <div className="max-w-7xl mx-auto flex flex-row justify-between">
+            <div className="flex flex-row items-center rounded-lg p-2 w-fit flex-grow justify-between font-bold text-sm">
               {selectedCommentNickname} 님에게 답글을 남깁니다.
             </div>
-            <button type="button" onClick={handleCancelReply}>
+            <button
+              type="button"
+              onClick={handleCancelReply}
+              className="text-secondary"
+            >
               취소
             </button>
           </div>
         )}
 
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col items-start gap-4 mb-4">
             <User
-              name={
-                <span style={{ fontSize: '1.1rem' }}>
-                  {memberInfo?.nickname}
-                </span>
-              }
+              name={<span>{memberInfo?.nickname}</span>}
               avatarProps={{
-                src: memberInfo?.imagePath,
-                style: { border: '1px solid black' },
+                src: memberInfo?.imagePath
+                  ? memberInfo.imagePath
+                  : '/svgs/person.svg',
               }}
             />
             <Input
               type="text"
-              label="댓글 작성하기"
+              placeholder={`${memberInfo === null ? '로그인 후 이용해주세요.' : '댓글을 작성하세요.'}`}
               className="flex-1"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
+              isDisabled={memberInfo === null}
             />
+          </div>
+          <div className="flex justify-end">
             <Button
-              className="py-2 px-4 rounded"
-              variant="ghost"
+              className="py-2 px-4 text-white"
               color="primary"
+              radius="full"
               onClick={() => {
                 if (reCommentOpen === true) {
                   handleCommentSubmit(articleId, newComment, selectedCommentId);
@@ -971,6 +971,7 @@ function ArticleDetail({ params }: Props) {
                   handleCommentSubmit(articleId, newComment, null);
                 }
               }}
+              isDisabled={memberInfo === null}
             >
               댓글 작성
             </Button>
