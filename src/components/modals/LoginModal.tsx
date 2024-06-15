@@ -293,7 +293,7 @@ export default function LoginModal({
                     로그인
                   </Button>
                   <Link
-                    href={`${process.env.NEXT_PUBLIC_API_URL}oauth2/authorization/google`}
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`}
                     className="w-full h-full text-white text-center"
                   >
                     <Button
@@ -328,7 +328,7 @@ export default function LoginModal({
                   </Button>
 
                   <Link
-                    href={`${process.env.NEXT_PUBLIC_API_URL}oauth2/authorization/naver`}
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/naver`}
                     className="w-full h-full text-white text-center"
                   >
                     <Button

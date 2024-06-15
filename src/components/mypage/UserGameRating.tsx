@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Divider,
   Tabs,
@@ -15,76 +15,30 @@ import { GetGameDetailDTO } from '@/types/GameDetail';
 import { UserAllGameInfo } from '@/types/UserInfo';
 import { IoIosWarning } from 'react-icons/io'; // 아이콘 추가
 import gameAPI from '@/services/game';
+import { useRouter } from 'next/navigation';
 import UserGameCard from './UserGameCard';
 
 interface UserGameRatingProps {
   gameInfo: GetGameDetailDTO[] | undefined;
   userGameInfo: UserAllGameInfo | undefined;
   isLoading: boolean;
+  reviews: {
+    [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
+  };
+  missingGamesCount: number;
 }
 
 export default function UserGameRating({
   gameInfo,
   userGameInfo,
   isLoading,
+  reviews,
+  missingGamesCount,
 }: UserGameRatingProps) {
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedSortKey, setSelectedSortKey] = useState('highPlaytime');
   const [sortButtonText, setSortButtonText] = useState('높은 플레이시간');
-  const [reviews, setReviews] = useState<{
-    [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
-  }>({});
-  const [missingGamesCount, setMissingGamesCount] = useState(0);
-
-  useEffect(() => {
-    async function fetchReviews() {
-      if (!gameInfo) return;
-
-      const reviewStatuses: {
-        [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
-      } = {};
-      const validGames = gameInfo.filter(
-        (game): game is GetGameDetailDTO =>
-          game !== undefined && game.id !== undefined
-      );
-
-      try {
-        const promises = validGames.map(async (game) => {
-          try {
-            const response = await gameAPI.getMyReview(game.id);
-            return {
-              id: game.id,
-              status: response.data.reviewStatus || 'NONE',
-            };
-          } catch (error) {
-            return { id: game.id, status: 'NONE' };
-          }
-        });
-
-        const results = await Promise.all(promises);
-        results.forEach((result) => {
-          if (result !== null && result.id !== undefined) {
-            reviewStatuses[result.id] = result.status;
-          }
-        });
-
-        setReviews(reviewStatuses);
-      } catch (error) {
-        validGames.forEach((game) => {
-          if (game?.id !== undefined) {
-            reviewStatuses[game.id] = 'NONE';
-          }
-        });
-        setReviews(reviewStatuses);
-      }
-
-      const totalGames = gameInfo?.length || 0;
-      const validGamesCount = validGames.length;
-      setMissingGamesCount(totalGames - validGamesCount);
-    }
-
-    fetchReviews();
-  }, [gameInfo]);
+  const router = useRouter();
 
   const sortGames = (games: GetGameDetailDTO[]) => {
     return games.sort((a, b) => {
@@ -94,8 +48,8 @@ export default function UserGameRating({
       const playtimeB =
         userGameInfo?.games.find((g) => g.appid === b.id)?.playtime_forever ||
         0;
-      const reviewA = reviews[a.id] || 'NONE';
-      const reviewB = reviews[b.id] || 'NONE';
+      const reviewA = (reviews !== null && reviews[a.id]) || 'NONE';
+      const reviewB = (reviews !== null && reviews[b.id]) || 'NONE';
 
       switch (selectedSortKey) {
         case 'highPlaytime':
@@ -125,7 +79,7 @@ export default function UserGameRating({
   };
 
   const getFilteredGames = () => {
-    if (!gameInfo) return [];
+    if (!gameInfo && reviews === null) return [];
     const filteredGames = gameInfo.filter(
       (game) =>
         game !== undefined &&
@@ -140,12 +94,9 @@ export default function UserGameRating({
     gameId: number,
     newStatus: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT'
   ) => {
-    setReviews((prevReviews) => ({
-      ...prevReviews,
-      [gameId]: newStatus,
-    }));
     try {
       await gameAPI.submitReview(gameId, newStatus);
+      router.refresh();
     } catch (error) {
       // 에러처리
     }
@@ -175,7 +126,7 @@ export default function UserGameRating({
   const filteredGames = getFilteredGames();
 
   const displayGameCount = () => {
-    if (!gameInfo) return 0;
+    if (!gameInfo && reviews === null) return 0;
     if (selectedTab === 'unrated') {
       return gameInfo.filter((game) => reviews[game?.id] === 'NONE').length;
     }
@@ -249,7 +200,8 @@ export default function UserGameRating({
             const playtime =
               userGameInfo?.games.find((g) => g.appid === game.id)
                 ?.playtime_forever || 0;
-            const reviewStatus = reviews[game.id] || 'NONE';
+            const reviewStatus =
+              (reviews !== null && reviews[game.id]) || 'NONE';
             return (
               <UserGameCard
                 key={game.id}

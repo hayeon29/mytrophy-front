@@ -20,6 +20,7 @@ const config: Config = {
         second: '#FB5D8D',
         lightGray: '#D9D9D9',
         blackGray: '#B1B1B1',
+        textBlack: '#1E293B',
         gray: '#CBD5E1',
         blueLightGray: '#E2E8F0',
         blueGray: '#D2DAF8',

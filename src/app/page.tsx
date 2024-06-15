@@ -50,7 +50,7 @@ export default function Home() {
       setLoadingGames(true);
       try {
         const response = await gameAPI.getGameDetailsByTop(1, 10);
-        setTopGames(response.data.content.filter((game) => game.id !== null));
+        setTopGames(response.content.filter((game) => game.id !== null));
       } catch (error) {
         // 에러처리
       } finally {
@@ -263,13 +263,18 @@ export default function Home() {
         <div
           className="w-full flex justify-center cursor-pointer"
           onClick={() => {
-            window.open(
-              'https://store.steampowered.com/sale/nextfest',
-              '_blank'
-            );
+            if (typeof window !== 'undefined') {
+              window.open(
+                'https://store.steampowered.com/sale/nextfest',
+                '_blank'
+              );
+            }
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (
+              e.key === 'Enter' ||
+              (e.key === ' ' && typeof window !== 'undefined')
+            ) {
               window.open(
                 'https://store.steampowered.com/sale/nextfest',
                 '_blank'

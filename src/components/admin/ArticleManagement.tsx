@@ -24,6 +24,14 @@ import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
 
+const headerColorMap = {
+  FREE_BOARD: 'default',
+  INFORMATION: 'success',
+  GUIDE: 'warning',
+  REVIEW: 'danger',
+  CHATTING: 'primary',
+};
+
 export default function ArticleManagement() {
   const [articles, setArticles] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -35,14 +43,6 @@ export default function ArticleManagement() {
   const [editedArticle, setEditedArticle] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState(null);
-
-  const headerColorMap = {
-    FREE_BOARD: 'default',
-    INFORMATION: 'success',
-    GUIDE: 'warning',
-    REVIEW: 'danger',
-    CHATTING: 'primary',
-  };
 
   const columns = [
     { name: 'id', uid: 'id' },
@@ -72,11 +72,14 @@ export default function ArticleManagement() {
     fetchArticles();
   }, [currentPage]);
 
-  const handleEdit = (article) => {
-    setSelectedArticle(article);
-    setEditedArticle(article);
-    onOpen();
-  };
+  const handleEdit = useCallback(
+    (article) => {
+      setSelectedArticle(article);
+      setEditedArticle(article);
+      onOpen();
+    },
+    [onOpen]
+  );
 
   const handleDelete = async () => {
     try {
@@ -110,92 +113,97 @@ export default function ArticleManagement() {
     }
   };
 
-  const renderCell = useCallback((article, columnKey) => {
-    switch (columnKey) {
-      case 'id':
-        return article.id;
-      case 'content':
-        return (
-          <div className="text-xs w-[200px] break-words">
-            <p>
-              {article.content.length > 40
-                ? `${article.content.substring(0, 40)}...`
-                : article.content}
+  const renderCell = useCallback(
+    (article, columnKey) => {
+      switch (columnKey) {
+        case 'id':
+          return article.id;
+        case 'content':
+          return (
+            <div className="text-xs w-[200px] break-words">
+              <p>
+                {article.content.length > 40
+                  ? `${article.content.substring(0, 40)}...`
+                  : article.content}
+              </p>
+            </div>
+          );
+        case 'commentCount':
+          return (
+            <div className="w-[50px] break-words">{article.commentCount}</div>
+          );
+        case 'likeCount':
+          return (
+            <div className="w-[50px] break-words">{article.likeCount}</div>
+          );
+        case 'header':
+          return (
+            <Chip
+              className="capitalize w-[100px]"
+              color={headerColorMap[article.header]}
+              size="sm"
+              variant="flat"
+            >
+              {article.header}
+            </Chip>
+          );
+        case 'username':
+          return article.nickname;
+        case 'createdAt':
+          return (
+            <p className="text-bold text-xs capitalize">
+              {new Date(article.createdAt).toLocaleString()}
             </p>
-          </div>
-        );
-      case 'commentCount':
-        return (
-          <div className="w-[50px] break-words">{article.commentCount}</div>
-        );
-      case 'likeCount':
-        return <div className="w-[50px] break-words">{article.likeCount}</div>;
-      case 'header':
-        return (
-          <Chip
-            className="capitalize w-[100px]"
-            color={headerColorMap[article.header]}
-            size="sm"
-            variant="flat"
-          >
-            {article.header}
-          </Chip>
-        );
-      case 'username':
-        return article.nickname;
-      case 'createdAt':
-        return (
-          <p className="text-bold text-xs capitalize">
-            {new Date(article.createdAt).toLocaleString()}
-          </p>
-        );
-      case 'actions':
-        return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="게시물 조회">
-              <Link href={`/article/${String(article.id)}`}>
-                <div className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
-                  <span className="sr-only">게임 조회</span>
-                </div>
-              </Link>
-            </Tooltip>
-            <Tooltip content="게시물 수정">
-              <span
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                role="button"
-                tabIndex={0}
-                onKeyPress={() => handleEdit(article)}
-                onClick={() => handleEdit(article)}
-              >
-                <span className="sr-only">게시물 수정</span>
-                <EditIcon />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="게시물 삭제">
-              <span
-                className="text-lg text-danger cursor-pointer active:opacity-50"
-                role="button"
-                tabIndex={0}
-                onKeyPress={() => {
-                  setArticleToDelete(article);
-                  setIsDeleteModalOpen(true);
-                }}
-                onClick={() => {
-                  setArticleToDelete(article);
-                  setIsDeleteModalOpen(true);
-                }}
-              >
-                <span className="sr-only">게시물 삭제</span>
-                <DeleteIcon />
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return null;
-    }
-  }, []);
+          );
+        case 'actions':
+          return (
+            <div className="relative flex items-center gap-2">
+              <Tooltip content="게시물 조회">
+                <Link href={`/article/${String(article.id)}`}>
+                  <div className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <EyeIcon />
+                    <span className="sr-only">게임 조회</span>
+                  </div>
+                </Link>
+              </Tooltip>
+              <Tooltip content="게시물 수정">
+                <span
+                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={() => handleEdit(article)}
+                  onClick={() => handleEdit(article)}
+                >
+                  <span className="sr-only">게시물 수정</span>
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="게시물 삭제">
+                <span
+                  className="text-lg text-danger cursor-pointer active:opacity-50"
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={() => {
+                    setArticleToDelete(article);
+                    setIsDeleteModalOpen(true);
+                  }}
+                  onClick={() => {
+                    setArticleToDelete(article);
+                    setIsDeleteModalOpen(true);
+                  }}
+                >
+                  <span className="sr-only">게시물 삭제</span>
+                  <DeleteIcon />
+                </span>
+              </Tooltip>
+            </div>
+          );
+        default:
+          return null;
+      }
+    },
+    [handleEdit, headerColorMap]
+  );
 
   const handlePageChange = (page) => {
     setCurrentPage(page);

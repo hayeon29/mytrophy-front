@@ -25,7 +25,7 @@ function ArticleCard({ article }: ArticleCardProps) {
     const fetchGameName = async () => {
       try {
         const response = await gameAPI.getGameDetail(article.appId.toString());
-        setGameName(response.data.name);
+        setGameName(response.name);
       } catch (error) {
         setGameName('게임 이름 못가져옴');
       }
