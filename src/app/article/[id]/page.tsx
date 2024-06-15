@@ -114,6 +114,9 @@ function ArticleDetail({ params }: Props) {
     setEditContent('');
     router.refresh();
     onClose();
+    if (typeof window !== undefined) {
+      window.location.reload();
+    }
   };
 
   const handleDeleteSubmit = async (commentId: string) => {
