@@ -21,7 +21,7 @@ function UserArticleList({ onUpdateMyArticleCount }) {
   useEffect(() => {
     const getMemberByToken = async () => {
       const memberInfo = await membersAPI.getUserInfo();
-      setMemberInfo(memberInfo);
+      setMemberInfo(memberInfo.data);
       if (memberInfo === null) {
         setMemberInfo(null);
       }

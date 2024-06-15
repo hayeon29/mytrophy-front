@@ -83,11 +83,14 @@ export default function MemberManagement() {
     }
   };
 
-  const handleOpenModal = (user) => {
-    setSelectedUser(user);
-    setEditedUser(user);
-    onOpen();
-  };
+  const handleOpenModal = useCallback(
+    (user) => {
+      setSelectedUser(user);
+      setEditedUser(user);
+      onOpen();
+    },
+    [onOpen]
+  );
 
   const handleEditUser = async () => {
     try {
@@ -212,7 +215,7 @@ export default function MemberManagement() {
           return cellValue;
       }
     },
-    [handleOpenModal, handleDelete, users]
+    [handleOpenModal]
   );
 
   return (

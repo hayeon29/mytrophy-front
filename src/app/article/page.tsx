@@ -340,40 +340,40 @@ export default function Article() {
         <div className="flex justify-left items-center p-0 gap-4">
           <Button
             color="primary"
-            variant={activeButton === 'FREE_BOARD' ? 'solid' : 'ghost'}
             onClick={() => handleClick('FREE_BOARD')}
+            className={`${activeButton === 'FREE_BOARD' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
           >
             자유
           </Button>
           <Button
             color="primary"
-            variant={activeButton === 'INFORMATION' ? 'solid' : 'ghost'}
             onClick={() => handleClick('INFORMATION')}
+            className={`${activeButton === 'INFORMATION' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
           >
             정보
           </Button>
           <Button
             color="primary"
-            variant={activeButton === 'GUIDE' ? 'solid' : 'ghost'}
             onClick={() => handleClick('GUIDE')}
+            className={`${activeButton === 'GUIDE' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
           >
             공략
           </Button>
           <Button
             color="primary"
-            variant={activeButton === 'REVIEW' ? 'solid' : 'ghost'}
             onClick={() => handleClick('REVIEW')}
+            className={`${activeButton === 'REVIEW' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
           >
             리뷰
           </Button>
         </div>
       </div>
       <div className="bg-white flex justify-center items-center py-4">
-        <div className="w-full max-w-7xl border border-gray p-4 flex items-center rounded-lg h-26 shadow-md text-left">
+        <div className="w-full max-w-7xl border border-blueLightGray p-8 flex items-center rounded-lg h-26 shadow-gray text-left">
           <Button
             color="default"
-            variant="faded"
-            className="flex-grow test-small"
+            radius="lg"
+            className="flex-grow test-small bg-blueLightGray text-blueBlack"
             onPress={handleWriteArticle}
           >
             클릭 후 글을 작성해보세요.
@@ -642,24 +642,26 @@ export default function Article() {
       </Modal>
 
       {/* 게시글 Cards */}
-      <div className="flex flex-col justify-center items-center py-4">
+      <div className="flex flex-col justify-center items-center py-4 gap-y-6">
         {articles.map((article) => (
-          <Card key={article.id} className="w-full max-w-7xl mb-4">
+          <Card
+            key={article.id}
+            className="w-full max-w-7xl border-blueLightGray shadow-gray p-8"
+          >
             {/* Card Header */}
-            <CardHeader className="justify-between flex-row px-6 py-4">
-              <div className="flex gap-5 items-center">
+            <CardHeader className="justify-between flex-row p-0 mb-6">
+              <div className="flex gap-x-3 items-center">
                 <Avatar
-                  isBordered
                   radius="full"
-                  size="md"
+                  className="w-8 h-8"
                   src={article.memberImage}
                 />
                 <div className="flex gap-1 items-start flex-col sm:flex-row sm:items-center">
-                  <h5 className="text-small font-semibold leading-none text-default-600">
+                  <h5 className="text-sm leading-none text-blackGray">
                     {article.nickname} {/* 유저 이름 */}
                   </h5>
-                  <h4 className="text-small tracking-tight text-default-400">
-                    {article.username} {/* 유저 아이디 */}
+                  <h4 className="text-sm tracking-tight text-blackGray">
+                    ({article.username}) {/* 유저 아이디 */}
                   </h4>
                 </div>
                 <span
@@ -669,7 +671,7 @@ export default function Article() {
                 </span>
               </div>
               {/* Counts */}
-              <div className="flex gap-3 items-center">
+              <div className="flex items-center ">
                 <button
                   type="button"
                   onMouseEnter={() => handleMouseEnter(article.id)}
@@ -677,17 +679,21 @@ export default function Article() {
                   onClick={() => handleLikeClick(article.id)}
                 >
                   {showLikeLabel[article.id] ? (
-                    <span className="border border-gray bg-primary text-white text-sm p-2 rounded-full">
+                    <span className="border border-primary bg-primary text-white text-sm p-2 rounded-full">
                       좋아요
                     </span>
                   ) : (
-                    <Image width={16} alt="vector" src="/svgs/likeIcon.svg" />
+                    <Image
+                      width={16}
+                      height={16}
+                      alt="vector"
+                      src="/svgs/likeIcon.svg"
+                    />
                   )}
                 </button>
-                <span className="text-sm text-gray-500 text-default-400">
+                <span className="text-sm text-primary ml-[6px] mr-4">
                   {article.cntUp}
                 </span>
-
                 <Modal isOpen={isLikedOpen} onOpenChange={setIsLikedOpen}>
                   <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">
@@ -707,27 +713,25 @@ export default function Article() {
                     </ModalFooter>
                   </ModalContent>
                 </Modal>
-
-                <Image width={16} alt="comment" src="/svgs/commentIcon.svg" />
-                <span className="text-sm text-gray-500 text-default-400">
+                <Image
+                  width={16}
+                  height={16}
+                  alt="comment"
+                  src="/svgs/commentIcon.svg"
+                />
+                <span className="text-sm text-primary ml-[6px]">
                   {article.commentCount}
                 </span>
               </div>
             </CardHeader>
-            <div className="flex p-4">
-              <CardBody className="px-3 py-0 text-small text-black flex-grow cursor-pointer">
+            <div className="flex">
+              <CardBody className="p-0 text-small text-black flex-grow cursor-pointer">
                 <Link href={`/article/${article.id}`}>
-                  <h1 className="text-lg font-bold">{article.name}</h1>
+                  <h1 className="text-lg font-bold mb-4">{article.name}</h1>
                   {/* 화면 너비가 768px 이하일 때, 최대 15자만 보여줌 */}
-                  <p className="hidden sm:block">
+                  <p className="hidden text-sm sm:block">
                     {article.content.length > 300
                       ? `${article.content.slice(0, 300)}...`
-                      : article.content}
-                  </p>
-                  {/* 화면 너비가 768px 이하일 때, 최대 15자만 보여줌 */}
-                  <p className="sm:hidden">
-                    {article.content.length > 15
-                      ? `${article.content.slice(0, 15)}...`
                       : article.content}
                   </p>
                 </Link>
@@ -753,6 +757,9 @@ export default function Article() {
           initialPage={1}
           page={currentPage}
           onChange={handlePageChange}
+          classNames={{
+            cursor: 'text-white font-bold',
+          }}
         />
       </div>
     </div>

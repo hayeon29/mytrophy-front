@@ -7,7 +7,7 @@ import UserRecommend from '@/components/mypage/UserRecommend';
 import articleAPI from '@/services/article';
 import { Button, Card, CardBody, CardHeader } from '@nextui-org/react';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import {
   AchievementInfo,
   UserGameAchievementDataInfo,
@@ -18,6 +18,7 @@ import { GetGameDetailDTO } from '@/types/GameDetail';
 import dayjs from 'dayjs';
 import { useModal } from '@/hooks/useModal';
 import ProfileEdit from '@/components/modals/ProfileEdit';
+import gameAPI from '@/services/game';
 import {
   useGameDetail,
   useMemberGameAchievementQueries,
@@ -33,6 +34,11 @@ function MyPage() {
   const [totalArticles, setTotalArticles] = useState(0);
   const [totalMyArticles, setTotalMyArticles] = useState(0);
   const [currentPage] = useState(1);
+  const [missingGamesCount, setMissingGamesCount] = useState(0);
+  const isGameDetailFetched = useRef(false);
+  const reviews = useRef<{
+    [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
+  }>(null);
 
   const { data: userInfo, isLoading: userInfoLoading } = useUserInfo();
 
@@ -47,8 +53,9 @@ function MyPage() {
     userInfo?.id
   );
 
-  const gameDetailInfo = useGameDetail(memberGame?.games)?.map(({ data }) => {
-    return data;
+  const gameDetailInfo = useGameDetail(memberGame?.games)?.map((value) => {
+    isGameDetailFetched.current = value.isFetched;
+    return value.data;
   }) as GetGameDetailDTO[];
 
   const memberGameAchievementData = useMemberGameAchievementQueries(
@@ -132,6 +139,55 @@ function MyPage() {
     };
     fetchData();
   }, [currentPage, userInfo]);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      const reviewStatuses: {
+        [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
+      } = {};
+      const validGames = gameDetailInfo.filter(
+        (game): game is GetGameDetailDTO =>
+          game !== undefined && game.id !== undefined
+      );
+
+      try {
+        const promises = validGames.map(async (game) => {
+          try {
+            const response = await gameAPI.getMyReview(game.id);
+            return {
+              id: game.id,
+              status: response.data.reviewStatus || 'NONE',
+            };
+          } catch (error) {
+            return { id: game.id, status: 'NONE' };
+          }
+        });
+
+        const results = await Promise.all(promises);
+        results.forEach((result) => {
+          if (result !== null && result.id !== undefined) {
+            reviewStatuses[result.id] = result.status;
+          }
+        });
+        reviews.current = reviewStatuses;
+      } catch (error) {
+        validGames.forEach((game) => {
+          if (game?.id !== undefined) {
+            reviewStatuses[game.id] = 'NONE';
+          }
+        });
+        reviews.current = reviewStatuses;
+      }
+
+      const totalGames = gameDetailInfo?.length || 0;
+      const validGamesCount = validGames.length;
+      setMissingGamesCount(totalGames - validGamesCount);
+    }
+
+    if (isGameDetailFetched.current) {
+      fetchReviews();
+    }
+  }, [gameDetailInfo]);
 
   const handleProfileEdit = () => {
     openModal(<ProfileEdit onClick={closeModal} />);
@@ -334,11 +390,15 @@ function MyPage() {
           {selectedTab === 0 &&
             userInfo.steamId !== null &&
             memberGame !== undefined &&
+            !memberGameLoading &&
+            isGameDetailFetched &&
             isMounted && (
               <UserGameRating
                 gameInfo={gameDetailInfo}
                 userGameInfo={memberGame}
                 isLoading={memberGameLoading}
+                reviews={reviews.current}
+                missingGamesCount={missingGamesCount}
               />
             )}
           {selectedTab === 1 && userInfo.steamId !== null && isMounted && (
