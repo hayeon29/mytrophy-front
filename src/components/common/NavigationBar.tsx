@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Navbar,
   NavbarBrand,
@@ -8,7 +8,6 @@ import {
   NavbarItem,
   Button,
   Avatar,
-  Input,
   Link,
 } from '@nextui-org/react';
 import Image from 'next/image';
@@ -18,7 +17,6 @@ import { useModal } from '@/hooks/useModal';
 import LocalStorage from '@/constants/LocalStorage';
 import { userState } from '@/recoils/userAtom';
 import { useRecoilState } from 'recoil';
-import { FaSearch } from 'react-icons/fa';
 import LoginModal from '../modals/LoginModal';
 
 export default function NavigationBar() {
@@ -45,17 +43,6 @@ export default function NavigationBar() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const searchInput = (event.target as HTMLFormElement).elements.namedItem(
-      'search'
-    ) as HTMLInputElement;
-    const searchQuery = searchInput.value;
-    if (searchQuery.length > 0) {
-      router.push(`/gamelist?keyword=${encodeURIComponent(searchQuery)}`);
-    }
-  };
 
   return (
     <>
@@ -129,33 +116,6 @@ export default function NavigationBar() {
             </NavbarContent>
           </div>
           <div className="flex items-center gap-8">
-            <form
-              onSubmit={handleSearch}
-              className="flex items-center space-x-1"
-            >
-              <Input
-                name="search"
-                classNames={{
-                  base: 'max-w-full sm:max-w-48 ',
-                  mainWrapper: 'h-full',
-                  input: 'text-small',
-                }}
-                radius="full"
-                size="md"
-                placeholder="검색"
-                type="search"
-              />
-              <Button
-                type="submit"
-                className="p-0 flex justify-center items-center rounded-full"
-                isIconOnly
-                color="default"
-                variant="light"
-                style={{ width: '35px', height: '35px' }}
-              >
-                <FaSearch color="white" size={22} />
-              </Button>
-            </form>
             {isMounted && loginUserState && (
               <NavbarContent className="text-sm">
                 <NavbarItem>
