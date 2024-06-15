@@ -85,13 +85,6 @@ export default function SignUp() {
           });
           if (loginResponse.status === 200) {
             LocalStorage.setItem('access', loginResponse.headers.access);
-            openModal(
-              <OkModal
-                title="로그인 결과"
-                message="로그인에 성공했습니다."
-                onClick={closeModal}
-              />
-            );
             const memberInfo = await membersAPI.getUserInfo();
             const {
               username,
