@@ -174,7 +174,7 @@ export default function UserGameRating({
                 총 <span className="text-[#FB5D8D]">{displayGameCount()}</span>
                 개의 게임
               </p>
-              {selectedTab === 'all' && missingGamesCount > 0 && (
+              {missingGamesCount > 0 && (
                 <Tooltip
                   content={`${missingGamesCount}개의 게임이 mytrophy데이터에 존재하지 않습니다.`}
                 >
@@ -230,7 +230,8 @@ export default function UserGameRating({
               })
             ) : (
               <div className="text-center text-gray-500">
-                {selectedTab === 'unrated' && '모든 게임을 평가했습니다.'}
+                {selectedTab === 'unrated' &&
+                  '불러온 게임을 모두 평가했습니다.'}
                 {selectedTab === 'rated' && '게임에 평가를 남겨보세요.'}
                 {selectedTab === 'all' && '보유한 Steam 게임이 없습니다.'}
               </div>
