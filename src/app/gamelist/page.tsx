@@ -127,19 +127,19 @@ function GameList() {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               placeholder="검색"
-              className="border border-gray-300 rounded-md p-2"
+              className="border border-blueLightGray rounded-full px-4 py-2 text-sm"
             />
             <button
               type="button"
               onClick={handleApplyFilters}
-              className="bg-blue-500 text-white rounded-md p-2"
+              className="bg-primary text-white rounded-xl py-2 px-6"
             >
               검색
             </button>
             <select
               value={sortOption}
               onChange={handleSortChange}
-              className="border border-gray-300 rounded-md p-2"
+              className="border border-blueLightGray rounded-md py-2 px-10 appearance-none outline-none bg-arrow-down bg-no-repeat bg-right bg-[108px]"
             >
               <option value="최신순">최신순</option>
               <option value="이름순">이름순</option>
@@ -160,7 +160,7 @@ function GameList() {
                     <Link href={`/game/${String(post.id)}`} key={post.id}>
                       <div
                         key={post.id}
-                        className="flex items-start p-4 rounded-lg bg-white shadow-md hover:shadow-xl"
+                        className="flex items-start p-4 rounded-lg bg-white shadow-gray hover:shadow-blueGray"
                       >
                         <Image
                           className="object-cover rounded-lg"
@@ -219,14 +219,14 @@ function GameList() {
           <div className="w-1/4 pl-6">
             <div className="mb-4">
               <h4 className="font-bold mb-2">카테고리</h4>
-              <div className="grid grid-cols-2 gap-2 bg-gray-100 shadow-md p-4 rounded-lg">
+              <div className="grid grid-cols-2 gap-2 bg-gray-100 shadow-gray p-4 rounded-lg">
                 {GAME_CATEGORY.map((category) => (
                   <button
                     type="button"
                     key={category.id}
-                    className={`px-2 py-1 rounded-full text-sm ${
+                    className={`p-3 rounded-xl text-sm ${
                       selectedCategoryIds.includes(category.id)
-                        ? 'bg-blue-500 text-white'
+                        ? 'bg-primary text-white'
                         : 'bg-gray-200'
                     }`}
                     onClick={() => handleCategoryChange(category.id)}
@@ -238,7 +238,7 @@ function GameList() {
             </div>
             <div className="mb-4">
               <h4 className="font-bold mb-2">가격</h4>
-              <div className="bg-gray-100 shadow-md p-4 rounded-lg">
+              <div className="bg-gray-100 shadow-gray p-4 rounded-lg">
                 <div className="mb-2">
                   <label className="mr-2">
                     <input
@@ -246,7 +246,7 @@ function GameList() {
                       name="price"
                       value="free"
                       onChange={() => setPriceRange({ min: '0', max: '0' })}
-                      className="mr-1"
+                      className="mr-2 text-sm"
                     />
                     무료
                   </label>
@@ -256,29 +256,29 @@ function GameList() {
                       name="price"
                       value="custom"
                       onChange={() => setPriceRange({ min: '', max: '' })}
-                      className="mr-1"
+                      className="mr-2 text-sm"
                     />
                     직접 입력
                   </label>
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <input
                     type="number"
                     name="min"
                     value={priceRange.min}
                     onChange={handlePriceChange}
                     placeholder="최소 금액"
-                    className="border border-gray-300 rounded-md p-2 w-full mr-2"
+                    className="border border-gray rounded-xl p-2 w-full mr-2"
                     disabled={priceRange.min === '0' && priceRange.max === '0'}
                   />
-                  <br />
+                  <span>~</span>
                   <input
                     type="number"
                     name="max"
                     value={priceRange.max}
                     onChange={handlePriceChange}
                     placeholder="최대 금액"
-                    className="border border-gray-300 rounded-md p-2 w-full"
+                    className="border border-gray rounded-xl p-2 w-full ml-2"
                     disabled={priceRange.min === '0' && priceRange.max === '0'}
                   />
                 </div>

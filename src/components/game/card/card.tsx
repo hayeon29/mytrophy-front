@@ -37,12 +37,12 @@ export default function GameCard({ gameDetail, similarCategory }) {
 
   return (
     <div className="p-0 flex justify-center">
-      <div className="block w-[384px] h-[358px] rounded-[20px] shadow-2xl ">
+      <div className="block w-[384px] h-[358px] rounded-[20px] shadow-gray ">
         <Link href={`/game/${gameDetail.id}`}>
           <div className="w-full h-full">
             <Image
               src={gameDetail.headerImagePath}
-              alt="card_Hader_Img"
+              alt="card_Header_Img"
               className="w-full h-[50%] rounded-t-[20px]"
               width={999}
               height={999}

@@ -279,15 +279,15 @@ export default function Game({ params }: Props) {
           </div>
           <div className="w-[45%] h-[100%] ml-[32px] block ">
             <div className="w-[100%] h-[7.5%] py-3 flex justify-end items-center">
-              <div className="w-[10%] h-[100%]">
+              <div className="w-[10%] h-[100%] min-w-24">
                 <Link href="/gamelist">
-                  <span className="w-[100%] h-[100%] border-1 border-gray font-bold text-gray text-[12px] text-center rounded-[10px] flex justify-center items-center">
+                  <span className="w-[100%]  h-[100%] border-1 border-gray font-bold text-gray text-[12px] text-center rounded-[10px] justify-center items-center inline-flex ">
                     목록으로
                   </span>
                 </Link>
               </div>
             </div>
-            <div className="w-[100%] h-[92.5%] border border-[#e2e8f0] rounded-[20px] p-[24px]">
+            <div className="w-[100%] h-[92.5%] border border-[#e2e8f0] rounded-[20px] p-6 flex flex-col gap-6">
               <div className="w-[100%] h-[5%] flex">
                 <div className="w-[50%] h-[100%] flex font-bold text-[20px] items-center">
                   <span>게임 정보</span>
@@ -305,14 +305,14 @@ export default function Game({ params }: Props) {
                 alt="headerImagePath"
                 width={476}
                 height={222}
-                className="w-[100%] h-[40%] my-4"
+                className="w-[100%] h-[40%]"
               />
               <div className="w-[100%] min-h-[6%] text-[12px] leading-tight m-0">
                 <span className="w-[100%] h-[100%]">
                   {gameDetail.description}
                 </span>
               </div>
-              <div className="w-[100%] h-[20%] mb-6 mt-2">
+              <div className="w-[100%] h-[20%]">
                 <div className="w-[100%] h-[20%] flex">
                   <span className="w-[20%] h-[100%] font-bold text-[12px]">
                     출시일
@@ -388,14 +388,14 @@ export default function Game({ params }: Props) {
                     ))}
                 </div>
               </div>
-              <div className="w-[100%] h-[8%] mb-4">
+              <div className="w-[100%] h-[8%]">
                 <Link href="/article">
                   <span className=" w-full h-full bg-[#5779e9] font-bold text-[16px] text-white rounded-[20px] flex justify-center items-center">
                     커뮤니티
                   </span>
                 </Link>
               </div>
-              <div className="w-[100%] h-[8%] mb-4">
+              <div className="w-[100%] h-[8%]">
                 <Link href={`https://store.steampowered.com/app/${appId}`}>
                   <span className="w-full h-full bg-white font-bold border-[#5779e9] border-1 text-[16px] text-[#5779e9] rounded-[20px] flex justify-center items-center">
                     스팀 페이지로 이동
@@ -405,30 +405,24 @@ export default function Game({ params }: Props) {
             </div>
           </div>
         </div>
-        <div className="w-[100%] h-[61px] bg-[#f6f7ff] border-1 border-t-[#f6f7ff] border-x-[#f6f7ff] border-b-[#5779e9] flex">
+        <div className="w-[100%] h-[61px] bg-[#f6f7ff] border-1 border-t-[#f6f7ff] border-x-[#f6f7ff] border-b-[#5779e9] grid grid-cols-3">
           <button
             type="button"
-            className={`w-[33%] h-[100%] ${selectedComponent === 'detail' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center`}
+            className={`h-[100%] ${selectedComponent === 'detail' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center border-r-1 border-primary`}
             onClick={() => setSelectedComponent('detail')}
           >
             <span>상세 게임</span>
           </button>
-          <div className="w-[0.5%] h-[100%] flex justify-center items-center">
-            <div className="w-0 h-[70%] border-1 border-[#5779e9]" />
-          </div>
           <button
             type="button"
-            className={`w-[33%] h-[100%] ${selectedComponent === 'similar' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center`}
+            className={`h-[100%] ${selectedComponent === 'similar' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center border-r-1 border-primary`}
             onClick={() => setSelectedComponent('similar')}
           >
             <span>유사 게임</span>
           </button>
-          <div className="w-[0.5%] h-[100%] flex justify-center items-center">
-            <div className="w-0 h-[70%] border-1 border-[#5779e9]" />
-          </div>
           <button
             type="button"
-            className={`w-[33%] h-[100%] ${selectedComponent === 'review' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center`}
+            className={`h-[100%] ${selectedComponent === 'review' ? 'bg-[#5779e9] text-white' : 'bg-[#f6f7ff] text-black'} flex justify-center items-center`}
             onClick={() => setSelectedComponent('review')}
           >
             <span>리뷰</span>
