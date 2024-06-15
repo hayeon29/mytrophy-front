@@ -14,6 +14,7 @@ const config: Config = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'arrow-down': "url('/svgs/arrow_down.svg')",
       },
       colors: {
         primary: '#5779E9',
@@ -36,6 +37,7 @@ const config: Config = {
       boxShadow: {
         disabled: '0 0 0px 1000px #FFF inset',
         gray: '0px 4px 24px 0px rgba(46,57,108,0.15)',
+        blueGray: '0px 4px 24px 0px rgba(46,57,108,0.45)',
       },
       dropShadow: {
         primary: '0 4px 12px rgba(87, 121, 233, 0.15)',

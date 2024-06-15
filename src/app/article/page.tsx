@@ -181,11 +181,13 @@ export default function Article() {
   const handleClick = async (header) => {
     try {
       let response;
+
       if (activeButton === header) {
-        // 이미 눌렀던 버튼을 다시 누르면 전체 게시글을 가져오기
+        // 이미 눌렀던 버튼을 다시 누르면 전체 게시글을 가져옵니다.
         response = await articleAPI.getArticleList(currentPage - 1, 10);
         setActiveButton('ALL');
       } else {
+        // 새로운 헤더를 클릭한 경우 해당 헤더의 게시글을 가져옵니다.
         response = await articleAPI.getArticlesByHeader(
           header,
           currentPage - 1,
@@ -194,9 +196,22 @@ export default function Article() {
         setActiveButton(header);
       }
 
-      setArticles(response.content);
+      // 가져온 게시글의 상세 정보를 함께 가져와서 articlesWithGameDetails를 생성합니다.
+      const articlesWithGameDetails = await Promise.all(
+        response.content.map(async (article) => {
+          const gameDetail = await gameAPI.getGameDetail(article.appId);
+          return {
+            ...article,
+            gameDetail,
+          };
+        })
+      );
+
+      // 게임 세부 정보가 추가된 게시물 목록으로 상태를 한 번에 업데이트합니다.
+      setArticles(articlesWithGameDetails);
       setTotalPages(response.totalPages);
     } catch (error) {
+      // 에러가 발생한 경우 처리합니다.
       handleAxiosError(error);
     }
   };
