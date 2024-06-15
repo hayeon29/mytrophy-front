@@ -85,8 +85,12 @@ export default function UserGameRating({
       (game) =>
         game !== undefined &&
         (selectedTab === 'all' ||
-          (selectedTab === 'unrated' && reviews[game.id] === 'NONE') ||
-          (selectedTab === 'rated' && reviews[game.id] !== 'NONE'))
+          (selectedTab === 'unrated' &&
+            reviews !== null &&
+            reviews[game.id] === 'NONE') ||
+          (selectedTab === 'rated' &&
+            reviews !== null &&
+            reviews[game.id] !== 'NONE'))
     );
     return sortGames(filteredGames);
   };
@@ -129,11 +133,14 @@ export default function UserGameRating({
   const displayGameCount = () => {
     if (!gameInfo && reviews === null) return 0;
     if (selectedTab === 'unrated') {
-      return gameInfo.filter((game) => reviews[game?.id] === 'NONE').length;
+      return gameInfo.filter(
+        (game) => reviews !== null && reviews[game?.id] === 'NONE'
+      ).length;
     }
     if (selectedTab === 'rated') {
       return gameInfo.filter(
-        (game) => reviews[game?.id] && reviews[game?.id] !== 'NONE'
+        (game) =>
+          reviews !== null && reviews[game?.id] && reviews[game?.id] !== 'NONE'
       ).length;
     }
     return gameInfo.length;
