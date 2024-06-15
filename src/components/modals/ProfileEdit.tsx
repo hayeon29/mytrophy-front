@@ -16,6 +16,7 @@ import {
 } from '@nextui-org/react';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 import OkModal from './OkModal';
 import ChangePassword from './ChangePassword';
 
@@ -64,7 +65,7 @@ export default function ProfileEdit({
         setIsUsernameExistChecked(false);
       }
     } catch (error) {
-      // 에러 메시지 모달창 출력
+      handleAxiosError(error);
     }
   };
 

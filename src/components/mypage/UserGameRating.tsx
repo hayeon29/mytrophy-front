@@ -16,6 +16,7 @@ import { UserAllGameInfo } from '@/types/UserInfo';
 import { IoIosWarning } from 'react-icons/io'; // 아이콘 추가
 import gameAPI from '@/services/game';
 import { useRouter } from 'next/navigation';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 import UserGameCard from './UserGameCard';
 
 interface UserGameRatingProps {
@@ -98,7 +99,7 @@ export default function UserGameRating({
       await gameAPI.submitReview(gameId, newStatus);
       router.refresh();
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 

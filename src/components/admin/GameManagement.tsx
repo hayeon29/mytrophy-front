@@ -20,6 +20,7 @@ import {
 } from '@nextui-org/react';
 import gameAPI from '@/services/game';
 import Link from 'next/link';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
 import { EditIcon } from '../../../public/icon/EditIcon';
@@ -68,7 +69,7 @@ export default function GameManagement() {
       setGames(games.filter((game) => game.id !== gameToDelete.id));
       setIsDeleteModalOpen(false);
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 
@@ -78,7 +79,7 @@ export default function GameManagement() {
       // Optionally, you could refresh the game list after saving top 100
       setCurrentPage(1);
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 
@@ -88,7 +89,7 @@ export default function GameManagement() {
       // Optionally, you could refresh the game list after updating the steam list
       setCurrentPage(1);
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 
@@ -98,7 +99,7 @@ export default function GameManagement() {
       // Optionally, you could refresh the game list after updating game details
       setCurrentPage(1);
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 
@@ -110,7 +111,7 @@ export default function GameManagement() {
       setIsAddGameModalOpen(false);
       setNewGameAppId('');
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 

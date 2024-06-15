@@ -26,6 +26,7 @@ import LoginModal from '@/components/modals/LoginModal';
 import { useModal } from '@/hooks/useModal';
 import articleAPI from '@/services/article';
 import membersAPI from '@/services/members';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 
 export default function Home() {
   const { modals, openModal, closeModal } = useModal();
@@ -52,7 +53,7 @@ export default function Home() {
         const response = await gameAPI.getGameDetailsByTop(1, 10);
         setTopGames(response.content.filter((game) => game.id !== null));
       } catch (error) {
-        // 에러처리
+        handleAxiosError(error);
       } finally {
         setLoadingGames(false);
       }
@@ -64,7 +65,7 @@ export default function Home() {
         const response = await articleAPI.getTopArticles();
         setTopArticles(response.data.content);
       } catch (error) {
-        // 에러처리
+        handleAxiosError(error);
       } finally {
         setLoadingArticles(false);
       }
@@ -76,7 +77,7 @@ export default function Home() {
         const response = await gameAPI.getMyRecommendedGames();
         setMyRecommendedGames(response.data.filter((game) => game.id !== null));
       } catch (error) {
-        // 에러처리
+        handleAxiosError(error);
       } finally {
         setLoadingMyRecommendedGames(false);
       }
@@ -91,7 +92,7 @@ export default function Home() {
           response.data.content.filter((game) => game.id !== null)
         );
       } catch (error) {
-        // 에러처리
+        handleAxiosError(error);
       } finally {
         setLoadingRecommendedGames(false);
       }
@@ -104,7 +105,7 @@ export default function Home() {
         const response = await gameAPI.getGameDetailsByRelease();
         setNewGames(response.content);
       } catch (error) {
-        // 에러처리
+        handleAxiosError(error);
       } finally {
         setLoadingNewGames(false);
       }
@@ -116,7 +117,7 @@ export default function Home() {
         const response = await gameAPI.getGameDetailsByPositive();
         setPositiveGames(response.content);
       } catch (error) {
-        // 에러처리
+        handleAxiosError(error);
       } finally {
         setLoadingPositiveGames(false);
       }
@@ -138,7 +139,7 @@ export default function Home() {
 
         setUserCategoryIds(categoryIds);
       } catch (error) {
-        // Error handling
+        handleAxiosError(error);
       }
     };
 

@@ -784,9 +784,8 @@ function ArticleDetail({ params }: Props) {
                               </ModalHeader>
                               <ModalBody style={{ wordWrap: 'break-word' }}>
                                 <Input
-                                  placeholder="내용을 입력해주세요."
+                                  placeholder="댓글을 입력해주세요."
                                   className="mb-4 flex-1"
-                                  label="댓글 수정하기"
                                   value={editContent}
                                   onChange={(e) =>
                                     setEditContent(e.target.value)
@@ -804,7 +803,7 @@ function ArticleDetail({ params }: Props) {
                                   삭제
                                 </Button>
                                 <Button
-                                  color="danger"
+                                  color="secondary"
                                   variant="light"
                                   onPress={onClose}
                                 >
@@ -812,6 +811,7 @@ function ArticleDetail({ params }: Props) {
                                 </Button>
                                 <Button
                                   color="primary"
+                                  className="text-white"
                                   onClick={() =>
                                     handleEditSubmit(selectedComment, onClose)
                                   }
@@ -863,49 +863,52 @@ function ArticleDetail({ params }: Props) {
                       key={childComment.id}
                       className="ml-8 py-2 flex justify-between"
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-between">
                         {/* 대댓글 아이콘 */}
-                        <VscIndent
-                          className="mr-2"
-                          style={{ fontSize: '1.5rem' }}
-                        />
+                        <VscIndent className="mr-2" />
                         {/* 대댓글 정보 */}
                         <User
-                          name={
-                            <span style={{ fontSize: '1.1rem' }}>
-                              {childComment.nickname}
-                            </span>
-                          }
+                          name={childComment.nickname}
                           avatarProps={{
                             src: childComment.imagePath,
                             style: { border: '1px solid black' },
                           }}
                         />
-                        <div className="mx-10">
+                        <div className="mx-8 text-sm">
                           <p>{childComment.content}</p>
                           <p className="mr-4 text-sm text-gray">
                             {new Date(childComment.createdAt).toLocaleString()}
                           </p>
                         </div>
                       </div>
+
                       <div className="flex flex-col ml-2">
-                        <div className="flex flex-col items-end">
-                          <Button
-                            className="py-2 px-4 rounded mb-2 w-20"
-                            variant="ghost"
-                            color="primary"
-                            onClick={() => handleLike(childComment.id)} // API 호출 연결
-                          >
-                            좋아요 {childComment.likes}
-                          </Button>
+                        <div className="flex flex-row self-end gap-2 mb-4">
+                          <Image
+                            src="/svgs/likeIcon.svg"
+                            alt="좋아요 아이콘"
+                            width={24}
+                            height={24}
+                          />
+                          <span>{childComment.likes}</span>
+                        </div>
+                        <div className="flex flex-row items-end gap-4">
+                          <div className="flex flex-row items-center gap-2">
+                            <Button
+                              className="py-2 px-4 rounded-xl w-20 text-white"
+                              color="primary"
+                              onClick={() => handleLike(childComment.id)} // API 호출 연결
+                            >
+                              좋아요
+                            </Button>
+                          </div>
                           <Button
                             onPress={() => {
                               setCommentEditOpen(!isCommentEditOpen);
                               handleSelectedCommentId(childComment.id);
                             }}
-                            className="py-2 px-4 rounded w-20"
-                            variant="solid"
-                            color="danger"
+                            className="py-2 px-4 rounded-xl w-20 text-white"
+                            color="secondary"
                             style={{
                               display:
                                 memberInfo !== null &&

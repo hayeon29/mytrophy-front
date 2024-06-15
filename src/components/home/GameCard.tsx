@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa6';
 import Link from 'next/link';
 import gameAPI from '@/services/game';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 import Category from './Category';
 import GameReviewModal from './GameReviewModal';
 
@@ -80,7 +81,7 @@ export default function GameCard({ game, idKey }) {
 
       onClose();
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 

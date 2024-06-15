@@ -20,6 +20,7 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import membersAPI from '@/services/members';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 import { EditIcon } from '../../../public/icon/EditIcon';
 import { DeleteIcon } from '../../../public/icon/DeleteIcon';
 import { EyeIcon } from '../../../public/icon/EyeIcon';
@@ -64,7 +65,7 @@ export default function MemberManagement() {
         setUsers(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {
-        // 에러처리
+        handleAxiosError(error);
       } finally {
         setLoading(false);
       }
@@ -77,7 +78,7 @@ export default function MemberManagement() {
       await membersAPI.deleteMemberById(userToDelete.id);
       setUsers(users.filter((user) => user.id !== userToDelete.id));
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     } finally {
       setIsDeleteModalOpen(false);
     }
@@ -97,7 +98,7 @@ export default function MemberManagement() {
       await membersAPI.updateMemberById(editedUser.id, editedUser);
       onClose();
     } catch (error) {
-      // 에러처리
+      handleAxiosError(error);
     }
   };
 
