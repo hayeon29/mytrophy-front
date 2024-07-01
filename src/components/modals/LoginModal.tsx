@@ -7,6 +7,7 @@ import {
   Input,
   useDisclosure,
 } from '@nextui-org/react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { UserLoginInfo } from '@/types/LoginInfo';
@@ -305,6 +306,28 @@ export default function LoginModal({
                   >
                     스팀으로 로그인하기
                   </Button>
+
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/naver`}
+                    className="w-full h-full text-white text-center"
+                  >
+                    <Button
+                      id="naverIdLogin"
+                      className="bg-naver rounded-xl w-full py-4 text-white text-sm font-bold"
+                      size="lg"
+                      startContent={
+                        <Image
+                          src="/image/naver.png"
+                          alt="naver logo on login"
+                          width={24}
+                          height={24}
+                        />
+                      }
+                    >
+                      네이버로 로그인하기
+                    </Button>
+                  </Link>
+
                 </ModalBody>
               </div>
             </>
