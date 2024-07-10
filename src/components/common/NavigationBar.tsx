@@ -1,15 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Button,
-  Avatar,
-  Link,
-} from '@nextui-org/react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import membersAPI from '@/services/members';
@@ -17,6 +8,7 @@ import { useModal } from '@/hooks/useModal';
 import LocalStorage from '@/constants/LocalStorage';
 import { userState } from '@/recoils/userAtom';
 import { useRecoilState } from 'recoil';
+import Link from 'next/link';
 import LoginModal from '../modals/LoginModal';
 
 export default function NavigationBar() {
@@ -28,12 +20,10 @@ export default function NavigationBar() {
   const { modals, openModal, closeModal } = useModal();
 
   const handleLogout = async () => {
-    const response = await membersAPI.logout();
-    if (response.status === 200) {
-      LocalStorage.removeItem('access');
-      setLoginUserState(null);
-      router.refresh();
-    }
+    await membersAPI.logout();
+    LocalStorage.removeItem('access');
+    setLoginUserState(null);
+    router.refresh();
   };
 
   const handleLoginClick = () => {
@@ -51,128 +41,83 @@ export default function NavigationBar() {
           return <div key={id}>{component}</div>;
         })}
       {path !== '/signup' && path !== '/select-category' && (
-        <Navbar
-          className="bg-primary flex justify-center items-center"
-          maxWidth="xl"
-        >
-          <div className="flex items-center gap-8">
-            <NavbarBrand as={Link} href="/">
+        <nav className="w-full bg-white h-20 border-b-1 border-blueGray">
+          <div className="w-full min-w-1024 max-w-1280 mx-auto h-full flex flex-row items-center">
+            <Link href="/" className="p-6">
               <Image
                 src="/svgs/logo.svg"
-                width={32}
+                width={127}
                 height={32}
                 alt="logo on navigation bar"
               />
-            </NavbarBrand>
-            <NavbarContent className="hidden sm:flex gap-4" justify="start">
-              {path === '/' ? (
-                <NavbarItem isActive>
-                  <Link href="/" color="secondary" className="text-sm">
-                    홈
-                  </Link>
-                </NavbarItem>
-              ) : (
-                <NavbarItem>
-                  <Link href="/" color="foreground" className="text-sm">
-                    홈
-                  </Link>
-                </NavbarItem>
-              )}
-              {path === '/article' ? (
-                <NavbarItem isActive>
-                  <Link href="/article" color="secondary" className="text-sm">
-                    커뮤니티
-                  </Link>
-                </NavbarItem>
-              ) : (
-                <NavbarItem>
-                  <Link href="/article" color="foreground" className="text-sm">
-                    커뮤니티
-                  </Link>
-                </NavbarItem>
-              )}
-
-              {path === '/gamelist' ? (
-                <NavbarItem isActive>
-                  <Link
-                    href="/gamelist?page=1"
-                    color="secondary"
-                    className="text-sm"
-                  >
-                    게임 목록
-                  </Link>
-                </NavbarItem>
-              ) : (
-                <NavbarItem>
-                  <Link
-                    href="/gamelist?page=1"
-                    color="foreground"
-                    className="text-sm"
-                  >
-                    게임 목록
-                  </Link>
-                </NavbarItem>
-              )}
-            </NavbarContent>
-          </div>
-          <div className="flex items-center gap-8">
-            {isMounted && loginUserState && (
-              <NavbarContent className="text-sm">
-                <NavbarItem>
-                  <button
-                    type="button"
-                    className="text-white text-sm"
-                    onClick={handleLogout}
-                  >
-                    로그아웃
-                  </button>
-                </NavbarItem>
-                <NavbarItem>
-                  <Link href="/member" className="text-white text-sm">
+            </Link>
+            <div className="h-full flex flex-row items-center justify-center gap-12 grow text-sm font-black">
+              <Link
+                href="/"
+                className={`h-full flex items-center border-b-4 ${path === '/' ? 'text-primary border-primary' : 'text-black border-white'}`}
+              >
+                홈
+              </Link>
+              <Link
+                href="/article"
+                className={`h-full flex items-center border-b-4 ${path === '/article' ? 'text-primary border-primary' : 'text-black border-white'}`}
+              >
+                커뮤니티
+              </Link>
+              <Link
+                href="/gamelist?page=1"
+                className={`h-full flex items-center border-b-4 ${path === '/gamelist' ? 'text-primary border-primary' : 'text-black border-white'}`}
+              >
+                게임 목록
+              </Link>
+            </div>
+            <div className="h-full flex items-center gap-8 p-8 text-sm">
+              {isMounted && loginUserState && (
+                <span className="flex flex-row gap-4 text-black">
+                  <Link href="/member" className="self-center">
                     마이페이지
                   </Link>
-                </NavbarItem>
-                <div className="flex items-center gap-4">
-                  <span className="text-white">
-                    {loginUserState?.nickname || loginUserState?.name || '유저'}
-                  </span>
-                  {loginUserState?.imagePath !== null && isMounted ? (
-                    <Avatar
-                      src={loginUserState.imagePath}
-                      size="sm"
-                      style={{ width: 32, height: 32 }}
+                  <button type="button" onClick={handleLogout}>
+                    로그아웃
+                  </button>
+                  <div className="flex items-center gap-4">
+                    <span>
+                      {loginUserState?.nickname ||
+                        loginUserState?.name ||
+                        '유저'}
+                    </span>
+                    <Image
+                      width={32}
+                      height={32}
+                      alt="profile photo"
+                      src={`${loginUserState?.imagePath !== null ? loginUserState.imagePath : '/svgs/person.svg'}`}
+                      className="rounded-full"
                     />
-                  ) : (
-                    <Avatar
-                      src="/svgs/person.svg"
-                      size="sm"
-                      className="bg-lightGray"
-                      style={{ width: 32, height: 32 }}
-                    />
-                  )}
-                </div>
-              </NavbarContent>
-            )}
-            {isMounted && !loginUserState && (
-              <div className="flex gap-2">
-                <Button
-                  className="bg-white text-primary border-primary border-0 rounded-full"
-                  onPress={handleLoginClick}
-                >
-                  로그인
-                </Button>
-                <Button className="bg-white text-primary border-primary border-0 rounded-full">
-                  <Link
-                    href="/signup"
-                    className="w-full h-full text-sm flex justify-center items-center"
+                  </div>
+                </span>
+              )}
+              {isMounted && !loginUserState && (
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    className=" text-black border-0"
+                    onClick={handleLoginClick}
                   >
-                    회원가입
-                  </Link>
-                </Button>
-              </div>
-            )}
+                    로그인
+                  </button>
+                  <button type="button" className="text-black border-0">
+                    <Link
+                      href="/signup"
+                      className="w-full h-full flex justify-center items-center"
+                    >
+                      회원가입
+                    </Link>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </Navbar>
+        </nav>
       )}
     </>
   );
