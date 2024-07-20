@@ -89,7 +89,15 @@ const gameAPI = {
     return (await api.get(`${API_URL}/count`)).data;
   },
 
-  async searchGameByName(page = 10, size = 1, keyword: string = '') {
+  async searchGameByName({
+    page = 0,
+    size = 10,
+    keyword = '',
+  }: {
+    page?: number;
+    size?: number;
+    keyword: string;
+  }) {
     return (
       await api.post(`${API_URL}/search?page=${page}&size=${size}`, { keyword })
     ).data;
