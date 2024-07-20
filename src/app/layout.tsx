@@ -5,6 +5,7 @@ import NavigationBar from '@/components/common/NavigationBar';
 import RecoilRootProvider from '@/providers/RecoilRootProvider';
 import Providers from '@/providers/NextUiProvider';
 import ReactQueryProviders from '@/providers/ReactQueryProviders';
+import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,8 +16,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="kr">
@@ -24,9 +27,9 @@ export default function RootLayout({
         <RecoilRootProvider>
           <Providers>
             <ReactQueryProviders>
-              {' '}
               {/* Wrap components with LoginModalProvider */}
               <NavigationBar />
+              {modal}
               {children}
             </ReactQueryProviders>
           </Providers>

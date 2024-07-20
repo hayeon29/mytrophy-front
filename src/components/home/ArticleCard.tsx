@@ -34,7 +34,7 @@ function ArticleCard({ article }: { article: HomeArticle }) {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="w-full bg-whiteBlue rounded-2xl rounded-ee-none p-3 flex flex-col gap-y-2 mb-2">
+      <div className="w-full bg-neonLightBlue rounded-2xl rounded-ee-none p-3 flex flex-col gap-y-2 mb-2">
         <div className="flex items-center justify-start">
           <div className="flex flex-row items-center gap-x-2">
             <Link

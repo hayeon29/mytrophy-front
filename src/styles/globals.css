@@ -51,4 +51,11 @@ body {
     border-style: solid;
     border-color: transparent;
   }
+
+  /* 숫자 입력창 화살표 없애기 */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
