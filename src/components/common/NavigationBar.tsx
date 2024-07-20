@@ -2,32 +2,26 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import membersAPI from '@/services/members';
-import { useModal } from '@/hooks/useModal';
 import LocalStorage from '@/constants/LocalStorage';
 import { userState } from '@/recoils/userAtom';
 import { useRecoilState } from 'recoil';
 import Link from 'next/link';
-import LoginModal from '../modals/LoginModal';
 
 export default function NavigationBar() {
   const [isMounted, setIsMounted] = useState(false);
   const [loginUserState, setLoginUserState] = useRecoilState(userState);
 
   const path = usePathname();
-  const router = useRouter();
-  const { modals, openModal, closeModal } = useModal();
 
   const handleLogout = async () => {
     await membersAPI.logout();
     LocalStorage.removeItem('access');
     setLoginUserState(null);
-    router.refresh();
-  };
-
-  const handleLoginClick = () => {
-    openModal(<LoginModal onClick={closeModal} />);
+    if (typeof window !== undefined) {
+      window.location.reload();
+    }
   };
 
   useEffect(() => {
@@ -35,11 +29,7 @@ export default function NavigationBar() {
   }, []);
 
   return (
-    <>
-      {modals.length > 0 &&
-        modals.map(({ component, id }) => {
-          return <div key={id}>{component}</div>;
-        })}
+    <div>
       {path !== '/signup' && path !== '/select-category' && (
         <nav className="w-full bg-white h-20 border-b-1 border-blueGray">
           <div className="w-full min-w-1024 max-w-1280 mx-auto h-full flex flex-row items-center">
@@ -81,11 +71,7 @@ export default function NavigationBar() {
                     로그아웃
                   </button>
                   <div className="flex items-center gap-4">
-                    <span>
-                      {loginUserState?.nickname ||
-                        loginUserState?.name ||
-                        '유저'}
-                    </span>
+                    <span>{loginUserState?.nickname || '유저'}</span>
                     <Image
                       width={32}
                       height={32}
@@ -98,13 +84,9 @@ export default function NavigationBar() {
               )}
               {isMounted && !loginUserState && (
                 <div className="flex gap-4">
-                  <button
-                    type="button"
-                    className=" text-black border-0"
-                    onClick={handleLoginClick}
-                  >
+                  <Link className=" text-black border-0" href="/login">
                     로그인
-                  </button>
+                  </Link>
                   <button type="button" className="text-black border-0">
                     <Link
                       href="/signup"
@@ -119,6 +101,6 @@ export default function NavigationBar() {
           </div>
         </nav>
       )}
-    </>
+    </div>
   );
 }

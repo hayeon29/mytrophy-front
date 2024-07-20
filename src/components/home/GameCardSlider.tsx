@@ -60,7 +60,8 @@ function GameCardSlider({ games, idKey }) {
         </div>
         <div className="w-full overflow-hidden">
           <div
-            className={`flex flex-row gap-x-8 translate-x-[${translatedWidthOfSlide}px] transition-all`}
+            style={{ transform: `translateX(${translatedWidthOfSlide}px)` }}
+            className="flex flex-row gap-x-8 transition-all"
           >
             {games
               .filter((game) => game.id !== null)
