@@ -61,10 +61,12 @@ function Reissue() {
   return <div />;
 }
 
-const ReissuePage = () => {
-  <Suspense fallback={<CircularProgress aria-label="로딩중" />}>
-    <Reissue />
-  </Suspense>;
-};
+function ReissuePage() {
+  return (
+    <Suspense fallback={<CircularProgress aria-label="로딩중" />}>
+      <Reissue />
+    </Suspense>
+  );
+}
 
 export default ReissuePage;
