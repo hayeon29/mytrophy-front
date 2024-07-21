@@ -1,8 +1,8 @@
-import { Post } from '@/utils/axiosMethod';
+import api from '@/config/AxiosConfig';
 
 const authAPI = {
   async reissue() {
-    return Post(`/api/reissue`);
+    return api.post(`/api/reissue`);
   },
 };
 
