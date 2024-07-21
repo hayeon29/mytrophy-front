@@ -183,7 +183,7 @@ function ArticleDetail({ params }: Props) {
   const handleSearch = async () => {
     setIsLoading(true);
     try {
-      const response = await gameAPI.searchGameByName(0, 10, searchValue);
+      const response = await gameAPI.searchGameByName({ keyword: searchValue });
       setSearchResults(response.content);
       setIsSearchModalOpen(true);
 

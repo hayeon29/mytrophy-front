@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   Button,
   Image,
-  Pagination,
   Modal,
   ModalContent,
   ModalHeader,
@@ -14,16 +13,16 @@ import {
   Input,
   Textarea,
   Checkbox,
-  Card,
-  CardHeader,
   Avatar,
-  CardBody,
 } from '@nextui-org/react';
 import articleAPI from '@/services/article';
 import gameAPI from '@/services/game';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@/recoils/userAtom';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import ARTICLE_CATEGORY from '@/constants/articleCategory';
+import PageSelectButton from '@/components/common/PageSelectButton';
+import Edit from '@/components/icon/Edit';
 
 export default function Article() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -89,7 +88,7 @@ export default function Article() {
   const handleSearch = async () => {
     setIsLoading(true);
     try {
-      const response = await gameAPI.searchGameByName(0, 10, searchValue);
+      const response = await gameAPI.searchGameByName({ keyword: searchValue });
       setSearchResults(response.content);
       setIsSearchModalOpen(true);
 
@@ -245,10 +244,6 @@ export default function Article() {
     }
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
   };
@@ -339,78 +334,23 @@ export default function Article() {
     });
   };
 
-  const handleWriteArticle = () => {
-    if (memberInfo === null) {
-      setMessage('로그인 후 게시글을 작성할 수 있습니다.');
-      setIsOpen(true);
-      setIsPostModalOpen(false);
-    } else {
-      setIsPostModalOpen(true);
-    }
-  };
-
   return (
-    <div className="bg-white h-screen mx-auto">
-      <div className="max-w-7xl mx-auto relative bg-white pt-4">
+    <div className="bg-whiteBlue flex flex-col items-center">
+      <div className="w-full max-w-1280 min-w-1024 relative pt-4">
         <div className="flex justify-left items-center p-0 gap-4">
-          <Button
-            color="primary"
-            onClick={() => handleClick('FREE_BOARD')}
-            className={`${activeButton === 'FREE_BOARD' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
-          >
-            자유
-          </Button>
-          <Button
-            color="primary"
-            onClick={() => handleClick('INFORMATION')}
-            className={`${activeButton === 'INFORMATION' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
-          >
-            정보
-          </Button>
-          <Button
-            color="primary"
-            onClick={() => handleClick('GUIDE')}
-            className={`${activeButton === 'GUIDE' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
-          >
-            공략
-          </Button>
-          <Button
-            color="primary"
-            onClick={() => handleClick('REVIEW')}
-            className={`${activeButton === 'REVIEW' ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 `}
-          >
-            리뷰
-          </Button>
-        </div>
-      </div>
-      <div className="bg-white flex justify-center items-center py-4">
-        <div className="w-full max-w-7xl border border-blueLightGray p-8 flex items-center rounded-lg h-26 shadow-gray text-left">
-          <Button
-            color="default"
-            radius="lg"
-            className="flex-grow test-small bg-blueLightGray text-blueBlack"
-            onPress={handleWriteArticle}
-          >
-            클릭 후 글을 작성해보세요.
-          </Button>
-
-          <Modal isOpen={isOpen} onOpenChange={setIsOpen} shadow="sm">
-            <ModalContent>
-              <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
-              <ModalBody>
-                <p>{message}</p>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  color="danger"
-                  variant="light"
-                  onPress={handleCloseModal}
-                >
-                  확인
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
+          {Object.keys(ARTICLE_CATEGORY).map((value) => {
+            return (
+              <button
+                key={value}
+                type="button"
+                color="primary"
+                onClick={() => handleClick(value)}
+                className={`${activeButton === value ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 rounded-md px-4 py-2 text-sm`}
+              >
+                {ARTICLE_CATEGORY[value]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -572,7 +512,11 @@ export default function Article() {
                 <hr style={{ border: '1px solid #ddd' }} />
                 {/*  파일 업로드  */}
                 <div
-                  style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+                  style={{
+                    display: 'flex',
+                    gap: '10px',
+                    alignItems: 'center',
+                  }}
                 >
                   <label
                     htmlFor="fileUpload"
@@ -657,14 +601,14 @@ export default function Article() {
       </Modal>
 
       {/* 게시글 Cards */}
-      <div className="flex flex-col justify-center items-center py-4 gap-y-6">
+      <div className="w-full max-w-1280 min-w-1024 flex flex-col justify-center items-center py-4 gap-y-6 relative">
         {articles.map((article) => (
-          <Card
+          <div
             key={article.id}
-            className="w-full max-w-7xl border-blueLightGray shadow-gray p-8"
+            className="w-full bg-white border-1 border-blueLightGray rounded-2xl drop-shadow-primary p-8 flex flex-col gap-y-4"
           >
             {/* Card Header */}
-            <CardHeader className="justify-between flex-row p-0 mb-6">
+            <div className="flex flex-row justify-between">
               <div className="flex gap-x-3 items-center">
                 <Avatar
                   radius="full"
@@ -738,43 +682,56 @@ export default function Article() {
                   {article.commentCount}
                 </span>
               </div>
-            </CardHeader>
-            <div className="flex">
-              <CardBody className="p-0 text-small text-black flex-grow cursor-pointer">
-                <Link href={`/article/${article.id}`}>
-                  <h1 className="text-lg font-bold mb-4">{article.name}</h1>
-                  {/* 화면 너비가 768px 이하일 때, 최대 15자만 보여줌 */}
-                  <p className="hidden text-sm sm:block">
-                    {article.content.length > 300
-                      ? `${article.content.slice(0, 300)}...`
-                      : article.content}
-                  </p>
+            </div>
+            <div className="flex flex-col gap-y-3 text-black">
+              <div className="flex-grow">
+                <Link href={`/article/${article.id}`} className="flex flex-col">
+                  <h1 className="font-bold text-xl">{article.name}</h1>
                 </Link>
-              </CardBody>
-              {/* Image */}
-              {article.gameDetail && (
-                <div className="flex justify-center items-center">
+              </div>
+              <div className="flex flex-row justify-between">
+                <p className="overflow-ellipsis text-sm line-clamp-5">
+                  {article.content}
+                </p>
+                {/* Image */}
+                {article.gameDetail && (
                   <Image
                     width={240}
                     height={144}
                     alt="side image"
                     src={article.gameDetail.headerImagePath}
+                    className="bg-white"
                   />
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </Card>
+          </div>
         ))}
-      </div>
-      <div className="flex justify-center mt-4">
-        <Pagination
-          total={totalPages}
-          initialPage={1}
-          page={currentPage}
-          onChange={handlePageChange}
-          classNames={{
-            cursor: 'text-white font-bold',
-          }}
+        <Link href="/article/write/modal">
+          <span
+            role="presentation"
+            className="fixed w-20 h-20 bg-primary rounded-full bottom-8 right-8 flex items-center justify-center drop-shadow-primary cursor-pointer"
+          >
+            <Edit fill="#FFFFFF" width={32} height={32} />
+          </span>
+        </Link>
+        <Modal isOpen={isOpen} onOpenChange={setIsOpen} shadow="sm">
+          <ModalContent>
+            <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
+            <ModalBody>
+              <p>{message}</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={handleCloseModal}>
+                확인
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <PageSelectButton
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPage={totalPages}
         />
       </div>
     </div>
