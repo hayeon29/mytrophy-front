@@ -44,9 +44,11 @@ function Reissue() {
             loginType,
           });
           if (isFirstLogin) {
-            router.replace('/select-category');
-          } else {
-            router.replace('/');
+            if (typeof window !== undefined) {
+              window.location.href = '/select-category';
+            }
+          } else if (typeof window !== undefined) {
+            window.location.href = '/';
           }
         }
       } catch (error) {
