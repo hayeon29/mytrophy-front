@@ -1,14 +1,6 @@
-/* eslint-disable react/require-default-props */
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from '@nextui-org/react';
+import { useModal } from '@/hooks/useModal';
 import { useEffect } from 'react';
+import CommonModal from './CommonModal';
 
 export default function OkModal({
   title = '',
@@ -17,28 +9,30 @@ export default function OkModal({
 }: {
   title?: string;
   message: string;
-  onClick: (...args: unknown[]) => void;
+  onClick?: (...args: unknown[]) => void;
 }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { closeModal } = useModal();
 
   useEffect(() => {
-    onOpen();
     return () => {
-      onClose();
+      closeModal();
     };
-  }, [onOpen, onClose]);
+  }, [closeModal]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClick} size="xs">
-      <ModalContent>
-        <ModalHeader>{title}</ModalHeader>
-        <ModalBody>{message}</ModalBody>
-        <ModalFooter>
-          <Button color="primary" className="text-white" onPress={onClick}>
+    <CommonModal title={title} onClose={onClick || closeModal}>
+      <div className="p-4 flex flex-col gap-y-6">
+        <p className="text-center">{message}</p>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="bg-primary text-white px-3 py-2 rounded self-end"
+            onClick={onClick || closeModal}
+          >
             닫기
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          </button>
+        </div>
+      </div>
+    </CommonModal>
   );
 }

@@ -1,56 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import {
-  Button,
-  Image,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-  Textarea,
-  Checkbox,
-  Avatar,
-} from '@nextui-org/react';
+import Image from 'next/image';
 import articleAPI from '@/services/article';
 import gameAPI from '@/services/game';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@/recoils/userAtom';
 import { handleAxiosError } from '@/utils/handleAxiosError';
 import ARTICLE_CATEGORY from '@/constants/articleCategory';
+import { ARTICLE_SEARCH } from '@/constants/SearchOption';
 import PageSelectButton from '@/components/common/PageSelectButton';
 import Edit from '@/components/icon/Edit';
 
+import { useModal } from '@/hooks/useModal';
+import OkModal from '@/components/modals/OkModal';
+import { ArticleListType } from '@/types/Article';
+
 export default function Article() {
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
-  const modalPlacement = 'center';
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [checkedFiles, setCheckedFiles] = useState<boolean[]>([]);
   const [activeButton, setActiveButton] = useState('');
   const [articles, setArticles] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedGameId, setSelectedGameId] = useState(null);
-  const [selectedGameName, setSelectedGameName] = useState('');
-  const memberInfo = useRecoilValue(userState);
-  const [showLikeLabel, setShowLikeLabel] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
-  const [isGameOpen, setIsGameOpen] = useState(false);
-  const [isArticleOpen, setIsArticleOpen] = useState(false);
-  const [isLikedOpen, setIsLikedOpen] = useState(false);
-  const [message, setMessage] = useState('게시글을 작성하시겠습니까?');
-  const [userInfo, setUserInfo] = useState({
-    header: '',
-    name: '',
-    content: '',
-  });
+  const [selectedSortOption, setSelectedSortOption] = useState('제목');
+  const [isOptionVisible, setIsOptionVisible] = useState(false);
+  const userInfo = useRecoilValue(userState);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const { modal, openModal } = useModal();
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -84,98 +60,6 @@ export default function Article() {
 
     fetchArticles();
   }, [currentPage]);
-
-  const handleSearch = async () => {
-    setIsLoading(true);
-    try {
-      const response = await gameAPI.searchGameByName({ keyword: searchValue });
-      setSearchResults(response.content);
-      setIsSearchModalOpen(true);
-
-      if (response.content.length === 0) {
-        setMessage('검색한 게임이 없습니다. 다시 검색해주세요.');
-        setIsGameOpen(true);
-      }
-    } catch (error) {
-      handleAxiosError(error);
-      setMessage('게임 검색 중 오류가 발생했습니다. 다시 시도해주세요.');
-      setIsGameOpen(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGameSelectAppId = (appId, gameName, onClose) => {
-    setSelectedGameId(appId);
-    setSelectedGameName(gameName);
-    setIsLoading(false);
-    onClose();
-    setSearchValue(selectedGameName);
-  };
-
-  const handleClickCreateArticle = async (onClose) => {
-    try {
-      let fileUrls = null; // Initialize file URL string
-
-      // Your form validation logic
-      if (!userInfo.name || !userInfo.content || !selectedGameId) {
-        setMessage('제목과 내용, 선택한 게임을 모두 입력해주세요.'); // Update message for invalid input
-        setIsArticleOpen(true); // Open modal for invalid input
-        return;
-      }
-
-      if (selectedFiles.length > 0) {
-        const formData = new FormData();
-        selectedFiles.forEach((file) => {
-          formData.append('file', file);
-        });
-
-        const responses = await articleAPI.articleFileUpload(formData);
-
-        fileUrls = responses.join(',');
-      }
-
-      const response = await articleAPI.articleCreate(
-        activeButton,
-        userInfo.name,
-        userInfo.content,
-        selectedGameId,
-        fileUrls
-      );
-
-      if (response.status === 200) {
-        setMessage('게시글 작성이 완료되었습니다.');
-      } else {
-        setMessage('게시글 작성에 실패했습니다. 다시 시도해주세요.');
-        setIsArticleOpen(false);
-      }
-
-      onClose();
-      if (typeof window !== undefined) {
-        window.location.reload();
-      }
-    } catch (error) {
-      handleAxiosError(error);
-      setMessage('게시글 작성에 실패했습니다. 다시 시도해주세요.');
-      setIsOpen(true);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsOpen(false);
-  };
-
-  const handleArticleCloseModal = () => {
-    setIsArticleOpen(false);
-  };
-
-  const handleGameCloseModal = () => {
-    setIsGameOpen(false);
-  };
-
-  const handleLikedCloseModal = () => {
-    setIsLikedOpen(false);
-  };
 
   const handleClick = async (header) => {
     try {
@@ -236,504 +120,237 @@ export default function Article() {
   };
 
   const handleLikeClick = (articleId) => {
-    if (memberInfo !== null) {
+    if (userInfo !== null) {
       handleLike(articleId);
     } else {
-      setMessage('로그인 후 추천을 누를 수 있습니다.');
-      setIsLikedOpen(true);
+      openModal(<OkModal message="게시글 작성이 완료되었습니다." />);
     }
   };
 
-  const handleButtonClick = (buttonName: string) => {
-    setActiveButton(buttonName);
+  const handleSortOptionVisibleClick = () => {
+    setIsOptionVisible((prev) => !prev);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const filesList = e.target.files;
-    if (!filesList) return; // 파일이 선택되지 않은 경우
-
-    const filesArray = Array.from(filesList);
-    setSelectedFiles((prevFiles: File[]) => [...prevFiles, ...filesArray]);
-    setCheckedFiles((prevChecked: boolean[]) => [
-      ...prevChecked,
-      ...filesArray.map(() => false),
-    ]);
+  const handleSortOptionClick = (option: string) => {
+    setSelectedSortOption(option);
+    setIsOptionVisible(false);
   };
 
-  const handleCheckboxChange = (index: number) => {
-    setCheckedFiles((prevChecked) => {
-      const newChecked = [...prevChecked];
-      newChecked[index] = !newChecked[index];
-      return newChecked;
-    });
+  const ArticleBackgroundColor = {
+    FREE_BOARD: 'bg-primary',
+    INFORMATION: 'bg-sky-400',
+    GUIDE: 'bg-yellow-300',
+    REVIEW: 'bg-second',
   };
 
-  const handleDeleteSelectedFiles = () => {
-    const newSelectedFiles = selectedFiles.filter(
-      (_, index) => !checkedFiles[index]
-    );
-    const newCheckedFiles = checkedFiles.filter((checked) => !checked);
-    setSelectedFiles(newSelectedFiles);
-    setCheckedFiles(newCheckedFiles);
-  };
-
-  const handleDeleteAllFiles = () => {
-    setSelectedFiles([]);
-    setCheckedFiles([]);
-  };
-
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setUserInfo((prevUserInfo) => ({
-      ...prevUserInfo,
-      [name]: value,
-    }));
-  };
-
-  const handleCloseSearchModal = () => {
-    setIsSearchModalOpen(false);
-    setIsLoading(false);
-  };
-
-  const handleClosePostModal = () => {
-    setIsPostModalOpen(false);
-  };
-
-  const handleGameSelect = (appId, gameName) => {
-    setSelectedGameId(appId);
-    setSelectedGameName(gameName);
-  };
-
-  const getBackgroundColor = (header) => {
-    switch (header) {
-      case 'FREE_BOARD':
-        return 'bg-blue-500';
-      case 'INFORMATION':
-        return 'bg-green-500';
-      case 'GUIDE':
-        return 'bg-yellow-500';
-      case 'REVIEW':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
+  const handleSearchClick = async () => {
+    if (searchRef.current.value.length <= 0) {
+      openModal(<OkModal message="키워드를 작성해주세요." />);
+      searchRef.current.blur();
+      return;
     }
-  };
-
-  const displayHeader = (header) => {
-    if (header === 'CHATTING') return 'CHATTING';
-    return header;
-  };
-
-  const handleMouseEnter = (articleId) => {
-    setShowLikeLabel({ [articleId]: true });
-  };
-
-  const handleMouseLeave = (articleId) => {
-    setShowLikeLabel({
-      [articleId]: false,
+    const searchResponse = await articleAPI.getArticlesByKeyword({
+      target: ARTICLE_SEARCH[selectedSortOption],
+      keyword: searchRef.current.value,
     });
+
+    if (searchResponse.status === 200) {
+      const searchResult = searchResponse.data as ArticleListType;
+      setArticles(searchResult.content);
+      setTotalPages(searchResult.totalPages);
+    }
   };
 
   return (
-    <div className="bg-whiteBlue flex flex-col items-center">
-      <div className="w-full max-w-1280 min-w-1024 relative pt-4">
-        <div className="flex justify-left items-center p-0 gap-4">
-          {Object.keys(ARTICLE_CATEGORY).map((value) => {
-            return (
-              <button
-                key={value}
-                type="button"
-                color="primary"
-                onClick={() => handleClick(value)}
-                className={`${activeButton === value ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 rounded-md px-4 py-2 text-sm`}
-              >
-                {ARTICLE_CATEGORY[value]}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 게시글 작성 모달창 */}
-      <Modal
-        isOpen={isPostModalOpen}
-        size="4xl"
-        onOpenChange={handleClosePostModal}
-        placement={modalPlacement}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                게시글 작성
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex gap-2">
-                  <Button
-                    color="primary"
-                    variant={activeButton === 'FREE_BOARD' ? 'solid' : 'ghost'}
-                    onClick={() => handleButtonClick('FREE_BOARD')}
-                  >
-                    자유
-                  </Button>
-                  <Button
-                    color="primary"
-                    variant={activeButton === 'INFORMATION' ? 'solid' : 'ghost'}
-                    onClick={() => handleButtonClick('INFORMATION')}
-                  >
-                    정보
-                  </Button>
-                  <Button
-                    color="primary"
-                    variant={activeButton === 'GUIDE' ? 'solid' : 'ghost'}
-                    onClick={() => handleButtonClick('GUIDE')}
-                  >
-                    공략
-                  </Button>
-                  <Button
-                    color="primary"
-                    variant={activeButton === 'REVIEW' ? 'solid' : 'ghost'}
-                    onClick={() => handleButtonClick('REVIEW')}
-                  >
-                    리뷰
-                  </Button>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-4">
-                    <Input
-                      type="text"
-                      label="게임을 검색해주세요."
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                    />
-
-                    <Button
-                      color="primary"
-                      className="text-white"
-                      onClick={handleSearch}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? '검색 중...' : '게임 검색'}
-                    </Button>
-
-                    <Modal isOpen={isGameOpen} onOpenChange={setIsGameOpen}>
-                      <ModalContent>
-                        <ModalHeader className="flex flex-col gap-1">
-                          게임 검색
-                        </ModalHeader>
-                        <ModalBody>
-                          <p>{message}</p>
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button
-                            color="danger"
-                            variant="light"
-                            onPress={handleGameCloseModal}
-                          >
-                            확인
-                          </Button>
-                        </ModalFooter>
-                      </ModalContent>
-                    </Modal>
-                  </div>
-                </div>
-                <Modal
-                  isOpen={isSearchModalOpen}
-                  onOpenChange={handleCloseSearchModal}
-                >
-                  <ModalContent>
-                    {(onClose) => (
-                      <>
-                        <ModalHeader className="flex flex-col gap-1 items-center">
-                          게임 검색
-                        </ModalHeader>
-                        <ModalBody className="flex">
-                          <div className="flex flex-col gap-4">
-                            {searchResults.map((game, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center gap-2"
-                              >
-                                <input
-                                  type="checkbox"
-                                  onChange={() =>
-                                    handleGameSelect(game.id, game.name)
-                                  }
-                                  checked={selectedGameId === game.id} // 선택한 게임이 체크되도록 확인
-                                />
-                                <label>{game.name}</label>
-                              </div>
-                            ))}
-                          </div>
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button
-                            color="danger"
-                            variant="light"
-                            onPress={onClose}
-                          >
-                            취소
-                          </Button>
-                          <Button
-                            color="primary"
-                            onPress={() =>
-                              handleGameSelectAppId(
-                                selectedGameId,
-                                selectedGameName,
-                                onClose
-                              )
-                            }
-                          >
-                            선택
-                          </Button>
-                        </ModalFooter>
-                      </>
-                    )}
-                  </ModalContent>
-                </Modal>
-                <hr style={{ border: '1px solid #ddd' }} />
-                <p>제목</p>
-                <Textarea
-                  name="name"
-                  value={userInfo.name}
-                  onChange={handleInput}
-                  placeholder="제목을 입력해주세요."
-                  className="mb-4"
-                />
-                <p>내용</p>
-                <Textarea
-                  name="content"
-                  value={userInfo.content}
-                  onChange={handleInput}
-                  placeholder="내용을 입력해주세요."
-                  className="mb-4"
-                />
-                <hr style={{ border: '1px solid #ddd' }} />
-                {/*  파일 업로드  */}
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '10px',
-                    alignItems: 'center',
-                  }}
-                >
-                  <label
-                    htmlFor="fileUpload"
-                    style={{
-                      cursor: 'pointer',
-                      maxWidth: '81px',
-                      border: '1px solid #ccc',
-                      padding: '5px',
-                      borderRadius: '5px',
-                    }}
-                  >
-                    파일 선택
-                  </label>
-                  <Button
-                    color="danger"
-                    variant="light"
-                    onClick={handleDeleteAllFiles}
-                  >
-                    파일 전체 삭제
-                  </Button>
-                  <Button
-                    color="danger"
-                    variant="light"
-                    onClick={handleDeleteSelectedFiles}
-                  >
-                    선택된 파일 삭제
-                  </Button>
-                </div>
-                <input
-                  type="file"
-                  multiple
-                  id="fileUpload"
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                />
-                {selectedFiles.map((file, index) => (
-                  <div key={file.name}>
-                    <label>
-                      <Checkbox
-                        checked={!!checkedFiles[index]}
-                        onChange={() => handleCheckboxChange(index)}
-                      />
-                      <span>{file.name}</span>
-                    </label>
-                  </div>
-                ))}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  취소
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={() => handleClickCreateArticle(onClose)}
-                >
-                  작성
-                </Button>
-
-                <Modal isOpen={isArticleOpen} onOpenChange={setIsArticleOpen}>
-                  <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">
-                      게시글
-                    </ModalHeader>
-                    <ModalBody>
-                      <p>{message}</p>
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button
-                        color="danger"
-                        variant="light"
-                        onPress={handleArticleCloseModal}
-                      >
-                        확인
-                      </Button>
-                    </ModalFooter>
-                  </ModalContent>
-                </Modal>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-
-      {/* 게시글 Cards */}
-      <div className="w-full max-w-1280 min-w-1024 flex flex-col justify-center items-center py-4 gap-y-6 relative">
-        {articles.map((article) => (
-          <div
-            key={article.id}
-            className="w-full bg-white border-1 border-blueLightGray rounded-2xl drop-shadow-primary p-8 flex flex-col gap-y-4"
-          >
-            {/* Card Header */}
-            <div className="flex flex-row justify-between">
-              <div className="flex gap-x-3 items-center">
-                <Avatar
-                  radius="full"
-                  className="w-8 h-8"
-                  src={article.memberImage}
-                />
-                <div className="flex gap-1 items-start flex-col sm:flex-row sm:items-center">
-                  <h5 className="text-sm leading-none text-blackGray">
-                    {article.nickname} {/* 유저 이름 */}
-                  </h5>
-                  <h4 className="text-sm tracking-tight text-blackGray">
-                    ({article.username}) {/* 유저 아이디 */}
-                  </h4>
-                </div>
-                <span
-                  className={`${getBackgroundColor(article.header)} rounded-sm text-white px-2 py-0.5 text-sm mr-2`}
-                >
-                  {displayHeader(article.header)}
-                </span>
-              </div>
-              {/* Counts */}
-              <div className="flex items-center ">
+    <>
+      {modal.component}
+      <div className="bg-whiteBlue flex flex-col items-center h-full min-h-[calc(100vh-80px)]">
+        <div className="w-full max-w-1280 min-w-1024 relative pt-4 flex flex-row justify-between items-center">
+          {/* 카테고리 선택 */}
+          <div className="flex justify-left items-center p-0 gap-4">
+            {Object.keys(ARTICLE_CATEGORY).map((value) => {
+              return (
                 <button
+                  key={value}
                   type="button"
-                  onMouseEnter={() => handleMouseEnter(article.id)}
-                  onMouseLeave={() => handleMouseLeave(article.id)}
-                  onClick={() => handleLikeClick(article.id)}
+                  color="primary"
+                  onClick={() => handleClick(value)}
+                  className={`${activeButton === value ? 'bg-primary text-white border-primary' : 'bg-white text-blueBlack border-blueLightGray'} border-1 rounded-md px-4 py-2 text-sm`}
                 >
-                  {showLikeLabel[article.id] ? (
-                    <span className="border border-primary bg-primary text-white text-sm p-2 rounded-full">
-                      좋아요
+                  {ARTICLE_CATEGORY[value]}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex flex-row items-center gap-x-3">
+            {/* 옵션 선택 컴포넌트 */}
+            <div className="w-28 relative text-sm">
+              <div
+                role="presentation"
+                className="border-1 border-blueLightGray rounded bg-white cursor-pointer p-2"
+                onClick={handleSortOptionVisibleClick}
+              >
+                {selectedSortOption}
+                <Image
+                  src="/svgs/below-arrow.svg"
+                  width={16}
+                  height={16}
+                  alt="옵션창 화살표 아이콘"
+                  className={`${isOptionVisible && 'rotate-180'} duration-100 absolute top-1/2 -translate-y-1/2 right-2`}
+                />
+              </div>
+              {isOptionVisible && (
+                <ol className="w-full p-1 border-1 border-blueLightGray rounded bg-white cursor-pointer absolute z-10 top-[110%]">
+                  {Object.keys(ARTICLE_SEARCH).map((eachOption) => {
+                    return (
+                      <li
+                        key={eachOption}
+                        role="presentation"
+                        className="p-2 hover:bg-blueLightGray"
+                        value="eachOption"
+                        onClick={() => {
+                          handleSortOptionClick(eachOption);
+                        }}
+                      >
+                        {eachOption}
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
+            </div>
+            {/* 검색 컴포넌트 */}
+            <div>
+              <input
+                type="text"
+                placeholder="검색하기"
+                className="py-3 pl-5 pr-10 w-72 rounded-full border-1 border-blueLightGray focus:border-primary outline-none text-sm"
+                ref={searchRef}
+                onKeyUp={(event) => {
+                  if (event.key === 'Enter') {
+                    handleSearchClick();
+                  }
+                }}
+              />
+              <Image
+                src="svgs/search.svg"
+                width={16}
+                height={16}
+                alt="검색 아이콘"
+                className="absolute top-1/2 right-5 cursor-pointer"
+                onClick={handleSearchClick}
+              />
+            </div>
+          </div>
+        </div>
+        {/* 게시글 Cards */}
+        <div className="w-full max-w-1280 min-w-1024 flex flex-col justify-center items-center py-4 gap-y-6 relative">
+          {articles.length === 0 ? (
+            <div className="w-full py-8 rounded-3xl bg-white border-1 border-blueLightGray drop-shadow-primary text-center text-blueLightGray text-2xl">
+              검색 결과가 없습니다.
+            </div>
+          ) : (
+            articles.map((article) => (
+              <div
+                key={article.id}
+                className="w-full bg-white border-1 border-blueLightGray rounded-2xl drop-shadow-primary p-8 flex flex-col gap-y-4"
+              >
+                {/* Card Header */}
+                <div className="flex flex-row justify-between">
+                  <div className="flex gap-x-3 items-center">
+                    <Image
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full object-cover"
+                      alt={`${article.id}의 프로필 사진`}
+                      src={article.memberImage || 'svgs/person.svg'}
+                    />
+                    <div className="flex gap-1 items-start flex-col sm:flex-row sm:items-center">
+                      <h5 className="text-sm leading-none text-blackGray">
+                        {article.nickname} {/* 유저 이름 */}
+                      </h5>
+                      <h4 className="text-sm tracking-tight text-blackGray">
+                        ({article.username}) {/* 유저 아이디 */}
+                      </h4>
+                    </div>
+                    {ARTICLE_CATEGORY[article.header] && (
+                      <span
+                        className={`${ArticleBackgroundColor[article.header]} rounded-sm text-white px-2 py-0.5 text-sm mr-2`}
+                      >
+                        {ARTICLE_CATEGORY[article.header]}
+                      </span>
+                    )}
+                  </div>
+                  {/* Counts */}
+                  <div className="flex items-center ">
+                    <button
+                      type="button"
+                      onClick={() => handleLikeClick(article.id)}
+                    >
+                      <Image
+                        width={16}
+                        height={16}
+                        alt="vector"
+                        src="/svgs/likeIcon.svg"
+                      />
+                    </button>
+                    <span className="text-sm text-primary ml-[6px] mr-4">
+                      {article.cntUp}
                     </span>
-                  ) : (
                     <Image
                       width={16}
                       height={16}
-                      alt="vector"
-                      src="/svgs/likeIcon.svg"
+                      alt="comment"
+                      src="/svgs/commentIcon.svg"
                     />
-                  )}
-                </button>
-                <span className="text-sm text-primary ml-[6px] mr-4">
-                  {article.cntUp}
-                </span>
-                <Modal isOpen={isLikedOpen} onOpenChange={setIsLikedOpen}>
-                  <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">
-                      게시글
-                    </ModalHeader>
-                    <ModalBody>
-                      <p>{message}</p>
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button
-                        color="danger"
-                        variant="light"
-                        onPress={handleLikedCloseModal}
-                      >
-                        확인
-                      </Button>
-                    </ModalFooter>
-                  </ModalContent>
-                </Modal>
-                <Image
-                  width={16}
-                  height={16}
-                  alt="comment"
-                  src="/svgs/commentIcon.svg"
-                />
-                <span className="text-sm text-primary ml-[6px]">
-                  {article.commentCount}
-                </span>
+                    <span className="text-sm text-primary ml-[6px]">
+                      {article.commentCount}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-y-3 text-black">
+                  <div className="flex-grow">
+                    <Link
+                      href={`/article/${article.id}`}
+                      className="flex flex-col"
+                    >
+                      <h1 className="font-bold text-xl">{article.name}</h1>
+                    </Link>
+                  </div>
+                  <div className="flex flex-row justify-between">
+                    <p className="overflow-ellipsis text-sm line-clamp-5">
+                      {article.content}
+                    </p>
+                    {/* Image */}
+                    {article.gameDetail && (
+                      <Image
+                        width={240}
+                        height={144}
+                        alt="side image"
+                        src={article.gameDetail.headerImagePath}
+                        className="bg-white"
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col gap-y-3 text-black">
-              <div className="flex-grow">
-                <Link href={`/article/${article.id}`} className="flex flex-col">
-                  <h1 className="font-bold text-xl">{article.name}</h1>
-                </Link>
-              </div>
-              <div className="flex flex-row justify-between">
-                <p className="overflow-ellipsis text-sm line-clamp-5">
-                  {article.content}
-                </p>
-                {/* Image */}
-                {article.gameDetail && (
-                  <Image
-                    width={240}
-                    height={144}
-                    alt="side image"
-                    src={article.gameDetail.headerImagePath}
-                    className="bg-white"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-        <Link href="/article/write/modal">
-          <span
-            role="presentation"
-            className="fixed w-20 h-20 bg-primary rounded-full bottom-8 right-8 flex items-center justify-center drop-shadow-primary cursor-pointer"
-          >
-            <Edit fill="#FFFFFF" width={32} height={32} />
-          </span>
-        </Link>
-        <Modal isOpen={isOpen} onOpenChange={setIsOpen} shadow="sm">
-          <ModalContent>
-            <ModalHeader className="flex flex-col gap-1">게시글</ModalHeader>
-            <ModalBody>
-              <p>{message}</p>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={handleCloseModal}>
-                확인
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <PageSelectButton
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPage={totalPages}
-        />
+            ))
+          )}
+          <Link href="/article/write/modal">
+            <span
+              role="presentation"
+              className="fixed w-20 h-20 bg-primary rounded-full bottom-8 right-8 flex items-center justify-center drop-shadow-primary cursor-pointer"
+            >
+              <Edit fill="#FFFFFF" width={32} height={32} />
+            </span>
+          </Link>
+          <PageSelectButton
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPage={totalPages}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

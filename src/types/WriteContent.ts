@@ -1,4 +1,5 @@
 type WriteContent = {
+  title: string;
   content: string;
 };
 

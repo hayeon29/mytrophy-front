@@ -10,11 +10,17 @@ import { PartyContent, WriteContent } from '@/types/WriteContent';
 import { ChangeEvent, useRef, useState } from 'react';
 import GameSearchModal from '@/components/modals/GameSearchModal';
 import { GetGameDetailDTO } from '@/types/GameDetail';
+import withAuth from '@/app/PrivateRoute';
+import { useModal } from '@/hooks/useModal';
+import OkModal from '@/components/modals/OkModal';
+import articleAPI from '@/services/article';
 
-export default function ArticleModal() {
+function ArticleModal() {
+  const { modal, openModal } = useModal();
   const [selectedCategory, setSelectedCategory] = useState(0); // 현재 선택한 카테고리
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const content = useRef<WriteContent | PartyContent>({
+    title: '',
     content: '',
     partySize: 0,
     partyOption: '',
@@ -63,8 +69,56 @@ export default function ArticleModal() {
     setIsSearchOpened(false);
   };
 
+  const handleArticleCompleteClick = async () => {
+    if (content.current.title.length <= 0) {
+      openModal(<OkModal message="제목을 작성해야 합니다." />);
+      return;
+    }
+
+    if (content.current.content.length <= 0) {
+      openModal(<OkModal message="내용을 작성해야 합니다." />);
+      return;
+    }
+
+    let fileUrls: null | string = null;
+
+    if (selectedFiles.length > 0) {
+      const fileFormData = new FormData();
+      for (let i = 0; i < selectedFiles.length; i += 1) {
+        fileFormData.append('file', selectedFiles[i]);
+      }
+      fileUrls = (await articleAPI.articleFileUpload(fileFormData)).join(',');
+    }
+
+    const writeResponse = await articleAPI.articleCreate({
+      header: Object.keys(ARTICLE_CATEGORY)[selectedCategory],
+      name: content.current.title,
+      content: content.current.content,
+      appId: selectedGame?.id.toString(),
+      imagePath: fileUrls,
+    });
+
+    if (writeResponse.status === 200) {
+      openModal(
+        <OkModal
+          message="게시글 작성이 완료되었습니다."
+          onClick={() => {
+            if (typeof window !== undefined) {
+              window.location.href = '/write';
+            }
+          }}
+        />
+      );
+    } else {
+      openModal(
+        <OkModal message="게시글 작성에 실패했습니다. 다시 작성해주세요." />
+      );
+    }
+  };
+
   return (
     <div className="w-full">
+      {modal.component}
       {isSearchOpened && (
         <GameSearchModal
           onClose={() => {
@@ -75,7 +129,7 @@ export default function ArticleModal() {
         />
       )}
       <RouterModal title="글쓰기">
-        <div className="py-3 px-5 border-b-1 border-disable">
+        <div className="py-3 px-5 border-b-1 border-disable ">
           <div className="flex justify-left items-center p-0 gap-4">
             {Object.keys(ARTICLE_CATEGORY).map((value, index) => {
               return (
@@ -114,6 +168,15 @@ export default function ArticleModal() {
             <p className="text-disable text-start">게임을 선택해주세요.</p>
           )}
         </button>
+        <div className="py-4 px-5 border-b-1 border-disable">
+          <input
+            type="text"
+            name="title"
+            placeholder="제목을 입력해주세요."
+            className="w-full outline-none text-sm"
+            onChange={handleContentChange}
+          />
+        </div>
         <div className="flex flex-col">
           {(selectedCategory === 0 || selectedCategory === 1) && (
             <CommonArticle setContent={handleContentChange} />
@@ -166,8 +229,9 @@ export default function ArticleModal() {
               파일 선택
             </label>
             <button
-              type="submit"
+              type="button"
               className="bg-primary px-14 py-3 rounded-xl text-white self-end"
+              onClick={handleArticleCompleteClick}
             >
               작성 완료
             </button>
@@ -177,3 +241,5 @@ export default function ArticleModal() {
     </div>
   );
 }
+
+export default withAuth(ArticleModal);

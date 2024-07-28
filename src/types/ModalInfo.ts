@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 
 type ModalInfo = {
   component: ReactElement | keyof JSX.IntrinsicElements;
-  id: string;
+  isOpen: boolean;
 };
 
 export type { ModalInfo };

@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { HomeArticle } from '@/types/HomeArticle';
+import { ArticleType } from '@/types/Article';
 import { MdRecommend } from 'react-icons/md';
 import Link from 'next/link';
 import Image from 'next/image';
 import gameAPI from '@/services/game';
 import dayjs from 'dayjs';
 
-function ArticleCard({ article }: { article: HomeArticle }) {
+function ArticleCard({ article }: { article: ArticleType }) {
   const [gameName, setGameName] = useState<string>('');
 
   useEffect(() => {

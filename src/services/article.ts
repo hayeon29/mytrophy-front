@@ -46,7 +46,19 @@ const articleAPI = {
     return response.data;
   },
 
-  articleCreate: async (header, name, content, appId, imagePath) => {
+  articleCreate: async ({
+    header,
+    name,
+    content,
+    appId,
+    imagePath,
+  }: {
+    header: string;
+    name: string;
+    content: string;
+    appId: string;
+    imagePath?: string;
+  }) => {
     const accessToken = localStorage.getItem('access');
     if (!accessToken) {
       throw new Error('No access token found in local storage.');
@@ -144,6 +156,22 @@ const articleAPI = {
     return api.get(`${API_URL}`, {
       params: { page, size, cntUp },
     });
+  },
+
+  async getArticlesByKeyword({
+    target,
+    keyword,
+    page = 0,
+    size = 10,
+  }: {
+    target: string;
+    keyword: string;
+    page?: number;
+    size?: number;
+  }) {
+    return api.get(
+      `${API_URL}/keyword-search?target=${target}&keyword=${keyword}&page=${page}&size=${size}`
+    );
   },
 };
 

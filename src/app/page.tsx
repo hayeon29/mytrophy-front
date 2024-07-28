@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { HomeGame } from '@/types/HomeGame';
 import { HomeCategory } from '@/types/HomeCategory';
 import Category from '@/components/home/Category';
-import { HomeArticle } from '@/types/HomeArticle';
+import { Article } from '@/types/Article';
 import ArticleCard from '@/components/home/ArticleCard';
 import { GoArrowUpRight } from 'react-icons/go';
 import { Spinner } from '@nextui-org/react';
@@ -18,7 +18,7 @@ import { handleAxiosError } from '@/utils/handleAxiosError';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
-  const [topArticles, setTopArticles] = useState<HomeArticle[]>([]);
+  const [topArticles, setTopArticles] = useState<Article[]>([]);
   const [myRecommendedGames, setMyRecommendedGames] = useState<HomeGame[]>([]);
   const [recommendedGames, setRecommendedGames] = useState<HomeGame[]>([]);
   const [newGames, setNewGames] = useState<HomeGame[]>([]); // 최근 출시 게임

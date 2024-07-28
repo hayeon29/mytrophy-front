@@ -2,23 +2,20 @@ import { modalState } from '@/recoils/modalAtom';
 import { ModalInfo } from '@/types/ModalInfo';
 import { ReactElement, useCallback } from 'react';
 import { useRecoilState } from 'recoil';
-import { v4 as uuidv4 } from 'uuid';
 
 export function useModal() {
-  const [modals, setModals] = useRecoilState<ModalInfo[]>(modalState);
+  const [modal, setModal] = useRecoilState<ModalInfo>(modalState);
 
   const openModal = useCallback(
     (component: ReactElement) => {
-      setModals((prevModals) => [...prevModals, { component, id: uuidv4() }]);
+      setModal({ component, isOpen: true });
     },
-    [setModals]
+    [setModal]
   );
 
   const closeModal = () => {
-    setModals((prevModal) =>
-      prevModal.filter((_, index) => index !== prevModal.length - 1)
-    );
+    setModal({ component: null, isOpen: false });
   };
 
-  return { modals, openModal, closeModal };
+  return { modal, openModal, closeModal };
 }

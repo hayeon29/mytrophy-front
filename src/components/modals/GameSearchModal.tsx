@@ -23,7 +23,7 @@ export default function GameSearchModal({
   };
 
   return (
-    <CommonModal title="검색" onClose={onClose}>
+    <CommonModal title="검색" onClose={onClose} size="middle">
       <div className="w-full p-6 relative text-sm">
         <input
           type="text"
