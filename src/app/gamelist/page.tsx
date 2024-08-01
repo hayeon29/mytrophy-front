@@ -139,7 +139,7 @@ function GameList() {
             <select
               value={sortOption}
               onChange={handleSortChange}
-              className="border border-blueLightGray rounded-md py-2 px-10 appearance-none outline-none bg-arrow-down bg-no-repeat bg-right bg-[108px]"
+              className="border border-blueLightGray rounded-md py-2 px-10 appearance-none outline-none bg-arrow-down bg-no-repeat"
             >
               <option value="최신순">최신순</option>
               <option value="이름순">이름순</option>
