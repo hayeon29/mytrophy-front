@@ -21,6 +21,7 @@ const config: Config = {
       },
       minWidth: {
         1024: '1024px',
+        modalMiddle: '800px',
       },
       colors: {
         primary: '#526DE4',
@@ -35,6 +36,7 @@ const config: Config = {
         neonLightBlue: '#EAECFF',
         blueLightGray: '#E2E8F0',
         blueGray: '#CBD5E1',
+        blueLightBlack: '#8491A7',
         blueBlack: '#2E396C',
         kakao: '#FFEB00',
         kakaoText: '#3C1E1E',

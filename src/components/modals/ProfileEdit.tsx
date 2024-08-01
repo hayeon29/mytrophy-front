@@ -26,7 +26,7 @@ export default function ProfileEdit({
   onClick: (...args: unknown[]) => void;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { modals, openModal, closeModal } = useModal();
+  const { openModal, closeModal } = useModal();
   const [userEditInfo, setUserEditInfo] = useRecoilState(userState);
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -188,128 +188,46 @@ export default function ProfileEdit({
   }, [onOpen, onClose, userEditInfo]);
 
   return (
-    <>
-      {modals.length > 0 &&
-        modals.map(({ component, id }) => {
-          return <div key={id}>{component}</div>;
-        })}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalContent>
-          <ModalHeader>프로필 수정</ModalHeader>
-          <form onSubmit={handleSubmitFileEdit}>
-            <ModalBody>
-              <div className="w-full">
-                <div className="flex flex-col items-center gap-4">
-                  <Avatar
-                    src={
-                      userInfo.imagePath !== null
-                        ? userInfo.imagePath
-                        : '/svgs/person.svg'
-                    }
-                    style={{ width: 64, height: 64 }}
-                    className="bg-lightGray rounded-full w-16 h-16"
-                  />
-                  <label
-                    className="bg-primary px-4 min-w-20 h-10 inline-flex items-center justify-center rounded-xl text-white text-sm"
-                    htmlFor="edit"
-                  >
-                    프로필 사진 변경
-                  </label>
-                </div>
-                <input
-                  type="file"
-                  id="edit"
-                  name="edit"
-                  className="hidden"
-                  onChange={handleFileChange}
-                  ref={fileInput}
-                />
-              </div>
-              <div className="w-full">
-                <label className="font-bold block mb-3" htmlFor="username">
-                  아이디
-                </label>
-                <div className="flex gap-x-2">
-                  <Input
-                    id="username"
-                    name="username"
-                    classNames={{
-                      inputWrapper: [
-                        'group-data-[focus=true]:border-primary',
-                        'h-12',
-                      ],
-                      input: [
-                        'autofill:transition-colors autofill:shadow-disabled',
-                      ],
-                    }}
-                    variant="bordered"
-                    placeholder="아이디를 입력해주세요"
-                    onChange={handleInput}
-                    defaultValue={userInfo.username}
-                    isInvalid={
-                      (checkMessage.username.length > 0 ||
-                        userInfo.username.length === 0) &&
-                      isUsernameExistChecked
-                    }
-                    errorMessage={checkMessage.username}
-                  />
-                  <Button
-                    color="primary"
-                    className="text-white h-12 px-8"
-                    onClick={handleUserExistClick}
-                    isDisabled={userInfo.username === userEditInfo.username}
-                  >
-                    아이디 확인
-                  </Button>
-                </div>
-              </div>
-              {userEditInfo.loginType === 'mytrophy' && (
-                <div className="w-full">
-                  <span className="font-bold block mb-3">비밀번호 변경</span>
-                  <Button
-                    color="primary"
-                    className="text-white"
-                    onClick={handleChangePasswordClick}
-                  >
-                    비밀번호 변경
-                  </Button>
-                </div>
-              )}
-              <div className="w-full">
-                <label className="font-bold block mb-3" htmlFor="email">
-                  이메일
-                </label>
-                <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  classNames={{
-                    inputWrapper: [
-                      'group-data-[focus=true]:border-primary',
-                      'h-12',
-                    ],
-                    input: [
-                      'autofill:transition-colors autofill:shadow-disabled',
-                    ],
-                  }}
-                  variant="bordered"
-                  placeholder="이메일을 입력해주세요."
-                  onChange={handleInput}
-                  defaultValue={userInfo.email}
-                  isInvalid={
-                    checkMessage.email.length > 0 && userInfo.email.length > 0
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalContent>
+        <ModalHeader>프로필 수정</ModalHeader>
+        <form onSubmit={handleSubmitFileEdit}>
+          <ModalBody>
+            <div className="w-full">
+              <div className="flex flex-col items-center gap-4">
+                <Avatar
+                  src={
+                    userInfo.imagePath !== null
+                      ? userInfo.imagePath
+                      : '/svgs/person.svg'
                   }
-                  errorMessage={checkMessage.email}
+                  style={{ width: 64, height: 64 }}
+                  className="bg-lightGray rounded-full w-16 h-16"
                 />
-              </div>
-              <div className="w-full">
-                <label className="font-bold block mb-3" htmlFor="name">
-                  이름
+                <label
+                  className="bg-primary px-4 min-w-20 h-10 inline-flex items-center justify-center rounded-xl text-white text-sm"
+                  htmlFor="edit"
+                >
+                  프로필 사진 변경
                 </label>
+              </div>
+              <input
+                type="file"
+                id="edit"
+                name="edit"
+                className="hidden"
+                onChange={handleFileChange}
+                ref={fileInput}
+              />
+            </div>
+            <div className="w-full">
+              <label className="font-bold block mb-3" htmlFor="username">
+                아이디
+              </label>
+              <div className="flex gap-x-2">
                 <Input
-                  type="text"
-                  id="name"
-                  name="name"
+                  id="username"
+                  name="username"
                   classNames={{
                     inputWrapper: [
                       'group-data-[focus=true]:border-primary',
@@ -320,48 +238,124 @@ export default function ProfileEdit({
                     ],
                   }}
                   variant="bordered"
-                  placeholder="이름을 입력해주세요."
+                  placeholder="아이디를 입력해주세요"
                   onChange={handleInput}
-                  defaultValue={userInfo.name}
+                  defaultValue={userInfo.username}
+                  isInvalid={
+                    (checkMessage.username.length > 0 ||
+                      userInfo.username.length === 0) &&
+                    isUsernameExistChecked
+                  }
+                  errorMessage={checkMessage.username}
                 />
+                <Button
+                  color="primary"
+                  className="text-white h-12 px-8"
+                  onClick={handleUserExistClick}
+                  isDisabled={userInfo.username === userEditInfo.username}
+                >
+                  아이디 확인
+                </Button>
               </div>
+            </div>
+            {userEditInfo.loginType === 'mytrophy' && (
               <div className="w-full">
-                <label className="font-bold block mb-3" htmlFor="nickname">
-                  닉네임
-                </label>
-                <Input
-                  type="text"
-                  id="nickname"
-                  name="nickname"
-                  classNames={{
-                    inputWrapper: [
-                      'group-data-[focus=true]:border-primary',
-                      'h-12',
-                    ],
-                    input: [
-                      'autofill:transition-colors autofill:shadow-disabled',
-                    ],
-                  }}
-                  variant="bordered"
-                  placeholder="닉네임을 입력해주세요."
-                  onChange={handleInput}
-                  defaultValue={userInfo.nickname}
-                />
+                <span className="font-bold block mb-3">비밀번호 변경</span>
+                <Button
+                  color="primary"
+                  className="text-white"
+                  onClick={handleChangePasswordClick}
+                >
+                  비밀번호 변경
+                </Button>
               </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                type="submit"
-                color="primary"
-                className="text-white"
-                isDisabled={!isEditInfoAvailable}
-              >
-                변경
-              </Button>
-            </ModalFooter>
-          </form>
-        </ModalContent>
-      </Modal>
-    </>
+            )}
+            <div className="w-full">
+              <label className="font-bold block mb-3" htmlFor="email">
+                이메일
+              </label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                classNames={{
+                  inputWrapper: [
+                    'group-data-[focus=true]:border-primary',
+                    'h-12',
+                  ],
+                  input: [
+                    'autofill:transition-colors autofill:shadow-disabled',
+                  ],
+                }}
+                variant="bordered"
+                placeholder="이메일을 입력해주세요."
+                onChange={handleInput}
+                defaultValue={userInfo.email}
+                isInvalid={
+                  checkMessage.email.length > 0 && userInfo.email.length > 0
+                }
+                errorMessage={checkMessage.email}
+              />
+            </div>
+            <div className="w-full">
+              <label className="font-bold block mb-3" htmlFor="name">
+                이름
+              </label>
+              <Input
+                type="text"
+                id="name"
+                name="name"
+                classNames={{
+                  inputWrapper: [
+                    'group-data-[focus=true]:border-primary',
+                    'h-12',
+                  ],
+                  input: [
+                    'autofill:transition-colors autofill:shadow-disabled',
+                  ],
+                }}
+                variant="bordered"
+                placeholder="이름을 입력해주세요."
+                onChange={handleInput}
+                defaultValue={userInfo.name}
+              />
+            </div>
+            <div className="w-full">
+              <label className="font-bold block mb-3" htmlFor="nickname">
+                닉네임
+              </label>
+              <Input
+                type="text"
+                id="nickname"
+                name="nickname"
+                classNames={{
+                  inputWrapper: [
+                    'group-data-[focus=true]:border-primary',
+                    'h-12',
+                  ],
+                  input: [
+                    'autofill:transition-colors autofill:shadow-disabled',
+                  ],
+                }}
+                variant="bordered"
+                placeholder="닉네임을 입력해주세요."
+                onChange={handleInput}
+                defaultValue={userInfo.nickname}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="submit"
+              color="primary"
+              className="text-white"
+              isDisabled={!isEditInfoAvailable}
+            >
+              변경
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   );
 }

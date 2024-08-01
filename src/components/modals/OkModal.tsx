@@ -1,5 +1,4 @@
 import { useModal } from '@/hooks/useModal';
-import { useEffect } from 'react';
 import CommonModal from './CommonModal';
 
 export default function OkModal({
@@ -13,25 +12,22 @@ export default function OkModal({
 }) {
   const { closeModal } = useModal();
 
-  useEffect(() => {
-    return () => {
-      closeModal();
-    };
-  }, [closeModal]);
-
   return (
-    <CommonModal title={title} onClose={onClick || closeModal}>
-      <div className="p-4 flex flex-col gap-y-6">
+    <CommonModal title={title} onClose={closeModal}>
+      <div className="p-4 flex flex-col gap-y-6 text-sm">
         <p className="text-center">{message}</p>
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="bg-primary text-white px-3 py-2 rounded self-end"
-            onClick={onClick || closeModal}
-          >
-            닫기
-          </button>
-        </div>
+        <button
+          type="button"
+          className="w-full bg-primary text-white px-3 py-2 rounded self-end"
+          onClick={() => {
+            if (onClick) {
+              onClick();
+            }
+            closeModal();
+          }}
+        >
+          닫기
+        </button>
       </div>
     </CommonModal>
   );

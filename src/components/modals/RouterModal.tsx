@@ -15,7 +15,7 @@ export default function Modal({
   return (
     <div>
       <div className="w-screen h-dvh fixed bg-black bg-opacity-50 top-0 left-0 z-10" />
-      <div className="bg-white rounded-2xl z-20 fixed w-[800px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="bg-white rounded-2xl z-10 fixed w-[800px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div
           className={`${title && 'border-b-1 border-disable'} p-5 flex flex-row justify-between`}
         >

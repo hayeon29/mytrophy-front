@@ -6,6 +6,7 @@ import RecoilRootProvider from '@/providers/RecoilRootProvider';
 import Providers from '@/providers/NextUiProvider';
 import ReactQueryProviders from '@/providers/ReactQueryProviders';
 import React from 'react';
+import ModalBackGround from '@/components/modals/ModalBackground';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
           <Providers>
             <ReactQueryProviders>
               {/* Wrap components with LoginModalProvider */}
+              <ModalBackGround />
               <NavigationBar />
               {modal}
               {children}

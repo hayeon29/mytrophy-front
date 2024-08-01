@@ -12,15 +12,14 @@ export default function CommonModal({
   children: React.ReactNode;
 }) {
   const modalSize = {
-    small: 'min-w-64 w-1/5',
-    middle: 'min-w-[800px] w-1/2',
+    small: 'min-w-64 w-1/6',
+    middle: 'min-w-modalMiddle w-1/2',
   };
 
   return (
     <div>
-      <div className="w-screen h-dvh fixed bg-black bg-opacity-50 top-0 left-0 z-30" />
       <div
-        className={`bg-white rounded-2xl z-30 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${size ? modalSize[size] : modalSize.small}`}
+        className={`bg-white rounded-2xl z-30 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-primary ${size ? modalSize[size] : modalSize.small}`}
       >
         <div
           className={`${title && 'border-b-1 border-disable'} p-5 flex flex-row justify-between`}
