@@ -5,17 +5,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import articleAPI from '@/services/article';
 import gameAPI from '@/services/game';
-import { useRecoilValue } from 'recoil';
-import { userState } from '@/recoils/userAtom';
 import { handleAxiosError } from '@/utils/handleAxiosError';
 import ARTICLE_CATEGORY from '@/constants/articleCategory';
-import { ARTICLE_SEARCH } from '@/constants/SearchOption';
+import { ARTICLE_SEARCH } from '@/constants/SortOption';
 import PageSelectButton from '@/components/common/PageSelectButton';
 import Edit from '@/components/icon/Edit';
 
 import { useModal } from '@/hooks/useModal';
 import OkModal from '@/components/modals/OkModal';
 import { ArticleListType } from '@/types/Article';
+import OptionSelection from '@/components/common/OptionSelection';
 
 export default function Article() {
   const [activeButton, setActiveButton] = useState('');
@@ -23,8 +22,6 @@ export default function Article() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSortOption, setSelectedSortOption] = useState('제목');
-  const [isOptionVisible, setIsOptionVisible] = useState(false);
-  const userInfo = useRecoilValue(userState);
   const searchRef = useRef<HTMLInputElement>(null);
   const { modal, openModal } = useModal();
 
@@ -41,7 +38,8 @@ export default function Article() {
         const articlesWithGameDetails = await Promise.all(
           articles.map(async (article) => {
             // 게임 세부 정보를 가져오고
-            const gameDetail = await gameAPI.getGameDetail(article.appId);
+            const gameDetail = (await gameAPI.getGameDetail(article.appId))
+              .data;
 
             // 해당 게임 세부 정보를 해당 게시물에 추가하여 새로운 객체를 생성
             return {
@@ -82,7 +80,7 @@ export default function Article() {
       // 가져온 게시글의 상세 정보를 함께 가져와서 articlesWithGameDetails를 생성합니다.
       const articlesWithGameDetails = await Promise.all(
         response.content.map(async (article) => {
-          const gameDetail = await gameAPI.getGameDetail(article.appId);
+          const gameDetail = (await gameAPI.getGameDetail(article.appId)).data;
           return {
             ...article,
             gameDetail,
@@ -99,41 +97,8 @@ export default function Article() {
     }
   };
 
-  const handleLike = async (articleId) => {
-    await articleAPI.articleLike(articleId);
-
-    // 서버에서 최신 좋아요 상태 가져오기
-    const updatedArticle = await articleAPI.getArticleDetail(articleId);
-
-    // 좋아요 수 업데이트
-    setArticles((prevArticles) =>
-      prevArticles.map((article) =>
-        article.id === articleId
-          ? {
-              ...article,
-              cntUp: updatedArticle.cntUp,
-              isLiked: updatedArticle.isLiked,
-            }
-          : article
-      )
-    );
-  };
-
-  const handleLikeClick = (articleId) => {
-    if (userInfo !== null) {
-      handleLike(articleId);
-    } else {
-      openModal(<OkModal message="게시글 작성이 완료되었습니다." />);
-    }
-  };
-
-  const handleSortOptionVisibleClick = () => {
-    setIsOptionVisible((prev) => !prev);
-  };
-
   const handleSortOptionClick = (option: string) => {
     setSelectedSortOption(option);
-    setIsOptionVisible(false);
   };
 
   const ArticleBackgroundColor = {
@@ -184,41 +149,11 @@ export default function Article() {
           </div>
           <div className="flex flex-row items-center gap-x-3">
             {/* 옵션 선택 컴포넌트 */}
-            <div className="w-28 relative text-sm">
-              <div
-                role="presentation"
-                className="border-1 border-blueLightGray rounded bg-white cursor-pointer p-2"
-                onClick={handleSortOptionVisibleClick}
-              >
-                {selectedSortOption}
-                <Image
-                  src="/svgs/below-arrow.svg"
-                  width={16}
-                  height={16}
-                  alt="옵션창 화살표 아이콘"
-                  className={`${isOptionVisible && 'rotate-180'} duration-100 absolute top-1/2 -translate-y-1/2 right-2`}
-                />
-              </div>
-              {isOptionVisible && (
-                <ol className="w-full p-1 border-1 border-blueLightGray rounded bg-white cursor-pointer absolute z-10 top-[110%]">
-                  {Object.keys(ARTICLE_SEARCH).map((eachOption) => {
-                    return (
-                      <li
-                        key={eachOption}
-                        role="presentation"
-                        className="p-2 hover:bg-blueLightGray"
-                        value="eachOption"
-                        onClick={() => {
-                          handleSortOptionClick(eachOption);
-                        }}
-                      >
-                        {eachOption}
-                      </li>
-                    );
-                  })}
-                </ol>
-              )}
-            </div>
+            <OptionSelection
+              selectedSortOption={selectedSortOption}
+              handleSortOptionClick={handleSortOptionClick}
+              optionData={ARTICLE_SEARCH}
+            />
             {/* 검색 컴포넌트 */}
             <div>
               <input
@@ -283,17 +218,12 @@ export default function Article() {
                   </div>
                   {/* Counts */}
                   <div className="flex items-center ">
-                    <button
-                      type="button"
-                      onClick={() => handleLikeClick(article.id)}
-                    >
-                      <Image
-                        width={16}
-                        height={16}
-                        alt="vector"
-                        src="/svgs/likeIcon.svg"
-                      />
-                    </button>
+                    <Image
+                      width={16}
+                      height={16}
+                      alt="recommend"
+                      src="/svgs/recommend.svg"
+                    />
                     <span className="text-sm text-primary ml-[6px] mr-4">
                       {article.cntUp}
                     </span>
