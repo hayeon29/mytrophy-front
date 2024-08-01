@@ -1,36 +1,36 @@
 import LocalStorage from '@/constants/LocalStorage';
+import { handleAxiosError } from '@/utils/handleAxiosError';
 import api from '../config/AxiosConfig';
 
 const API_URL = '/api';
 
 const commentAPI = {
-  async createComment(
-    articleId: string,
-    content: string,
-    parentCommentId: number | null = null
-  ) {
+  async createComment({
+    articleId,
+    content,
+    parentCommentId,
+  }: {
+    articleId: string;
+    content: string;
+    parentCommentId?: number;
+  }) {
     const accessToken = LocalStorage.getItem('access');
+
     if (!accessToken) {
-      throw new Error('No access token found in local storage.');
+      handleAxiosError(new Error('No access token found in local storage.'));
     }
 
-    let url = `${API_URL}/articles/${articleId}/comments`;
-    if (parentCommentId !== null) {
-      url += `?parentCommentId=${parentCommentId}`;
-    }
+    const url = `${API_URL}/articles/${articleId}/comments${parentCommentId !== undefined ? `?parentCommentId=${parentCommentId}` : ``}`;
 
-    const response = await api.post(
+    return api.post(
       url,
       { content, parentCommentId },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'access': accessToken,
+          access: accessToken,
         },
       }
     );
-
-    return response.data;
   },
 
   async updateComment(commentId: string, content: string) {
@@ -38,17 +38,15 @@ const commentAPI = {
     if (!accessToken) {
       throw new Error('No access token found in local storage.');
     }
-    const response = await api.patch(
+    return api.patch(
       `${API_URL}/comments/${commentId}`,
       { content },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'access': accessToken,
+          access: accessToken,
         },
       }
     );
-    return response.data;
   },
 
   async deleteComment(commentId: string) {
@@ -56,20 +54,21 @@ const commentAPI = {
     if (!accessToken) {
       throw new Error('No access token found in local storage.');
     }
-    const response = await api.delete(`${API_URL}/comments/${commentId}`, {
+    return api.delete(`${API_URL}/comments/${commentId}`, {
       headers: {
         access: accessToken,
       },
     });
-    return response.data;
   },
 
   async commentLike(commentId: string) {
     const accessToken = LocalStorage.getItem('access');
+
     if (!accessToken) {
-      throw new Error('No access token found in local storage.');
+      handleAxiosError(new Error('No access token found in local storage.'));
     }
-    const response = await api.post(
+
+    return api.post(
       `${API_URL}/comments/${commentId}/like`,
       {},
       {
@@ -78,7 +77,6 @@ const commentAPI = {
         },
       }
     );
-    return response.data;
   },
 };
 

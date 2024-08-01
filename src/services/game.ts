@@ -4,7 +4,7 @@ const API_URL = '/api/games';
 
 const gameAPI = {
   async getGameDetail(appId: string) {
-    return (await api.get(`${API_URL}/${appId}`)).data;
+    return api.get(`${API_URL}/${appId}`);
   },
 
   async getGamePlayerNumber(appId: string) {

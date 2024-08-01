@@ -26,15 +26,15 @@ const articleAPI = {
   },
 
   async getArticleDetail(articleId: string) {
-    return (await api.get(`${API_URL}/${articleId}`)).data;
+    return api.get(`${API_URL}/${articleId}`);
   },
 
-  async articleLike(articleId: string) {
+  async like(articleId: string) {
     const accessToken = localStorage.getItem('access');
     if (!accessToken) {
       throw new Error('No access token found in local storage.');
     }
-    const response = await api.post(
+    return api.post(
       `${API_URL}/${articleId}/like`,
       {},
       {
@@ -43,7 +43,6 @@ const articleAPI = {
         },
       }
     );
-    return response.data;
   },
 
   articleCreate: async ({
