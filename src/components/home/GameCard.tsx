@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import gameAPI from '@/services/game';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import GAME_POSITIVE from '@/constants/gamePositive';
 import Category from './Category';
 import GameReviewModal from './GameReviewModal';
 
@@ -78,18 +79,6 @@ export default function GameCard({ game, idKey }) {
     }
   };
 
-  const positiveMappings = {
-    OVERWHELMING_POSITIVE: '압도적으로 긍정적',
-    VERY_POSITIVE: '매우 긍정적',
-    MOSTLY_POSITIVE: '대체로 긍정적',
-    MIXED: '중립적',
-    MOSTLY_NEGATIVE: '대체로 부정적',
-    VERY_NEGATIVE: '매우 부정적',
-    UNKNOWN: '알 수 없음',
-  };
-
-  const positiveText = (positive) => positiveMappings[positive] || positive;
-
   return (
     <div className="w-[calc((100%-64px)/3)] flex-shrink-0">
       <div className="w-full h-full flex flex-col">
@@ -135,7 +124,7 @@ export default function GameCard({ game, idKey }) {
                 </div>
                 <div className="flex items-center justify-start gap-x-1">
                   <span className="font-bold">평가</span>
-                  <span>{positiveText(game.positive)}</span>
+                  <span>{GAME_POSITIVE[game.positive]}</span>
                 </div>
                 <div className="flex items-center justify-start gap-x-1">
                   <span className="font-bold">한국어 지원 여부</span>

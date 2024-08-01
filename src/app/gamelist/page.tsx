@@ -11,6 +11,7 @@ import Category from '@/components/home/Category';
 import { HomeCategory } from '@/types/HomeCategory';
 import GAME_CATEGORY from '@/constants/gameCategory';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import GAME_POSITIVE from '@/constants/gamePositive';
 
 function GameList() {
   const [gameDetails, setGameDetails] = useState([]);
@@ -23,16 +24,6 @@ function GameList() {
   const [keyword, setKeyword] = useState('');
 
   const itemsPerPage = 10;
-
-  const positivityMapping = {
-    OVERWHELMING_POSITIVE: '압도적으로 긍정적',
-    VERY_POSITIVE: '매우 긍정적',
-    MOSTLY_POSITIVE: '대체로 긍정적',
-    MIXED: '복합적',
-    MOSTLY_NEGATIVE: '대체로 부정적',
-    VERY_NEGATIVE: '매우 부정적',
-    UNKNOWN: '정보 없음',
-  };
 
   const truncateString = (str, num) => {
     if (str.length <= num) {
@@ -180,8 +171,7 @@ function GameList() {
                               }
                             />
                             <p className="text-gray-600">
-                              {' '}
-                              {positivityMapping[post.positive]}
+                              {GAME_POSITIVE[post.positive]}
                             </p>
                             <div className="flex justify-between items-center mt-1">
                               <div className="flex items-center">

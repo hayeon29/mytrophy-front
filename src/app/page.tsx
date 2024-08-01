@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { HomeGame } from '@/types/HomeGame';
 import { HomeCategory } from '@/types/HomeCategory';
 import Category from '@/components/home/Category';
-import { Article } from '@/types/Article';
+import { ArticleType } from '@/types/Article';
 import ArticleCard from '@/components/home/ArticleCard';
 import { GoArrowUpRight } from 'react-icons/go';
 import { Spinner } from '@nextui-org/react';
@@ -15,10 +15,11 @@ import gameAPI from '@/services/game';
 import articleAPI from '@/services/article';
 import membersAPI from '@/services/members';
 import { handleAxiosError } from '@/utils/handleAxiosError';
+import GAME_POSITIVE from '@/constants/gamePositive';
 
 export default function Home() {
   const [topGames, setTopGames] = useState<HomeGame[]>([]);
-  const [topArticles, setTopArticles] = useState<Article[]>([]);
+  const [topArticles, setTopArticles] = useState<ArticleType[]>([]);
   const [myRecommendedGames, setMyRecommendedGames] = useState<HomeGame[]>([]);
   const [recommendedGames, setRecommendedGames] = useState<HomeGame[]>([]);
   const [newGames, setNewGames] = useState<HomeGame[]>([]); // 최근 출시 게임
@@ -166,18 +167,6 @@ export default function Home() {
     );
   };
 
-  const positiveMappings = {
-    OVERWHELMING_POSITIVE: '압도적으로 긍정적',
-    VERY_POSITIVE: '매우 긍정적',
-    MOSTLY_POSITIVE: '대체로 긍정적',
-    MIXED: '중립적',
-    MOSTLY_NEGATIVE: '대체로 부정적',
-    VERY_NEGATIVE: '매우 부정적',
-    UNKNOWN: '알 수 없음',
-  };
-
-  const positiveText = (positive) => positiveMappings[positive] || positive;
-
   return (
     <main className="w-full flex min-h-screen bg-lightGray flex-col items-center justify-start">
       <div className="max-w-1280 min-w-1024 flex justify-center p-9">
@@ -224,7 +213,7 @@ export default function Home() {
                         </p>
                         <p className="flex flex-row gap-x-2.5">
                           <span className="font-bold">평가</span>
-                          <span>{positiveText(topGame.positive)}</span>
+                          <span>{GAME_POSITIVE[topGame.positive]}</span>
                         </p>
                         <p className="flex flex-row gap-x-2.5">
                           <span className="font-bold">한국어 지원 여부</span>

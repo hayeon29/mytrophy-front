@@ -4,29 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { GetGameCategoryDTO } from '@/types/GameDetail';
+import GAME_POSITIVE from '@/constants/gamePositive';
 
 export default function GameCard({ gameDetail, similarCategory }) {
-  // const category = gameDetail.getGameCategoryDTOList;
-  const getPositiveString = (positive) => {
-    switch (positive) {
-      case 'OVERWHELMING_POSITIVE':
-        return '압도적으로 긍정적';
-      case 'VERY_POSITIVE':
-        return '매우 긍정적';
-      case 'MOSTLY_POSITIVE':
-        return '대체로 긍정적';
-      case 'MIXED':
-        return '중립적';
-      case 'MOSTLY_NEGATIVE':
-        return '대체로 부정적';
-      case 'VERY_NEGATIVE':
-        return '매우 부정적';
-      case 'UNKNOWN':
-        return '알 수 없음';
-      default:
-        return '';
-    }
-  };
   const sortedCategories = [...gameDetail.getGameCategoryDTOList]
     .sort((a, b) => {
       if (a.name === similarCategory) return -1;
@@ -74,7 +54,7 @@ export default function GameCard({ gameDetail, similarCategory }) {
               <div className="w-full h-[15%] flex items-center my-1">
                 <span className="text-[14px] font-bold mr-2">평가</span>
                 <span className="text-[14px]">
-                  {getPositiveString(gameDetail.positive)}
+                  {GAME_POSITIVE[gameDetail.positive]}
                 </span>
               </div>
               <div className="w-full h-[15%] flex items-center mt-1">

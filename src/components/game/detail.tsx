@@ -2,31 +2,11 @@
 
 'use client';
 
+import GAME_POSITIVE from '@/constants/gamePositive';
 import React from 'react';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 
 export default function GameDetail({ gameDetail }) {
-  const getPositiveString = (positive) => {
-    switch (positive) {
-      case 'OVERWHELMING_POSITIVE':
-        return '압도적으로 긍정적';
-      case 'VERY_POSITIVE':
-        return '매우 긍정적';
-      case 'MOSTLY_POSITIVE':
-        return '대체로 긍정적';
-      case 'MIXED':
-        return '중립적';
-      case 'MOSTLY_NEGATIVE':
-        return '대체로 부정적';
-      case 'VERY_NEGATIVE':
-        return '매우 부정적';
-      case 'UNKNOWN':
-        return '알 수 없음';
-      default:
-        return '';
-    }
-  };
-
   const cleanRequirementString = (requirement) => {
     if (requirement === null) return '';
     return requirement.replace(/[:*]/g, '');
@@ -54,7 +34,7 @@ export default function GameDetail({ gameDetail }) {
           <div className="w-full h-[33%] flex justify-start items-start">
             <span className="text-sm font-bold mr-2 mb-2">평가</span>
             <span className="text-sm">
-              {getPositiveString(gameDetail.positive)}
+              {GAME_POSITIVE[gameDetail.positive]}
             </span>
           </div>
           <div className="w-full h-[33%] flex justify-start items-start">
