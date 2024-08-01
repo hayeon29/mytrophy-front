@@ -14,7 +14,8 @@ function ArticleCard({ article }: { article: ArticleType }) {
   useEffect(() => {
     const fetchGameName = async () => {
       try {
-        const response = await gameAPI.getGameDetail(article.appId.toString());
+        const response = (await gameAPI.getGameDetail(article.appId.toString()))
+          .data;
         setGameName(response.name);
       } catch (error) {
         setGameName('');

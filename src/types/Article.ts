@@ -12,7 +12,7 @@ type ArticleType = {
   username: string;
   nickname: string;
   memberImage?: string;
-  comments: string[];
+  comments: CommentType[];
   commentCount: number;
 };
 
@@ -28,4 +28,17 @@ type ArticleListType = {
   totalPages: number;
 };
 
-export type { ArticleType, ArticleListType };
+type CommentType = {
+  id: number;
+  content: string;
+  memberId: number;
+  articleId: number;
+  likes: number;
+  parentCommentId?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  imagePath?: string;
+  nickname: string;
+};
+
+export type { ArticleType, ArticleListType, CommentType };

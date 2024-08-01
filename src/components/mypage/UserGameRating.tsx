@@ -12,7 +12,7 @@ import {
   DropdownItem,
   CircularProgress,
 } from '@nextui-org/react';
-import { GetGameDetailDTO } from '@/types/GameDetail';
+import { GameDetailType } from '@/types/GameDetail';
 import { UserAllGameInfo } from '@/types/UserInfo';
 import { IoIosWarning } from 'react-icons/io'; // 아이콘 추가
 import gameAPI from '@/services/game';
@@ -21,7 +21,7 @@ import { handleAxiosError } from '@/utils/handleAxiosError';
 import UserGameCard from './UserGameCard';
 
 interface UserGameRatingProps {
-  gameInfo: GetGameDetailDTO[] | undefined;
+  gameInfo: GameDetailType[] | undefined;
   userGameInfo: UserAllGameInfo | undefined;
   isLoading: boolean;
   reviews: {
@@ -42,7 +42,7 @@ export default function UserGameRating({
   const [sortButtonText, setSortButtonText] = useState('높은 플레이시간');
   const router = useRouter();
 
-  const sortGames = (games: GetGameDetailDTO[]) => {
+  const sortGames = (games: GameDetailType[]) => {
     return games.sort((a, b) => {
       const playtimeA =
         userGameInfo?.games.find((g) => g.appid === a.id)?.playtime_forever ||

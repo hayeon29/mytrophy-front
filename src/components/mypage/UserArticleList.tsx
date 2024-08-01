@@ -45,7 +45,7 @@ function UserArticleList({ onUpdateMyArticleCount }) {
 
       const articlesWithGameDetails = await Promise.all(
         content.map(async (article) => {
-          const gameDetail = await gameAPI.getGameDetail(article.appId);
+          const gameDetail = (await gameAPI.getGameDetail(article.appId)).data;
           return {
             ...article,
             gameDetail,

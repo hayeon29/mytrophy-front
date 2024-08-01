@@ -4,7 +4,7 @@ import { AxiosError } from 'axios';
 
 export async function handleAxiosError(error: AxiosError | Error) {
   if (error instanceof AxiosError) {
-    switch (error?.response.status) {
+    switch (error?.response?.status) {
       case 401: {
         if (error?.response.data === 'access token expired') {
           try {

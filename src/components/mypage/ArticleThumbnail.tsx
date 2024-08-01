@@ -44,7 +44,8 @@ function ArticleThumbnail({ onUpdateArticleCount }) {
         const articlesWithGameDetails = await Promise.all(
           content.map(async (article) => {
             // 게임 세부 정보를 가져오고
-            const gameDetail = await gameAPI.getGameDetail(article.appId);
+            const gameDetail = (await gameAPI.getGameDetail(article.appId))
+              .data;
 
             // 해당 게임 세부 정보를 해당 게시물에 추가하여 새로운 객체를 생성
             return {

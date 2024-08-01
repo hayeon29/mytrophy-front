@@ -1,6 +1,6 @@
 'use client';
 
-import { GetGameDetailDTO, GetGameCategoryDTO } from '@/types/GameDetail';
+import { GameDetailType, GetGameCategoryDTO } from '@/types/GameDetail';
 import React from 'react';
 import GameCard from './card/card';
 
@@ -12,9 +12,9 @@ export default function GameSimilar({
   gameDetail3DTOList,
   gameCategory3DTO,
 }: {
-  gameDetail1DTOList: GetGameDetailDTO[] | null;
-  gameDetail2DTOList: GetGameDetailDTO[] | null;
-  gameDetail3DTOList: GetGameDetailDTO[] | null;
+  gameDetail1DTOList: GameDetailType[] | null;
+  gameDetail2DTOList: GameDetailType[] | null;
+  gameDetail3DTOList: GameDetailType[] | null;
   gameCategory1DTO: GetGameCategoryDTO | null;
   gameCategory2DTO: GetGameCategoryDTO | null;
   gameCategory3DTO: GetGameCategoryDTO | null;

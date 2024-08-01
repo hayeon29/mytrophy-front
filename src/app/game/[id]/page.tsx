@@ -9,7 +9,7 @@ import GameReview from '@/components/game/review';
 import GameSimilar from '@/components/game/similar';
 import {
   GetGameCategoryDTO,
-  GetGameDetailDTO,
+  GameDetailType,
   GetGamePlayerNumberDTO,
   GetGameScreenshotDTO,
 } from '@/types/GameDetail';
@@ -23,15 +23,15 @@ type Props = {
 
 export default function Game({ params }: Props) {
   const { id: appId } = params;
-  const [gameDetail, setGameDetail] = useState<GetGameDetailDTO | null>(null);
+  const [gameDetail, setGameDetail] = useState<GameDetailType | null>(null);
   const [similarGameDetail1, setSimilarGameDetail1] = useState<
-    GetGameDetailDTO[] | null
+    GameDetailType[] | null
   >(null);
   const [similarGameDetail2, setSimilarGameDetail2] = useState<
-    GetGameDetailDTO[] | null
+    GameDetailType[] | null
   >(null);
   const [similarGameDetail3, setSimilarGameDetail3] = useState<
-    GetGameDetailDTO[] | null
+    GameDetailType[] | null
   >(null);
   const [similarCategory, setSimilarCategory] = useState<
     GetGameCategoryDTO[] | null
@@ -106,7 +106,7 @@ export default function Game({ params }: Props) {
   useEffect(() => {
     const fetchGameDetail = async () => {
       try {
-        const response = await gameAPI.getGameDetail(appId);
+        const response = (await gameAPI.getGameDetail(appId)).data;
         setGameDetail(response);
         setCategory(response.getGameCategoryDTOList);
         similarGameFetch(response.getGameCategoryDTOList);

@@ -18,11 +18,11 @@ import {
   FaRegFaceGrin,
   FaRegFaceGrinSquint,
 } from 'react-icons/fa6';
-import { GetGameDetailDTO } from '@/types/GameDetail';
+import { GameDetailType } from '@/types/GameDetail';
 import { FaEdit } from 'react-icons/fa';
 
 interface UserGameCardProps {
-  game: GetGameDetailDTO;
+  game: GameDetailType;
   playtime: number;
   reviewStatus: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
   onReviewChange: (

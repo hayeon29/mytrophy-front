@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import gameAPI from '@/services/game';
-import { GetGameDetailDTO } from '@/types/GameDetail';
+import { GameDetailType } from '@/types/GameDetail';
 import CommonModal from './CommonModal';
 
 export default function GameSearchModal({
@@ -10,11 +10,11 @@ export default function GameSearchModal({
   selectedGame,
 }: {
   onClose: (...args: unknown[]) => void;
-  onSelect: (game: GetGameDetailDTO) => void;
-  selectedGame: GetGameDetailDTO | null;
+  onSelect: (game: GameDetailType) => void;
+  selectedGame: GameDetailType | null;
 }) {
   const gameKeyword = useRef<HTMLInputElement>(null);
-  const [games, setGames] = useState<GetGameDetailDTO[]>([]);
+  const [games, setGames] = useState<GameDetailType[]>([]);
   const handleGameKeywordSearch = async () => {
     const response = await gameAPI.searchGameByName({
       keyword: gameKeyword.current.value,

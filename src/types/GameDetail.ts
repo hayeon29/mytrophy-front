@@ -1,4 +1,4 @@
-type GetGameDetailDTO = {
+type GameDetailType = {
   id: number;
   name: string;
   description: string;
@@ -59,7 +59,7 @@ type GetGamePlayerNumberDTO = {
 export type {
   GetGameAchievementDTO,
   GetGameCategoryDTO,
-  GetGameDetailDTO,
+  GameDetailType,
   GetGamePlayerNumberDTO,
   GetGameScreenshotDTO,
   GameArticleDTO,

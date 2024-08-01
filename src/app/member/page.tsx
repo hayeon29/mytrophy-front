@@ -14,7 +14,7 @@ import {
   UserGameAchievementDataList,
   UserGameAchievementList,
 } from '@/types/UserInfo';
-import { GetGameDetailDTO } from '@/types/GameDetail';
+import { GameDetailType } from '@/types/GameDetail';
 import dayjs from 'dayjs';
 import { useModal } from '@/hooks/useModal';
 import ProfileEdit from '@/components/modals/ProfileEdit';
@@ -56,7 +56,7 @@ function MyPage() {
   const gameDetailInfo = useGameDetail(memberGame?.games)?.map((value) => {
     isGameDetailFetched.current = value.isFetched;
     return value.data;
-  }) as GetGameDetailDTO[];
+  }) as GameDetailType[];
 
   const memberGameAchievementData = useMemberGameAchievementQueries(
     userInfo?.id,
@@ -146,7 +146,7 @@ function MyPage() {
         [id: number]: 'NONE' | 'BAD' | 'GOOD' | 'PERFECT';
       } = {};
       const validGames = gameDetailInfo.filter(
-        (game): game is GetGameDetailDTO =>
+        (game): game is GameDetailType =>
           game !== undefined && game.id !== undefined
       );
 

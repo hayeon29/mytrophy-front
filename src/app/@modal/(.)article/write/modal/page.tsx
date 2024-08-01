@@ -9,7 +9,7 @@ import ARTICLE_CATEGORY from '@/constants/articleCategory';
 import { PartyContent, WriteContent } from '@/types/WriteContent';
 import { ChangeEvent, useRef, useState } from 'react';
 import GameSearchModal from '@/components/modals/GameSearchModal';
-import { GetGameDetailDTO } from '@/types/GameDetail';
+import { GameDetailType } from '@/types/GameDetail';
 import withAuth from '@/app/PrivateRoute';
 import { useModal } from '@/hooks/useModal';
 import OkModal from '@/components/modals/OkModal';
@@ -27,9 +27,7 @@ function ArticleModal() {
     partyTime: '',
   }); // 내용
   const [isSearchOpened, setIsSearchOpened] = useState(false); // 검색창 열림 여부
-  const [selectedGame, setSelectedGame] = useState<GetGameDetailDTO | null>(
-    null
-  );
+  const [selectedGame, setSelectedGame] = useState<GameDetailType | null>(null);
 
   // 카테고리 클릭 시 '선택한 카테고리' 변경 함수
   const handleCategoryClick = (index) => {
@@ -64,7 +62,7 @@ function ArticleModal() {
     );
   };
 
-  const handleSelectGame = (game: GetGameDetailDTO) => {
+  const handleSelectGame = (game: GameDetailType) => {
     setSelectedGame(game);
     setIsSearchOpened(false);
   };
@@ -119,15 +117,6 @@ function ArticleModal() {
   return (
     <div className="w-full">
       {modal.component}
-      {isSearchOpened && (
-        <GameSearchModal
-          onClose={() => {
-            setIsSearchOpened(false);
-          }}
-          onSelect={handleSelectGame}
-          selectedGame={selectedGame}
-        />
-      )}
       <RouterModal title="글쓰기">
         <div className="py-3 px-5 border-b-1 border-disable ">
           <div className="flex justify-left items-center p-0 gap-4">
@@ -238,6 +227,21 @@ function ArticleModal() {
           </div>
         </div>
       </RouterModal>
+      {isSearchOpened && (
+        <>
+          <div
+            role="presentation"
+            className="w-full h-full fixed bg-black bg-opacity-30 top-0 left-0 z-10"
+          />
+          <GameSearchModal
+            onClose={() => {
+              setIsSearchOpened(false);
+            }}
+            onSelect={handleSelectGame}
+            selectedGame={selectedGame}
+          />
+        </>
+      )}
     </div>
   );
 }
