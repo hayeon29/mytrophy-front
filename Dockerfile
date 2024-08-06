@@ -13,7 +13,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # 빌드된 정적 파일 복사
-COPY --from=builder /app/out /usr/share/nginx/html
+COPY --from=builder /app/.next /usr/share/nginx/html
 
 # Nginx 설정 파일 복사 (필요한 경우)
 COPY nginx.conf /etc/nginx/nginx.conf
