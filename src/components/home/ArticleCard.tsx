@@ -3,22 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { HomeArticle } from '@/types/HomeArticle';
 import { MdRecommend } from 'react-icons/md';
-import {
-  Avatar,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Button,
-} from '@nextui-org/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import gameAPI from '@/services/game';
+import dayjs from 'dayjs';
 
-interface ArticleCardProps {
-  article: HomeArticle;
-}
-
-function ArticleCard({ article }: ArticleCardProps) {
+function ArticleCard({ article }: { article: HomeArticle }) {
   const [gameName, setGameName] = useState<string>('');
 
   useEffect(() => {
@@ -27,14 +17,12 @@ function ArticleCard({ article }: ArticleCardProps) {
         const response = await gameAPI.getGameDetail(article.appId.toString());
         setGameName(response.name);
       } catch (error) {
-        setGameName('게임 이름 못가져옴');
+        setGameName('');
       }
     };
 
     fetchGameName();
   }, [article.appId]);
-
-  const displayName = article.nickname || article.username;
 
   const headerMapping = {
     FREE_BOARD: '자유',
@@ -44,86 +32,66 @@ function ArticleCard({ article }: ArticleCardProps) {
     CHATTING: '채팅',
   };
 
-  const headerText = headerMapping[article.header] || article.header;
-
   return (
-    <Card className="w-full max-w-[400px] bg-[#F6F7FF] shadow-md rounded-3xl p-3">
-      <CardHeader className="flex items-center justify-between p-4">
-        <div className="flex items-center">
-          <Link href="/article" passHref>
-            <Button
-              size="sm"
-              className="bg-[#5779E9] rounded-md text-white text-sm mr-3"
-              style={{ minWidth: 'auto', height: '28px' }}
+    <div className="w-full flex flex-col">
+      <div className="w-full bg-neonLightBlue rounded-2xl rounded-ee-none p-3 flex flex-col gap-y-2 mb-2">
+        <div className="flex items-center justify-start">
+          <div className="flex flex-row items-center gap-x-2">
+            <Link
+              href="/article"
+              className="bg-primary rounded-sm text-white text-xs px-1.5 py-0.5"
             >
-              {headerText}
-            </Button>
-          </Link>
-          <Link href={`/game/${article.appId}`} passHref>
-            <span
-              className="text-lg font-bold text-[#2E396C] hover:underline cursor-pointer items-center mt-1"
-              style={{
-                display: 'inline-block',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                maxWidth: '250px',
-              }}
-            >
-              {gameName}
-            </span>
-          </Link>
-        </div>
-      </CardHeader>
-
-      <CardBody className="p-4 pt-0">
-        <div className="flex justify-between mb-1">
-          <Link href={`/article/${article.id}`} passHref>
-            <div
-              className="text-[#2E396C] text-lg font-semibold cursor-pointer"
-              style={{
-                display: 'inline-block',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                maxWidth: '230px',
-              }}
-            >
-              {article.name}
-            </div>
-          </Link>
-          <div className="text-[#9CA3AF] text-md">
-            {new Date(article.createdAt).toLocaleDateString()}
+              <span>{headerMapping[article.header]}</span>
+            </Link>
+            <Link href={`/game/${article.appId}`}>
+              <span className="text-sm font-bold text-blueBlack">
+                {gameName}
+              </span>
+            </Link>
           </div>
         </div>
-        <Link href={`/article/${article.id}`} passHref>
-          <p className="mb-2 line-clamp-3 leading-5 overflow-hidden text-ellipsis break-all text-black cursor-pointer">
-            {article.content}
-          </p>
-        </Link>
-      </CardBody>
 
-      <CardFooter className="flex flex-col items-start p-4 pt-0">
-        <div className="flex items-center mb-4">
-          <MdRecommend className="mr-1 text-[#5779E9] text-xl" />
-          <span className="text-[#5779E9] text-lg font-semibold">
-            {article.cntUp}
+        <div className="flex flex-col gap-y-1">
+          <Link
+            href={`/article/${article.id}`}
+            className="text-sm text-blueBlack font-bold"
+          >
+            {article.name}
+          </Link>
+          <Link
+            href={`/article/${article.id}`}
+            className="line-clamp-3 overflow-hidden text-ellipsis break-all text-sm text-black"
+          >
+            {article.content}
+          </Link>
+        </div>
+
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex items-center">
+            <MdRecommend className="text-primary" />
+            <span className="text-primary text-sm font-semibold">
+              {article.cntUp}
+            </span>
+          </div>
+          <span className="text-gray text-sm">
+            {dayjs(article.createdAt).format('YYYY년 MM월 DD일')}
           </span>
         </div>
-        <div className="flex items-center">
-          <Avatar
-            isBordered
-            size="sm"
-            src={article.memberImage || undefined}
-            alt={displayName}
-            className="mr-3"
-          />
-          <span className="text-sm font-semibold text-black">
-            {displayName}
-          </span>
-        </div>
-      </CardFooter>
-    </Card>
+      </div>
+
+      <div className="flex items-center justify-end gap-x-2">
+        <span className="text-sm font-semibold text-black">
+          {article.nickname || article.username}
+        </span>
+        <Image
+          width={32}
+          height={32}
+          src={article.memberImage || './svgs/person.svg'}
+          alt={article.nickname || article.username}
+          className="rounded-full bg-blueLightGray"
+        />
+      </div>
+    </div>
   );
 }
 

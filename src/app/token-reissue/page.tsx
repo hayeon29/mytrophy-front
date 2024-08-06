@@ -44,9 +44,11 @@ function Reissue() {
             loginType,
           });
           if (isFirstLogin) {
-            router.replace('/select-category');
-          } else {
-            router.replace('/');
+            if (typeof window !== undefined) {
+              window.location.href = '/select-category';
+            }
+          } else if (typeof window !== undefined) {
+            window.location.href = '/';
           }
         }
       } catch (error) {
@@ -59,10 +61,12 @@ function Reissue() {
   return <div />;
 }
 
-const ReissuePage = () => {
-  <Suspense fallback={<CircularProgress aria-label="로딩중" />}>
-    <Reissue />
-  </Suspense>;
-};
+function ReissuePage() {
+  return (
+    <Suspense fallback={<CircularProgress aria-label="로딩중" />}>
+      <Reissue />
+    </Suspense>
+  );
+}
 
 export default ReissuePage;

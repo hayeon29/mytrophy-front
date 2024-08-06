@@ -1,80 +1,116 @@
-import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import SwiperCore from 'swiper';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+'use client';
+
+import React, { useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import GameCard from './GameCard';
 
-SwiperCore.use([Navigation, Pagination, Autoplay]);
-
 function GameCardSlider({ games, idKey }) {
+  const slideBoxRef = useRef<HTMLDivElement>(null);
+  const [translatedWidthOfSlide, setTranslatedWidthOfSlide] = useState(0);
+  const [curSlidePage, setCurSlidePage] = useState(0);
+
+  const totalGamePage = useMemo(() => {
+    return Math.ceil(games.length / 3);
+  }, [games.length]);
+
+  const handlePrevButton = () => {
+    setTranslatedWidthOfSlide(
+      (prevWidth) => prevWidth + (slideBoxRef.current?.offsetWidth || 0) + 32
+    );
+    setCurSlidePage((prev) => prev - 1);
+  };
+
+  const handleNextButton = () => {
+    setTranslatedWidthOfSlide(
+      (prevWidth) => prevWidth - (slideBoxRef.current?.offsetWidth || 0) - 32
+    );
+    setCurSlidePage((prev) => prev + 1);
+  };
+
+  const handlePageButtonClick = (page: number) => {
+    setCurSlidePage(page);
+    setTranslatedWidthOfSlide(() => {
+      if (page === 0) {
+        return 0;
+      }
+      return -((slideBoxRef.current?.offsetWidth || 0) + 32) * page;
+    });
+  };
+
   return (
-    <div className="relative w-full h-auto">
-      <Swiper
-        spaceBetween={0} // 슬라이드 간의 여백
-        slidesPerView={Math.min(3, games.length)} // 기본 슬라이드 수
-        navigation
-        pagination={{ clickable: true }}
-        loop={games.length >= 4}
-        autoplay={{
-          delay: 3200,
-          disableOnInteraction: false,
-        }}
-        breakpoints={{
-          1440: {
-            slidesPerView: 3,
-            spaceBetween: 10,
-          },
-          1024: {
-            slidesPerView: 2,
-            spaceBetween: 10, // breakpoint에 따른 슬라이드 간 여백
-          },
-          600: {
-            slidesPerView: 1,
-            spaceBetween: 5, // breakpoint에 따른 슬라이드 간 여백
-          },
-        }}
-      >
-        {games
-          .filter((game) => game.id !== null)
-          .map((game) => (
-            <SwiperSlide key={game.id} className="flex justify-center">
-              <GameCard game={game} idKey={idKey} />
-            </SwiperSlide>
-          ))}
-      </Swiper>
-      <style jsx global>{`
-        .swiper-container {
-          width: 100%;
-        }
-        .swiper-slide {
-          display: flex;
-          justify-content: center;
-          height: 450px !important; // 슬라이드 높이 조정
-        }
-        .swiper-button-prev,
-        .swiper-button-next {
-          width: 50px; /* 버튼의 너비를 조정 */
-          height: 50px; /* 버튼의 높이를 조정 */
-          z-index: 10; /* 버튼을 슬라이더 위에 표시 */
-          position: absolute; /* 버튼 위치 고정 */
-          top: 50%; /* 상하 가운데 정렬 */
-          transform: translateY(-50%); /* 상하 가운데 정렬 */
-          background: rgba(255, 255, 255, 0.4); /* 연한 백그라운드 */
-          border-radius: 50%; /* 동그란 버튼 */
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background 0.3s ease-in-out; /* 부드러운 전환 */
-        }
-        .swiper-button-prev::after,
-        .swiper-button-next::after {
-          font-size: 24px; /* 화살표 아이콘 크기 조정 */
-          color: #5779e9; /* 화살표 아이콘 색상 조정 */
-        }
-      `}</style>
+    <div className="w-full">
+      <div className="w-full relative" ref={slideBoxRef}>
+        <div className="absolute w-fit h-full -left-6 top-0">
+          <div className="relative h-full w-full flex flex-col justify-center">
+            <button
+              type="button"
+              className="w-12 h-12 rounded-full bg-white bg-opacity-50 border-1 border-blueLightGray z-10 disabled:hidden"
+              onClick={handlePrevButton}
+              disabled={curSlidePage === 0}
+            >
+              <Image
+                src="/svgs/prev-arrow.svg"
+                width={48}
+                height={48}
+                alt="압도적으로 긍정적인 게임 이전 슬라이드 버튼"
+                className=""
+              />
+            </button>
+          </div>
+        </div>
+        <div className="w-full overflow-hidden">
+          <div
+            style={{ transform: `translateX(${translatedWidthOfSlide}px)` }}
+            className="flex flex-row gap-x-8 transition-all"
+          >
+            {games
+              .filter((game) => game.id !== null)
+              .map((game) => {
+                return (
+                  <GameCard
+                    key={game.id || game.appId}
+                    game={game}
+                    idKey={idKey}
+                  />
+                );
+              })}
+          </div>
+        </div>
+        <div className="absolute w-fit h-full top-0 -right-6 z-10">
+          <div className="relative h-full w-full flex flex-col justify-center">
+            <button
+              type="button"
+              className="w-12 h-12 rounded-full bg-white bg-opacity-50 border-1 border-blueLightGray disabled:hidden"
+              onClick={handleNextButton}
+              disabled={curSlidePage === totalGamePage - 1}
+            >
+              <Image
+                src="/svgs/next-arrow.svg"
+                width={48}
+                height={48}
+                alt="압도적으로 긍정적인 게임 다음 슬라이드 버튼"
+                className=""
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="w-full h-fit flex flex-row justify-center mt-3">
+        <ol className="flex flex-row gap-x-3">
+          {[...Array(totalGamePage)].map((_, index) => {
+            return (
+              <li
+                key={index}
+                className={`w-2 h-2 rounded-full bg-white cursor-pointer border-1 border-gray ${curSlidePage === index && '!bg-primary !border-0'}`}
+                onClick={() => {
+                  handlePageButtonClick(index);
+                }}
+                role="presentation"
+              />
+            );
+          })}
+        </ol>
+      </div>
     </div>
   );
 }

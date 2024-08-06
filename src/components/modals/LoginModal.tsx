@@ -327,25 +327,6 @@ export default function LoginModal({
                       네이버로 로그인하기
                     </Button>
                   </Link>
-                  <Link
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`}
-                    className="w-full h-full text-white text-center"
-                  >
-                    <Button
-                      className="bg-white text-blueBlack rounded-xl border-blueGray border w-full py-4 text-sm font-bold"
-                      size="lg"
-                      startContent={
-                        <Image
-                          src="/svgs/google_logo.svg"
-                          alt="google logo on login"
-                          width={24}
-                          height={24}
-                        />
-                      }
-                    >
-                      구글로 로그인하기
-                    </Button>
-                  </Link>
 
                 </ModalBody>
               </div>
