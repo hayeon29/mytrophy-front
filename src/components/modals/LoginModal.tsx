@@ -327,6 +327,7 @@ export default function LoginModal({
                       네이버로 로그인하기
                     </Button>
                   </Link>
+
                 </ModalBody>
               </div>
             </>
