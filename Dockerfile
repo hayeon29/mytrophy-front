@@ -8,7 +8,6 @@ RUN npm install
 
 COPY . .
 RUN npm run build
-RUN npm run export
 
 # 실행 단계
 FROM nginx:alpine
